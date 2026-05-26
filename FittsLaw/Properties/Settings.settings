@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FittsLaw.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Amplitudes" Type="System.String" Scope="User">
+      <Value Profile="(Default)">100 200 400</Value>
+    </Setting>
+    <Setting Name="Widths" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20 40 80</Value>
+    </Setting>
+    <Setting Name="IsRandomized" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HasAudioFeedback" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Background" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFFFF</Value>
+    </Setting>
+    <Setting Name="Target" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF4040A0</Value>
+    </Setting>
+    <Setting Name="TrialCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">11</Value>
+    </Setting>
+    <Setting Name="Foreground" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF000000</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
