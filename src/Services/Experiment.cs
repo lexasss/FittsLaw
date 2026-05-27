@@ -4,10 +4,26 @@ namespace FittsLaw.Services;
 
 internal class Experiment
 {
+    public Models.ExperimentSetup? Setup { get; private set; }
+    public Models.Block[] Blocks { get; private set; } = [];
+
     public event EventHandler? Started;
-    public event EventHandler? Finished;
+
+    /// <summary>
+    /// The argument is true if the experiment was interrupted, false if it finished normally.
+    /// </summary>
+    public event EventHandler<bool>? Finished;
+
     public event EventHandler<Models.Block>? BlockStarted;
-    public event EventHandler<Models.Block>? BlockFinished;
+
+    /// <summary>
+    /// The argument is true if this was not the last block of the experiment, false otherwise.
+    /// </summary>
+    public event EventHandler<bool>? BlockFinished;
+
+    /// <summary>
+    /// Occurs when the target changes during the experiment. The argument is the current trial/target index within the block (starting from 0).
+    /// </summary>
     public event EventHandler<int>? TargetChanged;
 
     public async Task Run(Models.ExperimentSetup setup)
@@ -15,21 +31,24 @@ internal class Experiment
         if (_isRunning)
             return;
 
-        _setup = setup;
-        _blocks = CreateBlocks(setup);
+        Setup = setup;
+        Blocks = CreateBlocks(setup);
 
         _isRunning = true;
         Started?.Invoke(this, EventArgs.Empty);
 
         await Task.Delay(100);
 
-        foreach (var block in _blocks)
+        int i = 0;
+        foreach (var block in Blocks)
         {
             BlockStarted?.Invoke(this, block);
+            System.Diagnostics.Debug.WriteLine($"Started block {block.Index} with amplitude {block.Amplitude} and width {block.Width}");
 
-            for (int trial = 0; trial < _setup.TrialCount; trial++)
+            for (int trial = 0; trial < Setup.TrialCount; trial++)
             {
                 TargetChanged?.Invoke(this, trial);
+                System.Diagnostics.Debug.WriteLine($"Target {trial} shown");
 
                 _isWaitingForInput = true;
                 while (_isWaitingForInput && !_isInterrupted)
@@ -40,9 +59,11 @@ internal class Experiment
                 {
                     goto finalize;
                 }
+                System.Diagnostics.Debug.WriteLine($"Target {trial} hidden");
             }
 
-            BlockFinished?.Invoke(this, block);
+            BlockFinished?.Invoke(this, i < Blocks.Length - 1);
+            System.Diagnostics.Debug.WriteLine($"Block finished");
 
             _isPaused = true;
             while (_isPaused && !_isInterrupted)
@@ -53,11 +74,18 @@ internal class Experiment
             {
                 goto finalize;
             }
+
+            System.Diagnostics.Debug.WriteLine($"Block done");
+            i++;
         }
+
+        System.Diagnostics.Debug.WriteLine($"All done");
+
+        await Task.Delay(1000);
 
     finalize:
         _isRunning = false;
-        Finished?.Invoke(this, EventArgs.Empty);
+        Finished?.Invoke(this, false);
     }
 
     public void ResumeAfterTrial()
@@ -84,12 +112,11 @@ internal class Experiment
         _isPaused = false;
         _isWaitingForInput = false;
         _isInterrupted = true;
+
+        Finished?.Invoke(this, true);
     }
 
     #region Internal
-
-    Models.ExperimentSetup? _setup;
-    Models.Block[]? _blocks;
 
     bool _isRunning = false;
     bool _isPaused = false;
