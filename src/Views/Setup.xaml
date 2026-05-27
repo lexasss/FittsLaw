@@ -6,12 +6,13 @@
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
         mc:Ignorable="d"
         Title="Setup"
-        Height="190"
+        Height="250"
         Width="318"
         Icon="/Assets/Images/icon.png"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Window.DataContext>
-        <vm:SetupModel />
+        <vm:Setup />
     </Window.DataContext>
 
     <Grid>
@@ -37,24 +38,41 @@
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                     <Setter Property="Padding" Value="2" />
                 </Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Width" Value="140" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Padding" Value="2" />
+                </Style>
             </StackPanel.Resources>
 
             <WrapPanel>
-                <Label Content="Number of Trials:" />
-                <ComboBox ItemsSource="{Binding TrialCounts}"
-                          SelectedItem="{Binding SelectedTrialCount}" />
+                <Label Content="Number of targets" />
+                <ComboBox ItemsSource="{Binding TargetCounts}"
+                          SelectedItem="{Binding TargetCount}" />
             </WrapPanel>
 
             <WrapPanel>
-                <Label Content="Amplitudes:" />
+                <Label Content="Amplitudes" />
                 <TextBox Text="{Binding Amplitudes, Mode=TwoWay}"
                          ToolTip="Space-separated integers" />
             </WrapPanel>
 
             <WrapPanel>
-                <Label Content="Widths:" />
+                <Label Content="Widths" />
                 <TextBox Text="{Binding Widths, Mode=TwoWay}"
                          ToolTip="Space-separated integers" />
+            </WrapPanel>
+
+            <WrapPanel>
+                <Label Content="" />
+                <CheckBox IsChecked="{Binding IsRandomized, Mode=TwoWay}"
+                          Content="Randomized"/>
+            </WrapPanel>
+
+            <WrapPanel>
+                <Label Content="" />
+                <CheckBox IsChecked="{Binding HasAudioFeedback, Mode=TwoWay}"
+                          Content="Has audio feedback"/>
             </WrapPanel>
         </StackPanel>
 

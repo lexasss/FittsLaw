@@ -1,7 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace FittsLaw.Views;
 
@@ -11,29 +8,35 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        Closing += (s, e) =>
+        Content = _mainView;
+
+        var mainVm = (_mainView.DataContext as ViewModels.Main)!;
+        mainVm.ExperimentStarted += (s, e) =>
         {
-            if (DataContext is ViewModels.MainWindowModel model)
+            //Topmost = true;
+            WindowStyle = WindowStyle.None;
+
+            var state = WindowState;
+            WindowState = WindowState.Maximized;
+
+            var experimentView = new Experiment();
+            var expVm = (experimentView.DataContext as ViewModels.Experiment)!;
+            expVm.ExperimentStopped += (s, e) =>
             {
-                if (!model.Save())
-                {
-                    MessageBox.Show("Failed to save settings.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+                //Topmost = false;
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                WindowState = state;
+
+                Content = _mainView;
+            };
+
+            Content = experimentView;
         };
     }
 
-    private void Color_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button btn && btn.Content is Rectangle rect)
-        {
-            var currentColor = (rect.Fill as SolidColorBrush)?.Color ?? Colors.White;
+    #region Internal
 
-            var dialog = new Egorozh.ColorPicker.Dialog.ColorPickerDialog() { Color = currentColor };
-            if (dialog.ShowDialog() == true)
-            {
-                rect.Fill = new SolidColorBrush(dialog.Color);
-            }
-        }
-    }
+    Main _mainView = new();
+
+    #endregion
 }

@@ -3,9 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace FittsLaw.ViewModels;
 
-internal partial class SetupModel : ObservableObject
+internal partial class Setup : ObservableObject
 {
-    public int[] TrialCounts { get; init; }
+    public int[] TargetCounts { get; init; }
+
+    [ObservableProperty]
+    public partial int TargetCount { get; set; }
 
     [ObservableProperty]
     public partial string Amplitudes { get; set; }
@@ -14,9 +17,12 @@ internal partial class SetupModel : ObservableObject
     public partial string Widths { get; set; }
 
     [ObservableProperty]
-    public partial int SelectedTrialCount { get; set; }
+    public partial bool IsRandomized { get; set; }
 
-    public SetupModel()
+    [ObservableProperty]
+    public partial bool HasAudioFeedback { get; set; } = false;
+
+    public Setup()
     {
         var counts = new List<int>();
         for (int i = 3; i < 50; i += 2)
@@ -24,13 +30,15 @@ internal partial class SetupModel : ObservableObject
             counts.Add(i);
         }
 
-        TrialCounts = counts.ToArray();
+        TargetCounts = counts.ToArray();
 
         var props = Properties.Settings.Default;
 
+        TargetCount = props.TrialCount;
         Amplitudes = props.Amplitudes;
         Widths = props.Widths;
-        SelectedTrialCount = props.TrialCount;
+        IsRandomized = props.IsRandomized;
+        HasAudioFeedback = props.HasAudioFeedback;
     }
 
     #region RelayCommand
@@ -40,9 +48,11 @@ internal partial class SetupModel : ObservableObject
     {
         var props = Properties.Settings.Default;
 
+        props.TrialCount = TargetCount;
         props.Amplitudes = props.Amplitudes;
         props.Widths = props.Widths;
-        props.TrialCount = SelectedTrialCount;
+        props.IsRandomized = IsRandomized;
+        props.HasAudioFeedback = HasAudioFeedback;
 
         props.Save();
     }
@@ -55,22 +65,6 @@ internal partial class SetupModel : ObservableObject
     #endregion
 
     #region Internals
-    /*
-    const char Separator = ' ';
 
-    private static int[] ToIntegers(string str)
-    {
-        var parts = str.Split(Separator);
-        var integers = new List<int>();
-        foreach (var part in parts)
-        {
-            if (int.TryParse(part.Trim(), out int value))
-            {
-                integers.Add(value);
-            }
-        }
-        return integers.ToArray();
-    }
-    */
     #endregion
 }
