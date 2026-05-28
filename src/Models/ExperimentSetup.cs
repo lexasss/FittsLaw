@@ -2,26 +2,26 @@
 
 internal record class ExperimentSetup(
     int TrialCount,
-    int[] Amplitudes,
-    int[] Widths,
+    double[] Amplitudes,
+    double[] Widths,
     bool IsRandomized,
     bool HasAudioFeedback
 )
 {
     public static ExperimentSetup From(ViewModels.Setup vm) =>
         new(vm.TargetCount,
-            ToIntegers(vm.Amplitudes),
-            ToIntegers(vm.Widths),
+            ToNumbers(vm.Amplitudes),
+            ToNumbers(vm.Widths),
             vm.IsRandomized,
             vm.HasAudioFeedback);
 
-    private static int[] ToIntegers(string input)
+    private static double[] ToNumbers(string input)
     {
         var parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
-        var numbers = new int[parts.Length];
+        var numbers = new double[parts.Length];
         for (int i = 0; i < parts.Length; i++)
         {
-            if (int.TryParse(parts[i], out int num))
+            if (double.TryParse(parts[i], out double num))
             {
                 numbers[i] = num;
             }

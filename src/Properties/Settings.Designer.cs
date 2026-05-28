@@ -86,12 +86,12 @@ namespace FittsLaw.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF4040A0")]
-        public string Target {
+        public string ActiveTarget {
             get {
-                return ((string)(this["Target"]));
+                return ((string)(this["ActiveTarget"]));
             }
             set {
-                this["Target"] = value;
+                this["ActiveTarget"] = value;
             }
         }
         
@@ -110,12 +110,12 @@ namespace FittsLaw.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF000000")]
-        public string Foreground {
+        public string Border {
             get {
-                return ((string)(this["Foreground"]));
+                return ((string)(this["Border"]));
             }
             set {
-                this["Foreground"] = value;
+                this["Border"] = value;
             }
         }
     }

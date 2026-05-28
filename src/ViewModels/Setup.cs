@@ -41,7 +41,7 @@ internal partial class Setup : ObservableObject
         HasAudioFeedback = props.HasAudioFeedback;
     }
 
-    #region RelayCommand
+    #region Commands
 
     [RelayCommand]
     private void Start()
@@ -49,8 +49,8 @@ internal partial class Setup : ObservableObject
         var props = Properties.Settings.Default;
 
         props.TrialCount = TargetCount;
-        props.Amplitudes = props.Amplitudes;
-        props.Widths = props.Widths;
+        props.Amplitudes = Amplitudes;
+        props.Widths = Widths;
         props.IsRandomized = IsRandomized;
         props.HasAudioFeedback = HasAudioFeedback;
 

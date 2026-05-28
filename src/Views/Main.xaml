@@ -100,12 +100,12 @@
                 <Button Style="{StaticResource ToolbarIconButton}" 
                         ToolTip="Foreground"
                         Click="Color_Click">
-                    <Rectangle Fill="{Binding Foreground, Mode=TwoWay}"/>
+                    <Rectangle Fill="{Binding Border, Mode=TwoWay}"/>
                 </Button>
                 <Button Style="{StaticResource ToolbarIconButton}" 
                         ToolTip="Target"
                         Click="Color_Click">
-                    <Rectangle Fill="{Binding Target, Mode=TwoWay}"/>
+                    <Rectangle Fill="{Binding ActiveTarget, Mode=TwoWay}"/>
                 </Button>
             </ToolBar>
         </ToolBarTray>
@@ -121,12 +121,12 @@
                         <Setter Property="Width" Value="40"/>
                         <Setter Property="Height" Value="40"/>
                         <Setter Property="Margin" Value="8"/>
-                        <Setter Property="Stroke" Value="{Binding Foreground, Mode=OneWay}"/>
+                        <Setter Property="Stroke" Value="{Binding Border, Mode=OneWay}"/>
                     </Style>
                 </WrapPanel.Resources>
 
                 <Ellipse />
-                <Ellipse Fill="{Binding Target, Converter={StaticResource color2brush}, Mode=OneWay}"/>
+                <Ellipse Fill="{Binding ActiveTarget, Converter={StaticResource color2brush}, Mode=OneWay}"/>
             </WrapPanel>
         </StackPanel>
     </Grid>

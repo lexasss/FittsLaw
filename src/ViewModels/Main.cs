@@ -21,25 +21,25 @@ internal partial class Main : ObservableObject
         }
     }
 
-    public Brush Foreground
+    public Brush Border
     {
-        get => _uiSettings.Foreground;
+        get => _uiSettings.Border;
         set
         {
-            _uiSettings = _uiSettings with { Foreground = value };
+            _uiSettings = _uiSettings with { Border = value };
             _uiSettings.Save();
-            OnPropertyChanged(nameof(Foreground));
+            OnPropertyChanged(nameof(Border));
         }
     }
 
-    public Brush Target
+    public Brush ActiveTarget
     {
-        get => _uiSettings.Target;
+        get => _uiSettings.ActiveTarget;
         set
         {
-            _uiSettings = _uiSettings with { Target = value };
+            _uiSettings = _uiSettings with { ActiveTarget = value };
             _uiSettings.Save();
-            OnPropertyChanged(nameof(Target));
+            OnPropertyChanged(nameof(ActiveTarget));
         }
     }
 

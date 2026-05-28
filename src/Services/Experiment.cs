@@ -1,4 +1,5 @@
 ﻿using FittsLaw.Helpers;
+using System.Windows;
 
 namespace FittsLaw.Services;
 
@@ -26,6 +27,11 @@ internal class Experiment
     /// </summary>
     public event EventHandler<int>? TargetChanged;
 
+    public void SetTargets(Models.Target[] targets)
+    {
+        _targets = targets;
+    }
+
     public async Task Run(Models.ExperimentSetup setup)
     {
         if (_isRunning)
@@ -43,12 +49,16 @@ internal class Experiment
         foreach (var block in Blocks)
         {
             BlockStarted?.Invoke(this, block);
-            System.Diagnostics.Debug.WriteLine($"Started block {block.Index} with amplitude {block.Amplitude} and width {block.Width}");
+            System.Diagnostics.Debug.WriteLine($"Block {block.Index}: A={block.Amplitude}, W={block.Width}");
+
+            block.Targets = _targets;
+
+            _stopwatch.Restart();
 
             for (int trial = 0; trial < Setup.TrialCount; trial++)
             {
                 TargetChanged?.Invoke(this, trial);
-                System.Diagnostics.Debug.WriteLine($"Target {trial} shown");
+                System.Diagnostics.Debug.WriteLine($"Target {trial}");
 
                 _isWaitingForInput = true;
                 while (_isWaitingForInput && !_isInterrupted)
@@ -59,11 +69,9 @@ internal class Experiment
                 {
                     goto finalize;
                 }
-                System.Diagnostics.Debug.WriteLine($"Target {trial} hidden");
             }
 
             BlockFinished?.Invoke(this, i < Blocks.Length - 1);
-            System.Diagnostics.Debug.WriteLine($"Block finished");
 
             _isPaused = true;
             while (_isPaused && !_isInterrupted)
@@ -75,23 +83,30 @@ internal class Experiment
                 goto finalize;
             }
 
-            System.Diagnostics.Debug.WriteLine($"Block done");
             i++;
         }
 
-        System.Diagnostics.Debug.WriteLine($"All done");
+        System.Diagnostics.Debug.WriteLine($"Done");
 
         await Task.Delay(1000);
 
     finalize:
+
         _isRunning = false;
+
         Finished?.Invoke(this, false);
     }
 
-    public void ResumeAfterTrial()
+    public void ResumeAfterTrial(Point activationLocation)
     {
         if (!_isRunning || !_isWaitingForInput)
             return;
+
+        var target = _targets.FirstOrDefault(target => target.IsActive);
+        target?.ActivationTimestamp = _stopwatch.ElapsedMilliseconds;
+        target?.ActivationLocation = new Point(
+            activationLocation.X - target.Size / 2,
+            activationLocation.Y - target.Size / 2);
 
         _isWaitingForInput = false;
     }
@@ -117,6 +132,10 @@ internal class Experiment
     }
 
     #region Internal
+
+    readonly System.Diagnostics.Stopwatch _stopwatch = new();
+
+    Models.Target[] _targets = [];
 
     bool _isRunning = false;
     bool _isPaused = false;

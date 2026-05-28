@@ -1,28 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace FittsLaw.Views
+namespace FittsLaw.Views;
+
+public partial class Experiment : Page, IDisposable
 {
-    /// <summary>
-    /// Interaction logic for Experiment.xaml
-    /// </summary>
-    public partial class Experiment : Page
+    public ItemsControl TargetContainer => itemsControl;
+
+    public Experiment()
     {
-        public Experiment()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
+
+    #region Internal
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        Keyboard.Focus(this);
+    }
+
+    public void Dispose()
+    {
+        (DataContext as ViewModels.Experiment)?.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
+
+    #endregion
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 
 namespace FittsLaw.Views;
 
@@ -8,6 +9,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        _input = FittsLaw.App.ServiceProvider.GetService<Services.MouseInput>()!;
+        _experiment = FittsLaw.App.ServiceProvider.GetService<Services.Experiment>()!;
+
         Content = _mainView;
 
         var mainVm = (_mainView.DataContext as ViewModels.Main)!;
@@ -16,27 +20,46 @@ public partial class MainWindow : Window
             //Topmost = true;
             WindowStyle = WindowStyle.None;
 
-            var state = WindowState;
+            _originalWindowState = WindowState;
             WindowState = WindowState.Maximized;
 
-            var experimentView = new Experiment();
-            var expVm = (experimentView.DataContext as ViewModels.Experiment)!;
-            expVm.ExperimentStopped += (s, e) =>
-            {
-                //Topmost = false;
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowState = state;
+            _experimentView = new Experiment();
+            var expVm = (_experimentView.DataContext as ViewModels.Experiment)!;
+            expVm.ExperimentStopped += ExpVm_ExperimentStopped;
 
-                Content = _mainView;
-            };
+            _input.Register(this, _experimentView.TargetContainer.ItemContainerGenerator.Items, _experiment);
 
-            Content = experimentView;
+            Content = _experimentView;
         };
+    }
+
+    private void ExpVm_ExperimentStopped(object? sender, EventArgs e)
+    {
+        //Topmost = false;
+        WindowStyle = WindowStyle.SingleBorderWindow;
+        WindowState = _originalWindowState;
+
+        Content = _mainView;
+
+        if (_experimentView != null)
+        {
+            var expVm = (_experimentView.DataContext as ViewModels.Experiment)!;
+            expVm.ExperimentStopped -= ExpVm_ExperimentStopped;
+
+            _experimentView?.Dispose();
+            _experimentView = null;
+        }
     }
 
     #region Internal
 
-    Main _mainView = new();
+    readonly Services.MouseInput _input;
+    readonly Services.Experiment _experiment;
+
+    readonly Main _mainView = new();
+
+    Experiment? _experimentView;
+    WindowState _originalWindowState;
 
     #endregion
 }

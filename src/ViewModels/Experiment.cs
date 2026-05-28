@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
-using System.Windows.Shapes;
 
 namespace FittsLaw.ViewModels;
 
-internal class Experiment
+internal partial class Experiment : ObservableObject, IDisposable
 {
-    public ObservableCollection<Ellipse> Targets { get; } = [];
+    public ObservableCollection<Views.Target> Targets { get; } = [];
 
-    public int ParentSize { get; }
+    public double ParentSize { get; }
 
     public event EventHandler? ExperimentStopped;
 
@@ -22,17 +23,36 @@ internal class Experiment
         ParentSize = _experiment.Blocks.Max(b => b.Amplitude + 2 * b.Width);
     }
 
+    public void Dispose()
+    {
+        _experiment.BlockStarted -= Experiment_BlockStarted;
+        _experiment.BlockFinished -= Experiment_BlockFinished;
+        _experiment.TargetChanged -= Experiment_TargetChanged;
+        _experiment.Finished -= Experiment_Finished;
+
+        GC.SuppressFinalize(this);
+    }
+
+    #region Commands
+
+    [RelayCommand]
+    private void Interrupt()
+    {
+        _experiment.Interrupt();
+    }
+
+    #endregion
+
     #region Internal
 
     Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>()!;
-    Models.UiSettings _uiSettings = Models.UiSettings.From(Properties.Settings.Default);
-    Ellipse[] _targets = [];
 
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
-        _targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
+        var targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
+        _experiment.SetTargets(targets.Select(t => (t.DataContext as Target)!.Data).ToArray());
 
-        foreach (var target in _targets)
+        foreach (var target in targets)
         {
             Targets.Add(target);
         }
@@ -51,17 +71,21 @@ internal class Experiment
 
     private void Experiment_TargetChanged(object? sender, int index)
     {
-        foreach (var target in _targets)
+        foreach (var target in Targets)
         {
-            target.Fill = null;
+            var vm = (target.DataContext as Target)!;
+            vm.IsActive = false;
         }
-        _targets[index].Fill = _uiSettings.Target;
 
-        // input replacement while developing
+        var activeTargetVm = (Targets[index].DataContext as Target)!;
+        activeTargetVm.IsActive = true;
+
+        /*/ input replacement while developing
         Task.Delay(500).ContinueWith(_ =>
         {
             _experiment.ResumeAfterTrial();
         });
+        //*/
     }
 
     private void Experiment_Finished(object? sender, bool wasInterrupted)
@@ -70,7 +94,13 @@ internal class Experiment
 
         if (!wasInterrupted)
         {
-            // show statistics
+            foreach (var block in _experiment.Blocks)
+            {
+                foreach (var target in block.Targets)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Target {target.Id}: Size={target.Size}, Click=({target.ActivationLocation.X}, {target.ActivationLocation.Y}), Time={target.ActivationTimestamp}ms");
+                }
+            }
         }
     }
 

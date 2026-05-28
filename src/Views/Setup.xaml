@@ -86,6 +86,7 @@
                 </Style>
             </WrapPanel.Resources>
             <Button Content="Start"
+                    IsDefault="True"
                     Command="{Binding StartCommand}"
                     Click="Start_Click"/>
             <Button Content="Cancel"
