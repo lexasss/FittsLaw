@@ -22,6 +22,9 @@ internal partial class Setup : ObservableObject
     [ObservableProperty]
     public partial bool HasAudioFeedback { get; set; } = false;
 
+    [ObservableProperty]
+    public partial bool ContinuedManually { get; set; } = false;
+
     public Setup()
     {
         var counts = new List<int>();
@@ -39,6 +42,7 @@ internal partial class Setup : ObservableObject
         Widths = props.Widths;
         IsRandomized = props.IsRandomized;
         HasAudioFeedback = props.HasAudioFeedback;
+        ContinuedManually = props.ContinuedManually;
     }
 
     #region Commands
@@ -53,6 +57,7 @@ internal partial class Setup : ObservableObject
         props.Widths = Widths;
         props.IsRandomized = IsRandomized;
         props.HasAudioFeedback = HasAudioFeedback;
+        props.ContinuedManually = ContinuedManually;
 
         props.Save();
     }

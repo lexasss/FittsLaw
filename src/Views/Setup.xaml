@@ -6,11 +6,11 @@
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
         mc:Ignorable="d"
         Title="Setup"
-        Height="250"
         Width="318"
         Icon="/Assets/Images/icon.png"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        SizeToContent="Height">
     <Window.DataContext>
         <vm:Setup />
     </Window.DataContext>
@@ -73,6 +73,12 @@
                 <Label Content="" />
                 <CheckBox IsChecked="{Binding HasAudioFeedback, Mode=TwoWay}"
                           Content="Has audio feedback"/>
+            </WrapPanel>
+
+            <WrapPanel>
+                <Label Content="" />
+                <CheckBox IsChecked="{Binding ContinuedManually, Mode=TwoWay}"
+                          Content="Manual continuation"/>
             </WrapPanel>
         </StackPanel>
 

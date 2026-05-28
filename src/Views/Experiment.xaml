@@ -18,6 +18,8 @@
     <Page.InputBindings>
         <KeyBinding Key="Esc" 
                     Command="{Binding InterruptCommand}" />
+        <KeyBinding Key="Return" 
+                    Command="{Binding ContinueCommand}" />
     </Page.InputBindings>
 
     <Grid>
@@ -33,5 +35,11 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
+
+        <Label Content="Press ENTER to continue"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Visibility="{Binding InstructionVisibility}"
+               FontSize="26"/>
     </Grid>
 </Page>

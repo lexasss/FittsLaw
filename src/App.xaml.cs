@@ -12,6 +12,7 @@ public partial class App : Application
         ServiceCollection services = new();
 
         services.AddSingleton<Services.Experiment, Services.Experiment>();
+        services.AddSingleton<Services.Statistics, Services.Statistics>();
         services.AddSingleton<Services.MouseInput>();
         services.AddSingleton<Services.TouchInput>();
 

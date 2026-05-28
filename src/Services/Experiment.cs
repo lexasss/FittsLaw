@@ -41,54 +41,42 @@ internal class Experiment
         Blocks = CreateBlocks(setup);
 
         _isRunning = true;
+        _isPaused = setup.ContinuedManually;
+        _isWaitingForInput = false;
+        _isInterrupted = false;
+
         Started?.Invoke(this, EventArgs.Empty);
+        if (!await WaitFor(() => _isPaused))
+            goto finalize;
 
         await Task.Delay(100);
 
-        int i = 0;
+        _blockIndex = 0;
         foreach (var block in Blocks)
         {
             BlockStarted?.Invoke(this, block);
-            System.Diagnostics.Debug.WriteLine($"Block {block.Index}: A={block.Amplitude}, W={block.Width}");
 
             block.Targets = _targets;
 
             _stopwatch.Restart();
 
-            for (int trial = 0; trial < Setup.TrialCount; trial++)
+            for (_trialIndex = 0; _trialIndex < Setup.TrialCount; _trialIndex++)
             {
-                TargetChanged?.Invoke(this, trial);
-                System.Diagnostics.Debug.WriteLine($"Target {trial}");
+                TargetChanged?.Invoke(this, _trialIndex);
 
                 _isWaitingForInput = true;
-                while (_isWaitingForInput && !_isInterrupted)
-                {
-                    await Task.Delay(10);
-                }
-                if (_isInterrupted)
-                {
+                if (!await WaitFor(() => _isWaitingForInput))
                     goto finalize;
-                }
             }
 
-            BlockFinished?.Invoke(this, i < Blocks.Length - 1);
+            BlockFinished?.Invoke(this, _blockIndex < Blocks.Length - 1);
 
             _isPaused = true;
-            while (_isPaused && !_isInterrupted)
-            {
-                await Task.Delay(10);
-            }
-            if (_isInterrupted)
-            {
+            if (!await WaitFor(() => _isPaused))
                 goto finalize;
-            }
 
-            i++;
+            _blockIndex++;
         }
-
-        System.Diagnostics.Debug.WriteLine($"Done");
-
-        await Task.Delay(1000);
 
     finalize:
 
@@ -103,10 +91,16 @@ internal class Experiment
             return;
 
         var target = _targets.FirstOrDefault(target => target.IsActive);
-        target?.ActivationTimestamp = _stopwatch.ElapsedMilliseconds;
-        target?.ActivationLocation = new Point(
-            activationLocation.X - target.Size / 2,
-            activationLocation.Y - target.Size / 2);
+        if (target == null)
+            return;
+
+        var dx = activationLocation.X - target.Size / 2;
+        var dy = activationLocation.Y - target.Size / 2;
+        if (_trialIndex == 0 && Math.Sqrt(dx * dx + dy * dy) > target.Size / 2)
+            return; // ignore activations outside the target for the first trial of the block
+
+        target.ActivationTimestamp = _stopwatch.ElapsedMilliseconds;
+        target.ActivationOffset = new Point(dx, dy);
 
         _isWaitingForInput = false;
     }
@@ -141,6 +135,8 @@ internal class Experiment
     bool _isPaused = false;
     bool _isWaitingForInput = false;
     bool _isInterrupted = false;
+    int _blockIndex;
+    int _trialIndex;
 
     private static Models.Block[] CreateBlocks(Models.ExperimentSetup setup)
     {
@@ -160,6 +156,17 @@ internal class Experiment
         }
 
         return result.ToArray();
+    }
+
+    private async Task<bool> WaitFor(Func<bool> condition)
+    {
+        while (condition())
+        {
+            if (_isInterrupted)
+                return false;
+            await Task.Delay(10);
+        }
+        return true;
     }
 
     #endregion

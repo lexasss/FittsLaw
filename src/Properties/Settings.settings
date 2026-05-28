@@ -26,5 +26,8 @@
     <Setting Name="Border" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF000000</Value>
     </Setting>
+    <Setting Name="ContinuedManually" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

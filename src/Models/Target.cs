@@ -8,6 +8,6 @@ internal class Target
     public Point Position { get; set; }
     public double Size { get; set; }
     public bool IsActive { get; set; } = false;
-    public Point ActivationLocation { get; set; }
+    public Point ActivationOffset { get; set; }
     public long ActivationTimestamp { get; set; }
 }

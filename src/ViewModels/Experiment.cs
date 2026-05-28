@@ -2,12 +2,16 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace FittsLaw.ViewModels;
 
 internal partial class Experiment : ObservableObject, IDisposable
 {
     public ObservableCollection<Views.Target> Targets { get; } = [];
+
+    [ObservableProperty]
+    public partial Visibility InstructionVisibility { get; set; } = Visibility.Collapsed;
 
     public double ParentSize { get; }
 
@@ -20,6 +24,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         _experiment.TargetChanged += Experiment_TargetChanged;
         _experiment.Finished += Experiment_Finished;
 
+        InstructionVisibility = _experiment.Setup?.ContinuedManually == true ? Visibility.Visible : Visibility.Collapsed;
         ParentSize = _experiment.Blocks.Max(b => b.Amplitude + 2 * b.Width);
     }
 
@@ -41,14 +46,23 @@ internal partial class Experiment : ObservableObject, IDisposable
         _experiment.Interrupt();
     }
 
+    [RelayCommand]
+    private void Continue()
+    {
+        _experiment.ResumeAfterBlock();
+    }
+
     #endregion
 
     #region Internal
 
     Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>()!;
+    Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>()!;
 
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
+        InstructionVisibility = Visibility.Collapsed;
+
         var targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
         _experiment.SetTargets(targets.Select(t => (t.DataContext as Target)!.Data).ToArray());
 
@@ -62,11 +76,18 @@ internal partial class Experiment : ObservableObject, IDisposable
     {
         Targets.Clear();
 
-        // input replacement while developing
-        Task.Delay(1000).ContinueWith(_ =>
+        if (_experiment.Setup?.ContinuedManually == false || !hasNextBlock)
         {
-            _experiment.ResumeAfterBlock();
-        });
+            var delay = hasNextBlock ? 1000 : 10;
+            Task.Delay(delay).ContinueWith(_ =>
+            {
+                _experiment.ResumeAfterBlock();
+            });
+        }
+        else
+        {
+            InstructionVisibility = Visibility.Visible;
+        }
     }
 
     private void Experiment_TargetChanged(object? sender, int index)
@@ -94,13 +115,11 @@ internal partial class Experiment : ObservableObject, IDisposable
 
         if (!wasInterrupted)
         {
-            foreach (var block in _experiment.Blocks)
-            {
-                foreach (var target in block.Targets)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Target {target.Id}: Size={target.Size}, Click=({target.ActivationLocation.X}, {target.ActivationLocation.Y}), Time={target.ActivationTimestamp}ms");
-                }
-            }
+            var statisticsData = _statistics.Compute(_experiment.Blocks);
+
+            var dialog = new Views.Statistics();
+            (dialog.DataContext as Statistics)!.Items = statisticsData;
+            dialog.ShowDialog();
         }
     }
 

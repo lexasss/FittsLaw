@@ -17,7 +17,7 @@ internal static class BlockUiCreator
     {
         var center = fieldSize / 2.0;
         var angle = 2.0 * Math.PI / targetCount;    // between two adjacent targets on the circle
-        var radius = GetCircleRadius(targetCount, block.Amplitude) + block.Width / 2;
+        var radius = GetCircleRadius(targetCount, block.Amplitude);
 
         var targets = new Views.Target[targetCount];
         int halfTargetCount = targetCount / 2 + 1;
