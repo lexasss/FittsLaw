@@ -9,7 +9,9 @@
         Height="450"
         Width="300"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        MaxWidth="1260"
+        SizeToContent="Width">
     <Window.DataContext>
         <vm:Statistics />
     </Window.DataContext>

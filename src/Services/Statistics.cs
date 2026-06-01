@@ -76,17 +76,17 @@ internal class Statistics
             var effectiveWidth = 4.133 * sd;
             var effectiveId = Math.Log2(effectiveAmplitude / effectiveWidth + 1);
 
-            result["Block"][i] = block.Index.ToString();
+            result["Block"][i] = (i + 1).ToString();
             result["Trials"][i] = block.Targets.Count().ToString();
             result["Amplitude, px"][i] = block.Amplitude.ToString();
             result["Width, px"][i] = block.Width.ToString();
-            result["Offset, px"][i] = meanOffset.ToString("F2");
+            result["Offset, px"][i] = meanOffset.ToString("F1");
             result["ID, bits"][i] = id.ToString("F2");
-            result["Eff. Amplitude, px"][i] = effectiveAmplitude.ToString("F2");
-            result["Eff. Width, px"][i] = effectiveWidth.ToString("F2");
+            result["Eff. Amplitude, px"][i] = effectiveAmplitude.ToString("F1");
+            result["Eff. Width, px"][i] = effectiveWidth.ToString("F1");
             result["Eff. ID, bits"][i] = effectiveId.ToString("F2");
             result["MT, ms"][i] = meanDuration.ToString();
-            result["Errors"][i] = errorCount.ToString("F1");
+            result["Errors"][i] = errorCount.ToString();
             result["Errors, %"][i] = (100.0 * errors).ToString("F1");
             result["Throughput, b/s"][i] = throughput.ToString("F2");
 
