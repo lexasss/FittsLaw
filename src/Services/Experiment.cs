@@ -27,7 +27,7 @@ internal class Experiment
     /// </summary>
     public event EventHandler<int>? TargetChanged;
 
-    public void SetTargets(Models.Target[] targets)
+    public void SetTargets(IEnumerable<Models.Target> targets)
     {
         _targets = targets;
     }
@@ -129,7 +129,7 @@ internal class Experiment
 
     readonly System.Diagnostics.Stopwatch _stopwatch = new();
 
-    Models.Target[] _targets = [];
+    IEnumerable<Models.Target> _targets = [];
 
     bool _isRunning = false;
     bool _isPaused = false;

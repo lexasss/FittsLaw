@@ -13,7 +13,7 @@ internal partial class Target : ObservableObject
 
     public Brush BorderBrush => _settings.Border;
 
-    public Models.Target Data { get; } = new Models.Target();
+    public Models.Target Data { get; init; } = new Models.Target();
 
     public Target()
     {

@@ -46,7 +46,7 @@ internal class Statistics
                 startY = activationY;
             }
 
-            var n = block.Targets.Length - 1;
+            var n = block.Targets.Count() - 1;
 
             meanDuration /= n;
             effectiveAmplitude /= n;
@@ -61,7 +61,7 @@ internal class Statistics
             var effectiveId = Math.Log2(effectiveAmplitude / effectiveWidth + 1);
 
             result.Add(new Models.StatisticsData("Block", block.Index.ToString()));
-            result.Add(new Models.StatisticsData("Trials", block.Targets.Length.ToString()));
+            result.Add(new Models.StatisticsData("Trials", block.Targets.Count().ToString()));
             result.Add(new Models.StatisticsData("Amplitude, px", block.Amplitude.ToString()));
             result.Add(new Models.StatisticsData("Width, px", block.Width.ToString()));
             result.Add(new Models.StatisticsData("Offset, px", meanOffset.ToString("F2")));

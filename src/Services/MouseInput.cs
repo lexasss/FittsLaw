@@ -42,7 +42,7 @@ internal class MouseInput : IInput
     {
         var target = _items
             .OfType<Views.Target>()
-            .FirstOrDefault(t => (t.DataContext as ViewModels.Target)!.IsActive);
+            .FirstOrDefault(t => ((ViewModels.Target)t.DataContext).IsActive);
         _experiment?.ResumeAfterTrial(e.GetPosition(target));
     }
 

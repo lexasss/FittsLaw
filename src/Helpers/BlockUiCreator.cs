@@ -12,27 +12,40 @@ internal static class BlockUiCreator
     /// <param name="block">Block parametgers</param>
     /// <param name="targetCount">number of target</param>
     /// <param name="fieldSize">size of the parent</param>
-    /// <returns></returns>
-    public static Views.Target[] Create(Models.Block block, int targetCount, double fieldSize)
+    /// <returns>List of controls</returns>
+    public static Views.Target[] Create(
+        Models.Block block,
+        int targetCount,
+        double fieldSize)
     {
         var center = fieldSize / 2.0;
         var angle = 2.0 * Math.PI / targetCount;    // between two adjacent targets on the circle
         var radius = GetCircleRadius(targetCount, block.Amplitude);
 
         var targets = new Views.Target[targetCount];
+
         int halfTargetCount = targetCount / 2 + 1;
         int angleIndex = 0;
 
         for (int i = 0; i < targetCount; i++)
         {
+            var x = center + radius * Math.Cos(angleIndex * angle);
+            var y = center + radius * Math.Sin(angleIndex * angle);
+
             var target = new Views.Target
             {
                 Width = block.Width,
-                Height = block.Width
+                Height = block.Width,
+                DataContext = new ViewModels.Target()
+                {
+                    Data = new Models.Target()
+                    {
+                        Id = i,
+                        Size = block.Width,
+                        Position = new System.Windows.Point(x, y)
+                    }
+                }
             };
-
-            var x = center + radius * Math.Cos(angleIndex * angle);
-            var y = center + radius * Math.Sin(angleIndex * angle);
 
             angleIndex = (angleIndex + halfTargetCount) % targetCount;
 
@@ -40,11 +53,6 @@ internal static class BlockUiCreator
             Canvas.SetTop(target, y - block.Width / 2);
 
             targets[i] = target;
-
-            var data = (target.DataContext as ViewModels.Target)!.Data;
-            data.Id = i;
-            data.Size = block.Width;
-            data.Position = new System.Windows.Point(x, y);
         }
 
         return targets;

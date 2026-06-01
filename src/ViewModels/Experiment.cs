@@ -15,7 +15,9 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     public double ParentSize { get; }
 
+
     public event EventHandler? ExperimentStopped;
+
 
     public Experiment()
     {
@@ -56,15 +58,18 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     #region Internal
 
-    Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>()!;
-    Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>()!;
+    readonly Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>() ?? throw new Exception("Service is missing");
+    readonly Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>() ?? throw new Exception("Service is missing");
+
+    Target[] _targetViewModels = [];
 
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
         InstructionVisibility = Visibility.Collapsed;
 
         var targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
-        _experiment.SetTargets(targets.Select(t => (t.DataContext as Target)!.Data).ToArray());
+        _targetViewModels = targets.Select(t => (Target)t.DataContext).ToArray();
+        _experiment.SetTargets(_targetViewModels.Select(vm => vm.Data));
 
         foreach (var target in targets)
         {
@@ -75,6 +80,7 @@ internal partial class Experiment : ObservableObject, IDisposable
     private void Experiment_BlockFinished(object? sender, bool hasNextBlock)
     {
         Targets.Clear();
+        _targetViewModels = [];
 
         if (_experiment.Setup?.ContinuedManually == false || !hasNextBlock)
         {
@@ -92,14 +98,12 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     private void Experiment_TargetChanged(object? sender, int index)
     {
-        foreach (var target in Targets)
+        foreach (var vm in _targetViewModels)
         {
-            var vm = (target.DataContext as Target)!;
             vm.IsActive = false;
         }
 
-        var activeTargetVm = (Targets[index].DataContext as Target)!;
-        activeTargetVm.IsActive = true;
+        _targetViewModels[index].IsActive = true;
 
         /*/ input replacement while developing
         Task.Delay(500).ContinueWith(_ =>
@@ -117,8 +121,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         {
             var statisticsData = _statistics.Compute(_experiment.Blocks);
 
-            var dialog = new Views.Statistics();
-            (dialog.DataContext as Statistics)!.Items = statisticsData;
+            var dialog = new Views.Statistics(statisticsData);
             dialog.ShowDialog();
         }
     }
