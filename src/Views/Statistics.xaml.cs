@@ -4,7 +4,7 @@ namespace FittsLaw.Views;
 
 public partial class Statistics : Window
 {
-    public Statistics(Models.StatisticsData[] statisticsData)
+    public Statistics(IReadOnlyDictionary<string, string[]> statisticsData)
     {
         Owner = Application.Current.MainWindow;
 

@@ -2,12 +2,28 @@
 
 internal class Statistics
 {
-    public Models.StatisticsData[] Compute(Models.Block[] experimentBlocks)
+    public IReadOnlyDictionary<string, string[]> Compute(Models.Block[] experimentBlocks)
     {
-        var result = new List<Models.StatisticsData>();
+        int n = experimentBlocks.Length;
+
+        Dictionary<string, string[]> result = [];
+        result.Add("Block", new string[n]);
+        result.Add("Trials", new string[n]);
+        result.Add("Amplitude, px", new string[n]);
+        result.Add("Width, px", new string[n]);
+        result.Add("Offset, px", new string[n]);
+        result.Add("ID, bits", new string[n]);
+        result.Add("Eff. Amplitude, px", new string[n]);
+        result.Add("Eff. Width, px", new string[n]);
+        result.Add("Eff. ID, bits", new string[n]);
+        result.Add("MT, ms", new string[n]);
+        result.Add("Errors", new string[n]);
+        result.Add("Errors, %", new string[n]);
+        result.Add("Throughput, b/s", new string[n]);
 
         experimentBlocks.Sort((b1, b2) => b1.Index.CompareTo(b2.Index));
 
+        int i = 0;
         foreach (var block in experimentBlocks)
         {
             long meanDuration = 0;
@@ -46,7 +62,7 @@ internal class Statistics
                 startY = activationY;
             }
 
-            var n = block.Targets.Count() - 1;
+            n = block.Targets.Count() - 1;
 
             meanDuration /= n;
             effectiveAmplitude /= n;
@@ -60,22 +76,23 @@ internal class Statistics
             var effectiveWidth = 4.133 * sd;
             var effectiveId = Math.Log2(effectiveAmplitude / effectiveWidth + 1);
 
-            result.Add(new Models.StatisticsData("Block", block.Index.ToString()));
-            result.Add(new Models.StatisticsData("Trials", block.Targets.Count().ToString()));
-            result.Add(new Models.StatisticsData("Amplitude, px", block.Amplitude.ToString()));
-            result.Add(new Models.StatisticsData("Width, px", block.Width.ToString()));
-            result.Add(new Models.StatisticsData("Offset, px", meanOffset.ToString("F2")));
-            result.Add(new Models.StatisticsData("ID, bits", id.ToString("F2")));
-            result.Add(new Models.StatisticsData("Eff. Amplitude, px", effectiveAmplitude.ToString("F2")));
-            result.Add(new Models.StatisticsData("Eff. Width, px", effectiveWidth.ToString("F2")));
-            result.Add(new Models.StatisticsData("Eff. ID, bits", effectiveId.ToString("F2")));
-            result.Add(new Models.StatisticsData("MT, ms", meanDuration.ToString()));
-            result.Add(new Models.StatisticsData("Errors", errorCount.ToString("F1")));
-            result.Add(new Models.StatisticsData("Errors, %", (100.0 * errors).ToString("F1")));
-            result.Add(new Models.StatisticsData("Throughput, b/s", throughput.ToString("F2")));
-            result.Add(new Models.StatisticsData("", ""));
+            result["Block"][i] = block.Index.ToString();
+            result["Trials"][i] = block.Targets.Count().ToString();
+            result["Amplitude, px"][i] = block.Amplitude.ToString();
+            result["Width, px"][i] = block.Width.ToString();
+            result["Offset, px"][i] = meanOffset.ToString("F2");
+            result["ID, bits"][i] = id.ToString("F2");
+            result["Eff. Amplitude, px"][i] = effectiveAmplitude.ToString("F2");
+            result["Eff. Width, px"][i] = effectiveWidth.ToString("F2");
+            result["Eff. ID, bits"][i] = effectiveId.ToString("F2");
+            result["MT, ms"][i] = meanDuration.ToString();
+            result["Errors"][i] = errorCount.ToString("F1");
+            result["Errors, %"][i] = (100.0 * errors).ToString("F1");
+            result["Throughput, b/s"][i] = throughput.ToString("F2");
+
+            i++;
         }
 
-        return result.ToArray();
+        return result;
     }
 }

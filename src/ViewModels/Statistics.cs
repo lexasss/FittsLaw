@@ -11,7 +11,7 @@ internal partial class Statistics : ObservableObject
     public partial Visibility CopyToClipboardConfirmationVisibility { get; set; } = Visibility.Collapsed;
 
     [ObservableProperty]
-    public partial Models.StatisticsData[] Items { get; set; } = [];
+    public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
 
     public event EventHandler? HideCopyToClipboardConfirmation;
 
@@ -25,12 +25,12 @@ internal partial class Statistics : ObservableObject
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
         {
             foreach (var item in Items)
-                lines.Add($"{item.Name}\t{item.Value}");
+                lines.Add($"{item.Key}\t{string.Join("\t", item.Value)}");
         }
         else
         {
             foreach (var item in Items)
-                lines.Add($"{item.Value}");
+                lines.Add($"{string.Join("\t", item.Value)}");
         }
 
         Clipboard.SetText(string.Join('\n', lines));
