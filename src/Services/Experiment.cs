@@ -1,4 +1,5 @@
 ﻿using FittsLaw.Helpers;
+using System.Media;
 using System.Windows;
 
 namespace FittsLaw.Services;
@@ -26,6 +27,18 @@ internal class Experiment
     /// Occurs when the target changes during the experiment. The argument is the current trial/target index within the block (starting from 0).
     /// </summary>
     public event EventHandler<int>? TargetChanged;
+
+    public Experiment()
+    {
+        string path = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Assets",
+            "Sounds",
+            "selection.wav");
+
+        _soundPlayer.Open(new Uri(path));
+        _soundPlayer.Volume = 1.0;
+    }
 
     public void SetTargets(IEnumerable<Models.Target> targets)
     {
@@ -102,6 +115,12 @@ internal class Experiment
         target.ActivationTimestamp = _stopwatch.ElapsedMilliseconds;
         target.ActivationOffset = new Point(dx, dy);
 
+        if (Setup?.HasAudioFeedback == true)
+        {
+            _soundPlayer.Position = TimeSpan.Zero;
+            _soundPlayer.Play();
+        }
+
         _isWaitingForInput = false;
     }
 
@@ -128,6 +147,7 @@ internal class Experiment
     #region Internal
 
     readonly System.Diagnostics.Stopwatch _stopwatch = new();
+    readonly System.Windows.Media.MediaPlayer _soundPlayer = new();
 
     IEnumerable<Models.Target> _targets = [];
 

@@ -16,6 +16,13 @@
 
   <ItemGroup>
     <None Remove="Assets\Images\icon.png" />
+    <None Remove="Assets\Sounds\activation.mp3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Sounds\selection.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

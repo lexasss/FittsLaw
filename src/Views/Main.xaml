@@ -7,10 +7,16 @@
       xmlns:conv="clr-namespace:FittsLaw.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Main">
+      Title="Main"
+      Focusable="True"
+      Loaded="Page_Loaded">
     <Page.DataContext>
         <vm:Main />
     </Page.DataContext>
+    
+    <Page.InputBindings>
+        <KeyBinding Key="F2" Command="{Binding SetupCommand}"/>
+    </Page.InputBindings>
 
     <Page.Resources>
         <conv:ColorToBrush x:Key="color2brush"/>

@@ -1,5 +1,4 @@
-﻿using FittsLaw.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace FittsLaw.Views;
