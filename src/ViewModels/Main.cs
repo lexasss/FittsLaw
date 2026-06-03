@@ -43,7 +43,7 @@ internal partial class Main : ObservableObject
         }
     }
 
-    public event EventHandler? ExperimentStarted;
+    public event EventHandler<Models.ExperimentSetup>? ExperimentStarted;
 
     #region Commands
 
@@ -60,7 +60,7 @@ internal partial class Main : ObservableObject
                 var experiment = App.ServiceProvider.GetService<Services.Experiment>();
                 if (experiment?.Run(setup) != null)
                 {
-                    ExperimentStarted?.Invoke(this, EventArgs.Empty);
+                    ExperimentStarted?.Invoke(this, setup);
                 }
             }
             catch (Exception ex)

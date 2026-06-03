@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FittsLaw.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace FittsLaw.Views;
@@ -9,8 +10,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        _input = FittsLaw.App.ServiceProvider.GetService<Services.MouseInput>() ?? throw new Exception("Service is missing");
-        _experiment = FittsLaw.App.ServiceProvider.GetService<Services.Experiment>() ?? throw new Exception("Service is missing");
+        _input = FittsLaw.App.ServiceProvider.GetService<Services.MouseInput>() 
+            ?? throw new InvalidOperationException("MouseInput service not available");
+        _experiment = FittsLaw.App.ServiceProvider.GetService<Services.Experiment>() 
+            ?? throw new InvalidOperationException("Experiment service not available");
 
         Content = _mainView;
 
@@ -26,9 +29,13 @@ public partial class MainWindow : Window
 
     ViewModels.Experiment? _experimentViewModel;
     WindowState _originalWindowState;
+    int _originalScreenIndex = 0;
 
-    private void MainVm_ExperimentStarted(object? sender, EventArgs e)
+    private void MainVm_ExperimentStarted(object? sender, Models.ExperimentSetup setup)
     {
+        _originalScreenIndex = Helpers.Displays.GetScreenIndex(this);
+        Helpers.Displays.MoveToScreen(this, setup.ScreenIndex);
+
         //Topmost = true;
         WindowStyle = WindowStyle.None;
 
@@ -45,10 +52,17 @@ public partial class MainWindow : Window
         Content = experimentView;
     }
 
-    private void ExpVm_ExperimentStopped(object? sender, EventArgs e)
+    private void ExpVm_ExperimentStopped(object? sender, Models.ExperimentSetup setup)
     {
         //Topmost = false;
         WindowStyle = WindowStyle.SingleBorderWindow;
+
+        if (setup.ScreenIndex != _originalScreenIndex)
+        {
+            WindowState = WindowState.Normal;
+            Helpers.Displays.MoveToScreen(this, _originalScreenIndex);
+        }
+
         WindowState = _originalWindowState;
 
         Content = _mainView;

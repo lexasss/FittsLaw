@@ -16,7 +16,7 @@ internal partial class Experiment : ObservableObject, IDisposable
     public double ParentSize { get; }
 
 
-    public event EventHandler? ExperimentStopped;
+    public event EventHandler<Models.ExperimentSetup>? ExperimentStopped;
 
 
     public Experiment()
@@ -58,8 +58,10 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     #region Internal
 
-    readonly Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>() ?? throw new Exception("Service is missing");
-    readonly Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>() ?? throw new Exception("Service is missing");
+    readonly Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>() 
+        ?? throw new InvalidOperationException("Experiment service not available");
+    readonly Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>() 
+        ?? throw new InvalidOperationException("Statistics service not available");
 
     Target[] _targetViewModels = [];
 
@@ -115,7 +117,7 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     private void Experiment_Finished(object? sender, bool wasInterrupted)
     {
-        ExperimentStopped?.Invoke(this, EventArgs.Empty);
+        ExperimentStopped?.Invoke(this, _experiment.Setup!);
 
         if (!wasInterrupted)
         {

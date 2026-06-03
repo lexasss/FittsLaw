@@ -25,6 +25,9 @@ internal partial class Setup : ObservableObject
     [ObservableProperty]
     public partial bool ContinuedManually { get; set; } = false;
 
+    [ObservableProperty]
+    public partial int DisplayId { get; set; } = 0;
+
     public Setup()
     {
         var counts = new List<int>();
@@ -43,6 +46,7 @@ internal partial class Setup : ObservableObject
         IsRandomized = props.IsRandomized;
         HasAudioFeedback = props.HasAudioFeedback;
         ContinuedManually = props.ContinuedManually;
+        DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count);
     }
 
     #region Commands
@@ -58,6 +62,7 @@ internal partial class Setup : ObservableObject
         props.IsRandomized = IsRandomized;
         props.HasAudioFeedback = HasAudioFeedback;
         props.ContinuedManually = ContinuedManually;
+        props.DisplayId = DisplayId;
 
         props.Save();
     }

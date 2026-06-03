@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
+        xmlns:helpers="clr-namespace:FittsLaw.Helpers"
         mc:Ignorable="d"
         Title="Setup"
         Width="318"
@@ -14,6 +15,15 @@
     <Window.DataContext>
         <vm:Setup />
     </Window.DataContext>
+    <Window.Resources>
+        <ObjectDataProvider x:Key="Displays"
+                            ObjectType="{x:Type helpers:Displays}"
+                            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="helpers:Displays" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -61,6 +71,12 @@
                 <Label Content="Widths" />
                 <TextBox Text="{Binding Widths, Mode=TwoWay}"
                          ToolTip="Space-separated integers" />
+            </WrapPanel>
+
+            <WrapPanel>
+                <Label Content="Display" />
+                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Displays.Names}}"
+                          SelectedIndex="{Binding DisplayId}" />
             </WrapPanel>
 
             <WrapPanel>

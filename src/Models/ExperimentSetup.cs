@@ -6,7 +6,8 @@ internal record class ExperimentSetup(
     double[] Widths,
     bool IsRandomized,
     bool HasAudioFeedback,
-    bool ContinuedManually
+    bool ContinuedManually,
+    int ScreenIndex
 )
 {
     public static ExperimentSetup From(ViewModels.Setup vm) =>
@@ -15,7 +16,8 @@ internal record class ExperimentSetup(
             ToNumbers(vm.Widths),
             vm.IsRandomized,
             vm.HasAudioFeedback,
-            vm.ContinuedManually);
+            vm.ContinuedManually,
+            vm.DisplayId);
 
     private static double[] ToNumbers(string input)
     {
