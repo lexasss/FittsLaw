@@ -9,8 +9,8 @@ internal static class BlockUiCreator
     /// The distance between subsequent targets on the circle equals to the amplitude of the block,
     /// and the size of each target equals to the width of the block.
     /// </summary>
-    /// <param name="block">Block parametgers</param>
-    /// <param name="targetCount">number of target</param>
+    /// <param name="block">block parameters</param>
+    /// <param name="targetCount">number of targets (circles)</param>
     /// <param name="fieldSize">size of the parent</param>
     /// <returns>List of controls</returns>
     public static Views.Target[] Create(
