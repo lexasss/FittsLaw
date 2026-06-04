@@ -25,15 +25,18 @@ internal record class ExperimentSetup(
         var numbers = new double[parts.Length];
         for (int i = 0; i < parts.Length; i++)
         {
-            if (double.TryParse(parts[i], out double num))
+            if (double.TryParse(parts[i], out double num) && num > 0)
             {
                 numbers[i] = num;
             }
             else
             {
-                throw new FormatException($"Invalid number: {parts[i]}");
+                throw new ArgumentException($"Invalid number: {parts[i]}");
             }
         }
+
+        if (numbers.Length == 0)
+            throw new ArgumentException("At least one number is required.");
 
         return numbers;
     }

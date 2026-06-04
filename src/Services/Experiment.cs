@@ -95,7 +95,7 @@ internal class Experiment
 
         _isRunning = false;
 
-        Finished?.Invoke(this, false);
+        Finished?.Invoke(this, _isInterrupted);
     }
 
     public void ResumeAfterTrial(Point activationLocation)
@@ -140,8 +140,6 @@ internal class Experiment
         _isPaused = false;
         _isWaitingForInput = false;
         _isInterrupted = true;
-
-        Finished?.Invoke(this, true);
     }
 
     #region Internal

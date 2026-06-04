@@ -62,37 +62,55 @@ internal class Statistics
                 startY = activationY;
             }
 
-            n = block.Targets.Count() - 1;
-
-            meanDuration /= n;
-            effectiveAmplitude /= n;
-            meanOffset /= n;
-            sd = Math.Sqrt(sd / n);
-
-            var id = Math.Log2(block.Amplitude / block.Width + 1);
-            var errors = (double)errorCount / n;
-            var throughput = id / (0.001 * meanDuration);  // bits per second
-
-            var effectiveWidth = 4.133 * sd;
-            var effectiveId = Math.Log2(effectiveAmplitude / effectiveWidth + 1);
-
             result["Block"][i] = (i + 1).ToString();
             result["Trials"][i] = block.Targets.Count().ToString();
             result["Amplitude, px"][i] = block.Amplitude.ToString();
             result["Width, px"][i] = block.Width.ToString();
-            result["Offset, px"][i] = meanOffset.ToString("F1");
-            result["ID, bits"][i] = id.ToString("F2");
-            result["Eff. Amplitude, px"][i] = effectiveAmplitude.ToString("F1");
-            result["Eff. Width, px"][i] = effectiveWidth.ToString("F1");
-            result["Eff. ID, bits"][i] = effectiveId.ToString("F2");
-            result["MT, ms"][i] = meanDuration.ToString();
-            result["Errors"][i] = errorCount.ToString();
-            result["Errors, %"][i] = (100.0 * errors).ToString("F1");
-            result["Throughput, b/s"][i] = throughput.ToString("F2");
+
+            n = block.Targets.Count() - 1;
+
+            if (n > 0)
+            {
+                meanDuration /= n;
+                effectiveAmplitude /= n;
+                meanOffset /= n;
+                sd = Math.Sqrt(sd / n);
+
+                var id = Math.Log2(block.Amplitude / block.Width + 1);
+                var errors = (double)errorCount / n;
+                var throughput = id / (0.001 * meanDuration);  // bits per second
+
+                var effectiveWidth = 4.133 * sd;
+                var effectiveId = effectiveWidth > 0 ? Math.Log2(effectiveAmplitude / effectiveWidth + 1) : 0;
+
+                result["Offset, px"][i] = meanOffset.ToString("F1");
+                result["ID, bits"][i] = id.ToString("F2");
+                result["Eff. Amplitude, px"][i] = effectiveAmplitude.ToString("F1");
+                result["Eff. Width, px"][i] = effectiveWidth.ToString("F1");
+                result["Eff. ID, bits"][i] = effectiveId.ToString("F2");
+                result["MT, ms"][i] = meanDuration.ToString();
+                result["Errors"][i] = errorCount.ToString();
+                result["Errors, %"][i] = (100.0 * errors).ToString("F1");
+                result["Throughput, b/s"][i] = throughput.ToString("F2");
+            }
+            else // otherwise the computed values are set to 0 indicating the block is invalid for analysis
+            {
+                result["Offset, px"][i] = Zero;
+                result["ID, bits"][i] = Zero;
+                result["Eff. Amplitude, px"][i] = Zero;
+                result["Eff. Width, px"][i] = Zero;
+                result["Eff. ID, bits"][i] = Zero;
+                result["MT, ms"][i] = Zero;
+                result["Errors"][i] = Zero;
+                result["Errors, %"][i] = Zero;
+                result["Throughput, b/s"][i] = Zero;
+            }
 
             i++;
         }
 
         return result;
     }
+
+    readonly string Zero = "0";
 }

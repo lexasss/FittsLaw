@@ -58,8 +58,9 @@ internal partial class Main : ObservableObject
             {
                 var setup = Models.ExperimentSetup.From(model);
                 var experiment = App.ServiceProvider.GetService<Services.Experiment>();
-                if (experiment?.Run(setup) != null)
+                if (experiment != null)
                 {
+                    _ = experiment.Run(setup);  // runs asynchronously, never throws
                     ExperimentStarted?.Invoke(this, setup);
                 }
             }
