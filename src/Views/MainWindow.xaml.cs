@@ -9,8 +9,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        _input = FittsLaw.App.ServiceProvider.GetService<Services.MouseInput>() 
-            ?? throw new InvalidOperationException("MouseInput service not available");
+        _input = FittsLaw.App.ServiceProvider.GetService<Services.TouchInput>() 
+            ?? throw new InvalidOperationException("Input service not available");
         _experiment = FittsLaw.App.ServiceProvider.GetService<Services.Experiment>() 
             ?? throw new InvalidOperationException("Experiment service not available");
 
@@ -21,7 +21,7 @@ public partial class MainWindow : Window
 
     #region Internal
 
-    readonly Services.MouseInput _input;
+    readonly Services.IInput _input;
     readonly Services.Experiment _experiment;
 
     readonly Main _mainView = new();
