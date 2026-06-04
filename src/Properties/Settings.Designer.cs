@@ -133,6 +133,18 @@ namespace FittsLaw.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("MouseInput")]
+        public string InputType {
+            get {
+                return ((string)(this["InputType"]));
+            }
+            set {
+                this["InputType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int DisplayId {
             get {

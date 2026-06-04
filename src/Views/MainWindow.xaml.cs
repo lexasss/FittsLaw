@@ -9,8 +9,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        _input = FittsLaw.App.ServiceProvider.GetService<Services.TouchInput>() 
-            ?? throw new InvalidOperationException("Input service not available");
+        _inputFactory = FittsLaw.App.ServiceProvider.GetService<Func<string, Services.IInput>>() 
+            ?? throw new InvalidOperationException("Input service factory not available");
         _experiment = FittsLaw.App.ServiceProvider.GetService<Services.Experiment>() 
             ?? throw new InvalidOperationException("Experiment service not available");
 
@@ -21,7 +21,7 @@ public partial class MainWindow : Window
 
     #region Internal
 
-    readonly Services.IInput _input;
+    readonly Func<string, Services.IInput> _inputFactory;
     readonly Services.Experiment _experiment;
 
     readonly Main _mainView = new();
@@ -51,7 +51,8 @@ public partial class MainWindow : Window
         _experimentViewModel = (ViewModels.Experiment)experimentView.DataContext;
         _experimentViewModel.ExperimentStopped += ExpVm_ExperimentStopped;
 
-        _input.Register(this, experimentView.TargetContainer.ItemContainerGenerator.Items, _experiment);
+        var input = _inputFactory(setup.InputType);
+        input.Register(this, experimentView.TargetContainer.ItemContainerGenerator.Items, _experiment);
 
         Content = experimentView;
     }

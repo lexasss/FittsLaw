@@ -74,6 +74,12 @@
             </WrapPanel>
 
             <WrapPanel>
+                <Label Content="Input" />
+                <ComboBox ItemsSource="{Binding InputTypes}"
+                          SelectedItem="{Binding InputType}" />
+            </WrapPanel>
+
+            <WrapPanel>
                 <Label Content="Display" />
                 <ComboBox ItemsSource="{Binding Source={x:Static helpers:Displays.Items}}"
                           SelectedIndex="{Binding DisplayId}" />

@@ -15,7 +15,8 @@ public class ExperimentSetupTests
         {
             TargetCount = 5,
             Amplitudes = amplitudes,
-            Widths = amplitudes
+            Widths = amplitudes,
+            InputType = "MouseInput"
         });
 
         Assert.Equal(expected, setup.Amplitudes);
@@ -34,7 +35,8 @@ public class ExperimentSetupTests
         {
             TargetCount = 5,
             Amplitudes = amplitudes,
-            Widths = "10"
+            Widths = "10",
+            InputType = "MouseInput"
         };
 
         Assert.Throws<ArgumentException>(() => ExperimentSetup.From(vm));
@@ -51,9 +53,24 @@ public class ExperimentSetupTests
         {
             TargetCount = 5,
             Amplitudes = "100",
-            Widths = widths
+            Widths = widths,
+            InputType = "MouseInput"
         };
 
         Assert.Throws<ArgumentException>(() => ExperimentSetup.From(vm));
+    }
+
+    [Fact]
+    public void FromStoresSelectedInputType()
+    {
+        var setup = ExperimentSetup.From(new Setup
+        {
+            TargetCount = 5,
+            Amplitudes = "100",
+            Widths = "20",
+            InputType = "TouchInput"
+        });
+
+        Assert.Equal("TouchInput", setup.InputType);
     }
 }

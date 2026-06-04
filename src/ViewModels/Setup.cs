@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Text.RegularExpressions;
 
 namespace FittsLaw.ViewModels;
 
 internal partial class Setup : ObservableObject
 {
     public int[] TargetCounts { get; init; }
+    public string[] InputTypes { get; init; }
 
     [ObservableProperty]
     public partial int TargetCount { get; set; }
@@ -26,6 +28,9 @@ internal partial class Setup : ObservableObject
     public partial bool ContinuedManually { get; set; } = false;
 
     [ObservableProperty]
+    public partial string InputType { get; set; }
+
+    [ObservableProperty]
     public partial int DisplayId { get; set; } = 0;
 
     public Setup()
@@ -37,6 +42,19 @@ internal partial class Setup : ObservableObject
         }
 
         TargetCounts = counts.ToArray();
+        InputTypes = typeof(Services.IInput)
+            .Assembly
+            .GetTypes()
+            .Where(type =>
+                type.Namespace == typeof(Services.IInput).Namespace &&
+                typeof(Services.IInput).IsAssignableFrom(type) &&
+                !type.IsAbstract &&
+                type.IsClass)
+            .Select(type => _wordSeparationRegex
+                    .Replace(type.Name, " $1")
+                    .Split(' ',  StringSplitOptions.RemoveEmptyEntries)[0])
+            .Order()
+            .ToArray();
 
         var props = Properties.Settings.Default;
 
@@ -46,6 +64,7 @@ internal partial class Setup : ObservableObject
         IsRandomized = props.IsRandomized;
         HasAudioFeedback = props.HasAudioFeedback;
         ContinuedManually = props.ContinuedManually;
+        InputType = InputTypes.Contains(props.InputType) ? props.InputType : InputTypes.FirstOrDefault() ?? string.Empty;
         DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count - 1);
     }
 
@@ -62,6 +81,7 @@ internal partial class Setup : ObservableObject
         props.IsRandomized = IsRandomized;
         props.HasAudioFeedback = HasAudioFeedback;
         props.ContinuedManually = ContinuedManually;
+        props.InputType = InputType;
         props.DisplayId = DisplayId;
 
         props.Save();
@@ -70,6 +90,8 @@ internal partial class Setup : ObservableObject
     #endregion
 
     #region Internals
+
+    public static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
 
     #endregion
 }

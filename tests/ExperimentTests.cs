@@ -123,6 +123,7 @@ public class ExperimentTests
             IsRandomized: false,
             HasAudioFeedback: false,
             ContinuedManually: false,
+            InputType: nameof(MouseInput),
             ScreenIndex: 0);
 
     private static void ResumeAfterTrialOnNextTick(

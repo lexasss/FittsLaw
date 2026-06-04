@@ -29,6 +29,9 @@
     <Setting Name="ContinuedManually" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="InputType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MouseInput</Value>
+    </Setting>
     <Setting Name="DisplayId" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>

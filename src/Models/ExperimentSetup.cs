@@ -7,6 +7,7 @@ internal record class ExperimentSetup(
     bool IsRandomized,
     bool HasAudioFeedback,
     bool ContinuedManually,
+    string InputType,
     int ScreenIndex
 )
 {
@@ -17,6 +18,7 @@ internal record class ExperimentSetup(
             vm.IsRandomized,
             vm.HasAudioFeedback,
             vm.ContinuedManually,
+            vm.InputType,
             vm.DisplayId);
 
     private static double[] ToNumbers(string input)

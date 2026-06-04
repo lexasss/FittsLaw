@@ -18,11 +18,24 @@ public partial class App : Application
 
         services.AddSingleton<Func<string, Services.IInput>>(sp => key =>
         {
-            return key switch
+            var serviceType = typeof(Services.IInput)
+                .Assembly
+                .GetTypes()
+                .FirstOrDefault(type =>
+                    type.Namespace == typeof(Services.IInput).Namespace &&
+                    typeof(Services.IInput).IsAssignableFrom(type) &&
+                    !type.IsAbstract &&
+                    type.IsClass &&
+                    type.Name == key);
+
+            if (serviceType != null)
+                return (Services.IInput)ActivatorUtilities.GetServiceOrCreateInstance(sp, serviceType);
+
+            return key.ToLower() switch
             {
                 "mouse" => sp.GetRequiredService<Services.MouseInput>(),
                 "touch" => sp.GetRequiredService<Services.TouchInput>(),
-                _ => throw new ArgumentException()
+                _ => throw new ArgumentException($"Unknown input type: {key}")
             };
         });
 
