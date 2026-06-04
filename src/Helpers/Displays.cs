@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Management;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -7,14 +8,14 @@ namespace FittsLaw.Helpers;
 internal static class Displays
 {
     public static int Count => Screen.AllScreens.Length;
-    public static string[] Names => Screen.AllScreens
-        .Select(s => GetFriendlyMonitorName(s.DeviceName))
+    public static Models.MonitorInfo[] Items => Screen.AllScreens
+        .Select(s => GetMonitorFromDeviceName(s.DeviceName))
+        .OfType<Models.MonitorInfo>()
         .ToArray();
 
     public static bool MoveToScreen(Window window, int screenIndex)
     {
-        if (window == null)
-            throw new ArgumentNullException(nameof(window));
+        ArgumentNullException.ThrowIfNull(window);
 
         if (screenIndex == GetScreenIndex(window))
             return true;
@@ -56,8 +57,7 @@ internal static class Displays
 
     public static int GetScreenIndex(Window window)
     {
-        if (window == null)
-            throw new ArgumentNullException(nameof(window));
+        ArgumentNullException.ThrowIfNull(window);
 
         // Get DPI transform (WPF → device pixels)
         var source = PresentationSource.FromVisual(window);
@@ -89,8 +89,60 @@ internal static class Displays
 
     #region Internal
 
-    private static string GetFriendlyMonitorName(string screenDeviceName)
+    private static Models.MonitorInfo[] GetMonitorInfo()
     {
+        static string? Decode(ushort[] chars)
+        {
+            return chars == null ? null : new string(chars
+                    .TakeWhile(c => c != 0)
+                    .Select(c => (char)c)
+                    .ToArray());
+        }
+
+        List<Models.MonitorInfo> monitors = [];
+
+        var searcher = new ManagementObjectSearcher(
+            @"root\wmi",
+            "SELECT * FROM WmiMonitorID");
+        foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
+        {
+            string manufacturer = Decode((ushort[])obj["ManufacturerName"]) ?? "Unknown";
+            string model = Decode((ushort[])obj["UserFriendlyName"]) ?? "Integrated Monitor";
+            string serial = Decode((ushort[])obj["SerialNumberID"]) ?? string.Empty;
+            monitors.Add(new Models.MonitorInfo
+            {
+                SerialNumberID = serial,
+                Name = model,
+                Manufacturer = manufacturer,
+                FrendlyName = model,
+            });
+        }
+
+        searcher = new ManagementObjectSearcher(
+            @"root\cimv2",
+            @"SELECT * FROM Win32_PnPEntity WHERE PNPClass='Monitor'");
+
+        foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
+        {
+            string deviceId = obj["DeviceID"]?.ToString() ?? string.Empty;
+            foreach (var monitor in monitors)
+            {
+                if (deviceId.StartsWith($"DISPLAY\\{monitor.Manufacturer}"))
+                {
+                    monitor.DeviceID = deviceId;
+                    monitor.FullFrendlyName = obj["Name"]?.ToString() ?? string.Empty;
+                    monitor.Description = obj["Description"]?.ToString() ?? string.Empty;
+                    break;
+                }
+            }
+        }
+
+        return monitors.ToArray();
+    }
+
+    private static Models.MonitorInfo? GetMonitorFromDeviceName(string screenDeviceName)
+    {
+        var monitors = GetMonitorInfo();
 
         int err = GetDisplayConfigBufferSizes(
             QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
@@ -154,12 +206,16 @@ internal static class Displays
             err = DisplayConfigGetDeviceInfo(ref targetName);
 
             if (err == ERROR_SUCCESS)
-                return !string.IsNullOrEmpty(targetName.monitorFriendlyDeviceName)
+            {
+                string devicePath = targetName.monitorDevicePath[4..].Replace('#', '\\');  // remove \\.\ from the path start
+                return monitors.FirstOrDefault(m => devicePath.StartsWith(m.DeviceID, StringComparison.OrdinalIgnoreCase));
+                /* return !string.IsNullOrEmpty(targetName.monitorFriendlyDeviceName)
                     ? targetName.monitorFriendlyDeviceName
-                    : screenDeviceName;
+                    : "Integrated Monitor";*/
+            }
         }
 
-        return screenDeviceName;
+        return null;
     }
 
     private const int ERROR_SUCCESS = 0;

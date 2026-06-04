@@ -46,7 +46,7 @@ internal partial class Setup : ObservableObject
         IsRandomized = props.IsRandomized;
         HasAudioFeedback = props.HasAudioFeedback;
         ContinuedManually = props.ContinuedManually;
-        DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count);
+        DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count - 1);
     }
 
     #region Commands
@@ -65,11 +65,6 @@ internal partial class Setup : ObservableObject
         props.DisplayId = DisplayId;
 
         props.Save();
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
     }
 
     #endregion

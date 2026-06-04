@@ -12,12 +12,5 @@ public partial class Setup : Window
     private void Start_Click(object sender, RoutedEventArgs e)
     {
         DialogResult = true;
-        Close();
-    }
-
-    private void Cancel_Click(object sender, RoutedEventArgs e)
-    {
-        DialogResult = false;
-        Close();
     }
 }

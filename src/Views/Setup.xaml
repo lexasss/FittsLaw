@@ -75,7 +75,7 @@
 
             <WrapPanel>
                 <Label Content="Display" />
-                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Displays.Names}}"
+                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Displays.Items}}"
                           SelectedIndex="{Binding DisplayId}" />
             </WrapPanel>
 
@@ -112,9 +112,7 @@
                     Command="{Binding StartCommand}"
                     Click="Start_Click"/>
             <Button Content="Cancel"
-                    IsCancel="True"
-                    Command="{Binding CancelCommand}"
-                    Click="Cancel_Click"/>
+                    IsCancel="True"/>
         </WrapPanel>
     </Grid>
 </Window>

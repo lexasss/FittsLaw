@@ -32,13 +32,18 @@ public partial class MainWindow : Window
 
     private void MainVm_ExperimentStarted(object? sender, Models.ExperimentSetup setup)
     {
+        _originalWindowState = WindowState;
         _originalScreenIndex = Helpers.Displays.GetScreenIndex(this);
+
+        if (setup.ScreenIndex != _originalScreenIndex && WindowState == WindowState.Maximized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
         Helpers.Displays.MoveToScreen(this, setup.ScreenIndex);
 
         //Topmost = true;
         WindowStyle = WindowStyle.None;
-
-        _originalWindowState = WindowState;
         WindowState = WindowState.Maximized;
 
         var experimentView = new Experiment();
