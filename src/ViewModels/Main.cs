@@ -21,25 +21,47 @@ internal partial class Main : ObservableObject
         }
     }
 
-    public Brush Border
+    public Brush BorderBrush
     {
-        get => _uiSettings.Border;
+        get => _uiSettings.BorderBrush;
         set
         {
-            _uiSettings = _uiSettings with { Border = value };
+            _uiSettings = _uiSettings with { BorderBrush = value };
             _uiSettings.Save();
-            OnPropertyChanged(nameof(Border));
+            OnPropertyChanged(nameof(BorderBrush));
         }
     }
 
-    public Brush ActiveTarget
+    public Brush ActiveTargetBrush
     {
-        get => _uiSettings.ActiveTarget;
+        get => _uiSettings.ActiveTargetBrush;
         set
         {
-            _uiSettings = _uiSettings with { ActiveTarget = value };
+            _uiSettings = _uiSettings with { ActiveTargetBrush = value };
             _uiSettings.Save();
-            OnPropertyChanged(nameof(ActiveTarget));
+            OnPropertyChanged(nameof(ActiveTargetBrush));
+        }
+    }
+
+    public Brush ActiveTargetBorderBrush
+    {
+        get => _uiSettings.ActiveTargetBorderBrush;
+        set
+        {
+            _uiSettings = _uiSettings with { ActiveTargetBorderBrush = value };
+            _uiSettings.Save();
+            OnPropertyChanged(nameof(ActiveTargetBorderBrush));
+        }
+    }
+
+    public Brush CompletedTargetBorderBrush
+    {
+        get => _uiSettings.CompletedTargetBorderBrush;
+        set
+        {
+            _uiSettings = _uiSettings with { CompletedTargetBorderBrush = value };
+            _uiSettings.Save();
+            OnPropertyChanged(nameof(CompletedTargetBorderBrush));
         }
     }
 

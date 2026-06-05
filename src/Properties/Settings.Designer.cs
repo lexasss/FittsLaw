@@ -86,12 +86,12 @@ namespace FittsLaw.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF4040A0")]
-        public string ActiveTarget {
+        public string ActiveTargetColor {
             get {
-                return ((string)(this["ActiveTarget"]));
+                return ((string)(this["ActiveTargetColor"]));
             }
             set {
-                this["ActiveTarget"] = value;
+                this["ActiveTargetColor"] = value;
             }
         }
         
@@ -109,13 +109,13 @@ namespace FittsLaw.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF000000")]
-        public string Border {
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF404040")]
+        public string BorderColor {
             get {
-                return ((string)(this["Border"]));
+                return ((string)(this["BorderColor"]));
             }
             set {
-                this["Border"] = value;
+                this["BorderColor"] = value;
             }
         }
         
@@ -152,6 +152,30 @@ namespace FittsLaw.Properties {
             }
             set {
                 this["DisplayId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF000000")]
+        public string ActiveTargetBorderColor {
+            get {
+                return ((string)(this["ActiveTargetBorderColor"]));
+            }
+            set {
+                this["ActiveTargetBorderColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF000000")]
+        public string CompletedTargetBorderColor {
+            get {
+                return ((string)(this["CompletedTargetBorderColor"]));
+            }
+            set {
+                this["CompletedTargetBorderColor"] = value;
             }
         }
     }

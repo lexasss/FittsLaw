@@ -12,6 +12,6 @@ internal class MonitorInfo
 
     public override string ToString()
     {
-        return $"{Manufacturer} {Name} ({Description})";
+        return $"{Name} ({Manufacturer})";
     }
 }

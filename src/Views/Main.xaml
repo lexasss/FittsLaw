@@ -104,14 +104,24 @@
                     <Rectangle Fill="{Binding Background, Mode=TwoWay}"/>
                 </Button>
                 <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Foreground"
+                        ToolTip="Target border"
                         Click="Color_Click">
-                    <Rectangle Fill="{Binding Border, Mode=TwoWay}"/>
+                    <Rectangle Fill="{Binding BorderBrush, Mode=TwoWay}"/>
                 </Button>
                 <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Target"
+                        ToolTip="Active target color"
                         Click="Color_Click">
-                    <Rectangle Fill="{Binding ActiveTarget, Mode=TwoWay}"/>
+                    <Rectangle Fill="{Binding ActiveTargetBrush, Mode=TwoWay}"/>
+                </Button>
+                <Button Style="{StaticResource ToolbarIconButton}" 
+                        ToolTip="Active target border color"
+                        Click="Color_Click">
+                    <Rectangle Fill="{Binding ActiveTargetBorderBrush, Mode=TwoWay}"/>
+                </Button>
+                <Button Style="{StaticResource ToolbarIconButton}" 
+                        ToolTip="Completed target border color"
+                        Click="Color_Click">
+                    <Rectangle Fill="{Binding CompletedTargetBorderBrush, Mode=TwoWay}"/>
                 </Button>
             </ToolBar>
         </ToolBarTray>
@@ -127,12 +137,17 @@
                         <Setter Property="Width" Value="40"/>
                         <Setter Property="Height" Value="40"/>
                         <Setter Property="Margin" Value="8"/>
-                        <Setter Property="Stroke" Value="{Binding Border, Mode=OneWay}"/>
+                        <Setter Property="Stroke" Value="{Binding BorderBrush, Mode=OneWay}"/>
                     </Style>
                 </WrapPanel.Resources>
 
-                <Ellipse />
-                <Ellipse Fill="{Binding ActiveTarget, Converter={StaticResource color2brush}, Mode=OneWay}"/>
+                <Ellipse Stroke="{Binding BorderBrush, Mode=OneWay}"
+                         ToolTip="Initial"/>
+                <Ellipse Stroke="{Binding ActiveTargetBorderBrush, Mode=OneWay}"
+                         Fill="{Binding ActiveTargetBrush, Converter={StaticResource color2brush}, Mode=OneWay}"
+                         ToolTip="Active"/>
+                <Ellipse Stroke="{Binding CompletedTargetBorderBrush, Mode=OneWay}"
+                         ToolTip="Completed"/>
             </WrapPanel>
         </StackPanel>
     </Grid>

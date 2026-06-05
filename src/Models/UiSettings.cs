@@ -2,19 +2,26 @@
 
 namespace FittsLaw.Models;
 
-internal record class UiSettings(Brush Background, Brush Border, Brush ActiveTarget)
+internal record class UiSettings(
+    Brush Background, 
+    Brush BorderBrush, 
+    Brush ActiveTargetBrush, 
+    Brush ActiveTargetBorderBrush,
+    Brush CompletedTargetBorderBrush)
 {
     public static UiSettings From(ViewModels.Main main)
     {
-        return new UiSettings(main.Background, main.Border, main.ActiveTarget);
+        return new UiSettings(main.Background, main.BorderBrush, main.ActiveTargetBrush, main.ActiveTargetBorderBrush, main.CompletedTargetBorderBrush);
     }
 
     public static UiSettings From(Properties.Settings settings)
     {
         return new UiSettings(
             new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.Background)),
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.Border)),
-            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.ActiveTarget))
+            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.BorderColor)),
+            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.ActiveTargetColor)),
+            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.ActiveTargetBorderColor)),
+            new SolidColorBrush((Color)ColorConverter.ConvertFromString(settings.CompletedTargetBorderColor))
         );
     }
 
@@ -22,8 +29,10 @@ internal record class UiSettings(Brush Background, Brush Border, Brush ActiveTar
     {
         var props = Properties.Settings.Default;
         props.Background = (Background as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
-        props.Border = (Border as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
-        props.ActiveTarget = (ActiveTarget as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
+        props.BorderColor = (BorderBrush as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
+        props.ActiveTargetColor = (ActiveTargetBrush as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
+        props.ActiveTargetBorderColor = (ActiveTargetBorderBrush as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
+        props.CompletedTargetBorderColor = (CompletedTargetBorderBrush as SolidColorBrush)?.Color.ToString() ?? "#FFFFFFFF";
 
         props.Save();
     }
