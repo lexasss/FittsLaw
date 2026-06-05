@@ -106,13 +106,6 @@ internal partial class Experiment : ObservableObject, IDisposable
         }
 
         _targetViewModels[index].IsActive = true;
-
-        /*/ input replacement while developing
-        Task.Delay(500).ContinueWith(_ =>
-        {
-            _experiment.ResumeAfterTrial();
-        });
-        //*/
     }
 
     private void Experiment_Finished(object? sender, bool wasInterrupted)
