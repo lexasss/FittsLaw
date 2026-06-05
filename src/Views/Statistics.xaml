@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Statistics"
         Height="450"
-        Width="300"
+        Width="500"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         MaxWidth="1260"
@@ -15,80 +15,130 @@
     <Window.DataContext>
         <vm:Statistics />
     </Window.DataContext>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Hidden">
-            <ItemsControl ItemsSource="{Binding Items}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <WrapPanel Margin="8,2">
-                            <WrapPanel.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontSize" Value="14"/>
-                                </Style>
-                            </WrapPanel.Resources>
-                            <TextBlock Text="{Binding Key}"
-                                       Width="120" />
-                            <ItemsControl ItemsSource="{Binding Value}"
-                                          Margin="8,0,0,0">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                                                   Width="50"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </WrapPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+    <Window.Resources>
+        <Style x:Key="copy" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+        <Style x:Key="copiedLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Content" Value="Copied"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Visibility" Value="{Binding CopyToClipboardConfirmationVisibility}"/>
+        </Style>
+        <ControlTemplate x:Key="copySign" TargetType="ContentControl">
+            <Grid>
+                <TextBlock Margin="-2,-2,0,0" Foreground="White">▮</TextBlock>
+                <TextBlock Margin="-2,-2,0,0">▯</TextBlock>
+                <TextBlock Margin="2,2,0,0" Foreground="White">▮</TextBlock>
+                <TextBlock Margin="2,2,0,0" >▯</TextBlock>
+            </Grid>
+        </ControlTemplate>
+    </Window.Resources>
 
-        <Grid Grid.Row="1">
-            <WrapPanel Margin="4"
-                       HorizontalAlignment="Center">
-                <WrapPanel.Resources>
-                    <Style x:Key="copy" TargetType="Button">
-                        <Setter Property="Width" Value="32"/>
-                        <Setter Property="Height" Value="32"/>
-                        <Setter Property="FontSize" Value="20"/>
-                        <Setter Property="Padding" Value="2,0,0,0"/>
-                        <Setter Property="Foreground" Value="Gray"/>
-                    </Style>
+    <TabControl>
+        <TabControl.Resources>
+            <Style TargetType="TabItem">
+                <Setter Property="Padding" Value="12,6"/>
+            </Style>
+        </TabControl.Resources>
+        
+        <TabItem Header="Table">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                    <ControlTemplate x:Key="copySign" TargetType="ContentControl">
-                        <Grid>
-                            <TextBlock Margin="-2,-2,0,0" Foreground="White">▮</TextBlock>
-                            <TextBlock Margin="-2,-2,0,0">▯</TextBlock>
-                            <TextBlock Margin="2,2,0,0" Foreground="White">▮</TextBlock>
-                            <TextBlock Margin="2,2,0,0" >▯</TextBlock>
-                        </Grid>
-                    </ControlTemplate>
-                </WrapPanel.Resources>
+                <ScrollViewer Grid.Row="0"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Hidden">
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel Margin="8,2">
+                                    <WrapPanel.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="14"/>
+                                        </Style>
+                                    </WrapPanel.Resources>
+                                    <TextBlock Text="{Binding Key}"
+                                               Width="120" />
+                                    <ItemsControl ItemsSource="{Binding Value}"
+                                                  Margin="8,0,0,0">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding}"
+                                                           Width="50"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
-                <Button Style="{StaticResource copy}"
-                        Command="{Binding CopyToClipboardCommand}"
-                        ToolTip="Copies all fields to the clipboard.\nKeep Control button to include headers">
-                    <ContentControl Template="{StaticResource copySign}"/>
-                </Button>
-            </WrapPanel>
-            <Label Content="Copied"
-                   Margin="4"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Right"
-                   Visibility="{Binding CopyToClipboardConfirmationVisibility}"/>
-        </Grid>
-    </Grid>
+                <Grid Grid.Row="1">
+                    <WrapPanel Margin="4"
+                               HorizontalAlignment="Center">
+                        <Button Style="{StaticResource copy}"
+                                Command="{Binding CopyTableToClipboardCommand}">
+                            <ContentControl Template="{StaticResource copySign}"/>
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <StackPanel>
+                                        <TextBlock>Copies all numeric data to the clipboard.</TextBlock>
+                                        <TextBlock>Keep Control button to include headers.</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </WrapPanel>
+                    <Label Style="{StaticResource copiedLabel}"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Plot">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ContentControl Grid.Row="0"
+                                Content="{Binding PlotControl, Mode=OneTime}"
+                                MinWidth="500"/>
+                <Grid Grid.Row="1">
+                    <WrapPanel Margin="4"
+                               HorizontalAlignment="Center">
+                        <Button Style="{StaticResource copy}"
+                                Command="{Binding CopyPlotToClipboardCommand}">
+                            <ContentControl Template="{StaticResource copySign}"/>
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <StackPanel>
+                                        <TextBlock>Copies the plot to the clipboard as an image.</TextBlock>
+                                        <TextBlock>Keep Control button to rather copy as HTML image.</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </WrapPanel>
+                    <Label Style="{StaticResource copiedLabel}"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>
