@@ -17,12 +17,7 @@
   <ItemGroup>
     <None Remove="Assets\Images\icon.png" />
     <None Remove="Assets\Sounds\activation.mp3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\Sounds\selection.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Remove="Assets\Sounds\error.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Assets\Sounds\error.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Sounds\selection.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

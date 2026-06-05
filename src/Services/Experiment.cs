@@ -1,5 +1,4 @@
 ﻿using FittsLaw.Helpers;
-using System.Media;
 using System.Windows;
 
 namespace FittsLaw.Services;
@@ -30,14 +29,16 @@ internal class Experiment
 
     public Experiment()
     {
-        string path = System.IO.Path.Combine(
+        _soundPlayer.Open(new Uri(System.IO.Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             "Assets",
             "Sounds",
-            "selection.wav");
-
-        _soundPlayer.Open(new Uri(path));
-        _soundPlayer.Volume = 1.0;
+            "selection.mp3")));
+        _errorSoundPlayer.Open(new Uri(System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Assets",
+            "Sounds",
+            "error.mp3")));
     }
 
     public void SetTargets(IEnumerable<Models.Target> targets)
@@ -54,7 +55,7 @@ internal class Experiment
         Blocks = CreateBlocks(setup);
 
         _isRunning = true;
-        _isPaused = setup.ContinuedManually;
+        _isPaused = setup.IsContinueManually;
         _isWaitingForInput = false;
         _isInterrupted = false;
 
@@ -117,8 +118,12 @@ internal class Experiment
 
         if (Setup?.HasAudioFeedback == true)
         {
-            _soundPlayer.Position = TimeSpan.Zero;
-            _soundPlayer.Play();
+            var player = target.ActivationOffset.Amplitude() > target.Size / 2 &&
+                Setup?.IsDistinctErrorAudioFeedback == true
+                    ? _errorSoundPlayer 
+                    : _soundPlayer;
+            player.Position = TimeSpan.Zero;
+            player.Play();
         }
 
         _isWaitingForInput = false;
@@ -146,6 +151,7 @@ internal class Experiment
 
     readonly System.Diagnostics.Stopwatch _stopwatch = new();
     readonly System.Windows.Media.MediaPlayer _soundPlayer = new();
+    readonly System.Windows.Media.MediaPlayer _errorSoundPlayer = new();
 
     IEnumerable<Models.Target> _targets = [];
 

@@ -15,7 +15,8 @@ internal class Statistics
         "MT, ms",
         "Errors",
         "Errors, %",
-        "Throughput, b/s"
+        "Throughput, b/s",
+        "Eff. Throughput, b/s"
     ];
 
     public IReadOnlyDictionary<string, string[]> Compute(Models.Block[] experimentBlocks)
@@ -23,19 +24,8 @@ internal class Statistics
         int n = experimentBlocks.Length;
 
         Dictionary<string, string[]> result = [];
-        result.Add(Fields[0], new string[n]);
-        result.Add(Fields[1], new string[n]);
-        result.Add(Fields[2], new string[n]);
-        result.Add(Fields[3], new string[n]);
-        result.Add(Fields[4], new string[n]);
-        result.Add(Fields[5], new string[n]);
-        result.Add(Fields[6], new string[n]);
-        result.Add(Fields[7], new string[n]);
-        result.Add(Fields[8], new string[n]);
-        result.Add(Fields[9], new string[n]);
-        result.Add(Fields[10], new string[n]);
-        result.Add(Fields[11], new string[n]);
-        result.Add(Fields[12], new string[n]);
+        foreach (var field in Fields)
+            result.Add(field, new string[n]);
 
         experimentBlocks.Sort((b1, b2) => b1.Index.CompareTo(b2.Index));
 
@@ -98,6 +88,7 @@ internal class Statistics
 
                 var effectiveWidth = 4.133 * sd;
                 var effectiveId = effectiveWidth > 0 ? Math.Log2(effectiveAmplitude / effectiveWidth + 1) : 0;
+                var effectiveThroughput = effectiveId / (0.001 * meanDuration);  // bits per second
 
                 result[Fields[4]][i] = meanOffset.ToString("F1");
                 result[Fields[5]][i] = id.ToString("F2");
@@ -108,18 +99,12 @@ internal class Statistics
                 result[Fields[10]][i] = errorCount.ToString();
                 result[Fields[11]][i] = (100.0 * errors).ToString("F1");
                 result[Fields[12]][i] = throughput.ToString("F2");
+                result[Fields[13]][i] = effectiveThroughput.ToString("F2");
             }
             else // otherwise the computed values are set to 0 indicating the block is invalid for analysis
             {
-                result[Fields[4]][i] = Zero;
-                result[Fields[5]][i] = Zero;
-                result[Fields[6]][i] = Zero;
-                result[Fields[7]][i] = Zero;
-                result[Fields[8]][i] = Zero;
-                result[Fields[9]][i] = Zero;
-                result[Fields[10]][i] = Zero;
-                result[Fields[11]][i] = Zero;
-                result[Fields[12]][i] = Zero;
+                for (int j = 4; j < Fields.Length; j++) 
+                    result[Fields[j]][i] = ZERO;
             }
 
             i++;
@@ -128,5 +113,9 @@ internal class Statistics
         return result;
     }
 
-    readonly string Zero = "0";
+    #region Internal
+
+    const string ZERO = "0";
+
+    #endregion
 }

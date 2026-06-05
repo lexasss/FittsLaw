@@ -23,9 +23,11 @@ internal partial class Setup : ObservableObject
 
     [ObservableProperty]
     public partial bool HasAudioFeedback { get; set; } = false;
+    [ObservableProperty]
+    public partial bool IsDistinctErrorAudioFeedback { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool ContinuedManually { get; set; } = false;
+    public partial bool IsContinueManually { get; set; } = false;
 
     [ObservableProperty]
     public partial string InputType { get; set; }
@@ -63,7 +65,8 @@ internal partial class Setup : ObservableObject
         Widths = props.Widths;
         IsRandomized = props.IsRandomized;
         HasAudioFeedback = props.HasAudioFeedback;
-        ContinuedManually = props.ContinuedManually;
+        IsDistinctErrorAudioFeedback = props.IsDistinctErrorAudioFeedback;
+        IsContinueManually = props.IsContinueManually;
         InputType = InputTypes.Contains(props.InputType) ? props.InputType : InputTypes.FirstOrDefault() ?? string.Empty;
         DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count - 1);
     }
@@ -80,7 +83,8 @@ internal partial class Setup : ObservableObject
         props.Widths = Widths;
         props.IsRandomized = IsRandomized;
         props.HasAudioFeedback = HasAudioFeedback;
-        props.ContinuedManually = ContinuedManually;
+        props.IsDistinctErrorAudioFeedback = IsDistinctErrorAudioFeedback;
+        props.IsContinueManually = IsContinueManually;
         props.InputType = InputType;
         props.DisplayId = DisplayId;
 

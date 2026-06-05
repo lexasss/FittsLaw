@@ -17,24 +17,24 @@ internal partial class Statistics : ObservableObject
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
 
-    public WpfPlot PlotControl { get; } = new WpfPlot();
+    public WpfPlot MtAndTp { get; } = new WpfPlot();
 
     public event EventHandler? HideCopyToClipboardConfirmation;
 
     public Statistics()
     {
-        PlotControl.Plot.Legend(location: Alignment.UpperLeft);
-        PlotControl.Plot.BottomAxis.Label(Services.Statistics.Fields[5]);
-        PlotControl.Plot.LeftAxis.Label(Services.Statistics.Fields[12]);
-        PlotControl.Plot.RightAxis.Label(Services.Statistics.Fields[9]);
-        PlotControl.Plot.RightAxis.Ticks(true);
+        MtAndTp.Plot.Legend(location: Alignment.UpperLeft);
+        MtAndTp.Plot.BottomAxis.Label(Services.Statistics.Fields[5]);
+        MtAndTp.Plot.LeftAxis.Label(Services.Statistics.Fields[12]);
+        MtAndTp.Plot.RightAxis.Label(Services.Statistics.Fields[9]);
+        MtAndTp.Plot.RightAxis.Ticks(true);
     }
 
     #region Property Setters
 
     partial void OnItemsChanged(IReadOnlyDictionary<string, string[]> value)
     {
-        PlotControl.Plot.Clear();
+        MtAndTp.Plot.Clear();
 
         if (!value.ContainsKey(Services.Statistics.Fields[5]) || 
             !value.ContainsKey(Services.Statistics.Fields[12]) || 
@@ -49,18 +49,18 @@ internal partial class Statistics : ObservableObject
             .Value
             .Select(double.Parse)
             .ToArray();
-        PlotControl.Plot
+        MtAndTp.Plot
             .AddScatter(dataX, dataY, Color.Blue, lineStyle: LineStyle.None, label: "TP", markerShape: MarkerShape.cross, markerSize: 10);
 
         dataY = value.FirstOrDefault(kv => kv.Key == Services.Statistics.Fields[9])
             .Value
             .Select(double.Parse)
             .ToArray();
-        PlotControl.Plot
+        MtAndTp.Plot
             .AddScatter(dataX, dataY, Color.Red, lineStyle: LineStyle.None, label: "MT")
             .YAxisIndex = 1;
 
-        PlotControl.Refresh();
+        MtAndTp.Refresh();
     }
 
     #endregion
@@ -90,15 +90,15 @@ internal partial class Statistics : ObservableObject
 
 
     [RelayCommand]
-    private void CopyPlotToClipboard()
+    private void CopyPlotToClipboard(WpfPlot plot)
     {
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
         {
-            Clipboard.SetText(PlotControl.Plot.GetImageHtml());
+            Clipboard.SetText(plot.Plot.GetImageHtml());
         }
         else
         {
-            Clipboard.SetImage(ToBitmapSource(PlotControl.Plot.GetBitmap()));
+            Clipboard.SetImage(ToBitmapSource(plot.Plot.GetBitmap()));
         }
 
         ShowConfirmation();
@@ -108,14 +108,14 @@ internal partial class Statistics : ObservableObject
 
     #region Internal
 
-    const int ConfirmationVisibilityDuration = 2000;
+    const int CONFIRMATION_VISIBILITY_DURATION = 2000;
 
     private void ShowConfirmation()
     {
         CopyToClipboardConfirmationVisibility = Visibility.Visible;
         Task.Run(async () =>
         {
-            await Task.Delay(ConfirmationVisibilityDuration);
+            await Task.Delay(CONFIRMATION_VISIBILITY_DURATION);
             HideCopyToClipboardConfirmation?.Invoke(this, EventArgs.Empty);
         });
     }

@@ -26,7 +26,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         _experiment.TargetChanged += Experiment_TargetChanged;
         _experiment.Finished += Experiment_Finished;
 
-        InstructionVisibility = _experiment.Setup?.ContinuedManually == true ? Visibility.Visible : Visibility.Collapsed;
+        InstructionVisibility = _experiment.Setup?.IsContinueManually == true ? Visibility.Visible : Visibility.Collapsed;
         ParentSize = _experiment.Blocks.Max(b => b.Amplitude + 2 * b.Width);
     }
 
@@ -84,7 +84,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         Targets.Clear();
         _targetViewModels = [];
 
-        if (_experiment.Setup?.ContinuedManually == false || !hasNextBlock)
+        if (_experiment.Setup?.IsContinueManually == false || !hasNextBlock)
         {
             var delay = hasNextBlock ? 1000 : 10;
             Task.Delay(delay).ContinueWith(_ =>

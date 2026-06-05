@@ -6,7 +6,8 @@ internal record class ExperimentSetup(
     double[] Widths,
     bool IsRandomized,
     bool HasAudioFeedback,
-    bool ContinuedManually,
+    bool IsDistinctErrorAudioFeedback,
+    bool IsContinueManually,
     string InputType,
     int ScreenIndex
 )
@@ -17,7 +18,8 @@ internal record class ExperimentSetup(
             ToNumbers(vm.Widths),
             vm.IsRandomized,
             vm.HasAudioFeedback,
-            vm.ContinuedManually,
+            vm.IsDistinctErrorAudioFeedback,
+            vm.IsContinueManually,
             vm.InputType,
             vm.DisplayId);
 

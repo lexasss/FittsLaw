@@ -7,7 +7,7 @@
         xmlns:helpers="clr-namespace:FittsLaw.Helpers"
         mc:Ignorable="d"
         Title="Setup"
-        Width="318"
+        Width="296"
         Icon="/Assets/Images/icon.png"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -37,11 +37,12 @@
                     <Setter Property="Margin" Value="4" />
                 </Style>
                 <Style TargetType="Label">
-                    <Setter Property="Width" Value="150" />
+                    <Setter Property="Width" Value="130" />
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                 </Style>
                 <Style TargetType="ComboBox">
                     <Setter Property="Width" Value="140" />
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
                 </Style>
                 <Style TargetType="TextBox">
                     <Setter Property="Width" Value="140" />
@@ -49,8 +50,8 @@
                     <Setter Property="Padding" Value="2" />
                 </Style>
                 <Style TargetType="CheckBox">
-                    <Setter Property="Width" Value="140" />
                     <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
                     <Setter Property="Padding" Value="2" />
                 </Style>
             </StackPanel.Resources>
@@ -93,13 +94,19 @@
 
             <WrapPanel>
                 <Label Content="" />
-                <CheckBox IsChecked="{Binding HasAudioFeedback, Mode=TwoWay}"
-                          Content="Has audio feedback"/>
+                <StackPanel>
+                    <CheckBox IsChecked="{Binding HasAudioFeedback, Mode=TwoWay}"
+                              Content="Audio feedback"/>
+                    <CheckBox IsChecked="{Binding IsDistinctErrorAudioFeedback, Mode=TwoWay}"
+                              IsEnabled="{Binding HasAudioFeedback}"
+                              Content="distinct on errors"
+                              Margin="20,4,0,0"/>
+                </StackPanel>
             </WrapPanel>
 
             <WrapPanel>
                 <Label Content="" />
-                <CheckBox IsChecked="{Binding ContinuedManually, Mode=TwoWay}"
+                <CheckBox IsChecked="{Binding IsContinueManually, Mode=TwoWay}"
                           Content="Manual continuation"/>
             </WrapPanel>
         </StackPanel>

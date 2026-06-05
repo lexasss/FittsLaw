@@ -122,12 +122,12 @@ namespace FittsLaw.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ContinuedManually {
+        public bool IsContinueManually {
             get {
-                return ((bool)(this["ContinuedManually"]));
+                return ((bool)(this["IsContinueManually"]));
             }
             set {
-                this["ContinuedManually"] = value;
+                this["IsContinueManually"] = value;
             }
         }
         
@@ -176,6 +176,18 @@ namespace FittsLaw.Properties {
             }
             set {
                 this["CompletedTargetBorderColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsDistinctErrorAudioFeedback {
+            get {
+                return ((bool)(this["IsDistinctErrorAudioFeedback"]));
+            }
+            set {
+                this["IsDistinctErrorAudioFeedback"] = value;
             }
         }
     }
