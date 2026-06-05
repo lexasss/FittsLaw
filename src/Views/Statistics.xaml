@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
+        xmlns:conv="clr-namespace:FittsLaw.Converters"
         mc:Ignorable="d"
         Title="Statistics"
         Height="450"
@@ -17,6 +18,8 @@
     </Window.DataContext>
 
     <Window.Resources>
+        <conv:StatKeyToMargin x:Key="StatKeyToMargin"/>
+        
         <Style x:Key="copy" TargetType="Button">
             <Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
@@ -62,7 +65,7 @@
                     <ItemsControl ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <WrapPanel Margin="8,2">
+                                <WrapPanel Margin="{Binding Key, Converter={StaticResource StatKeyToMargin}}">
                                     <WrapPanel.Resources>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontSize" Value="14"/>
