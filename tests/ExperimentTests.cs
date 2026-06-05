@@ -122,7 +122,8 @@ public class ExperimentTests
             Widths: [20],
             IsRandomized: false,
             HasAudioFeedback: false,
-            ContinuedManually: false,
+            IsDistinctErrorAudioFeedback: false,
+            IsContinueManually: false,
             InputType: nameof(MouseInput),
             ScreenIndex: 0);
 
