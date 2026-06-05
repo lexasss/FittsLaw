@@ -19,13 +19,36 @@
 
     <Window.Resources>
         <conv:StatKeyToMargin x:Key="StatKeyToMargin"/>
-        
+
+        <DataTemplate x:Key="copySign">
+            <Grid>
+                <TextBlock Margin="-2,-2,0,0" Foreground="White">▮</TextBlock>
+                <TextBlock Margin="-2,-2,0,0">▯</TextBlock>
+                <TextBlock Margin="2,2,0,0" Foreground="White">▮</TextBlock>
+                <TextBlock Margin="2,2,0,0" >▯</TextBlock>
+            </Grid>
+        </DataTemplate>
+
         <Style x:Key="copy" TargetType="Button">
             <Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Padding" Value="2,0,0,0"/>
             <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="ContentTemplate" Value="{StaticResource copySign}" />
+        </Style>
+        <Style x:Key="copyPlot" TargetType="Button" BasedOn="{StaticResource copy}">
+            <Setter Property="Command" Value="{Binding CopyPlotToClipboardCommand}"/>
+            <Setter Property="ToolTip">
+                <Setter.Value>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock>Copies the plot to the clipboard as an image.</TextBlock>
+                            <TextBlock>Keep Control button to rather copy as HTML image.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="copiedLabel" TargetType="Label">
             <Setter Property="FontSize" Value="14"/>
@@ -35,14 +58,6 @@
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="Visibility" Value="{Binding CopyToClipboardConfirmationVisibility}"/>
         </Style>
-        <ControlTemplate x:Key="copySign" TargetType="ContentControl">
-            <Grid>
-                <TextBlock Margin="-2,-2,0,0" Foreground="White">▮</TextBlock>
-                <TextBlock Margin="-2,-2,0,0">▯</TextBlock>
-                <TextBlock Margin="2,2,0,0" Foreground="White">▮</TextBlock>
-                <TextBlock Margin="2,2,0,0" >▯</TextBlock>
-            </Grid>
-        </ControlTemplate>
     </Window.Resources>
 
     <TabControl>
@@ -99,7 +114,6 @@
                                HorizontalAlignment="Center">
                         <Button Style="{StaticResource copy}"
                                 Command="{Binding CopyTableToClipboardCommand}">
-                            <ContentControl Template="{StaticResource copySign}"/>
                             <Button.ToolTip>
                                 <ToolTip>
                                     <StackPanel>
@@ -115,31 +129,40 @@
             </Grid>
         </TabItem>
 
-        <TabItem Header="Plot">
+        <TabItem Header="TP+MT">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ContentControl Grid.Row="0"
-                                Content="{Binding MtAndTp, Mode=OneTime}"
+                                Content="{Binding TpAndMt, Mode=OneTime}"
                                 MinWidth="500"/>
                 <Grid Grid.Row="1">
                     <WrapPanel Margin="4"
                                HorizontalAlignment="Center">
-                        <Button Style="{StaticResource copy}"
-                                Command="{Binding CopyPlotToClipboardCommand}"
-                                CommandParameter="{Binding MtAndTp}">
-                            <ContentControl Template="{StaticResource copySign}"/>
-                            <Button.ToolTip>
-                                <ToolTip>
-                                    <StackPanel>
-                                        <TextBlock>Copies the plot to the clipboard as an image.</TextBlock>
-                                        <TextBlock>Keep Control button to rather copy as HTML image.</TextBlock>
-                                    </StackPanel>
-                                </ToolTip>
-                            </Button.ToolTip>
-                        </Button>
+                        <Button Style="{StaticResource copyPlot}"
+                                CommandParameter="{Binding TpAndMt}"/>
+                    </WrapPanel>
+                    <Label Style="{StaticResource copiedLabel}"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="TPe+MT">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ContentControl Grid.Row="0"
+                                Content="{Binding EffTpAndMt, Mode=OneTime}"
+                                MinWidth="500"/>
+                <Grid Grid.Row="1">
+                    <WrapPanel Margin="4"
+                               HorizontalAlignment="Center">
+                        <Button Style="{StaticResource copyPlot}"
+                                CommandParameter="{Binding EffTpAndMt}"/>
                     </WrapPanel>
                     <Label Style="{StaticResource copiedLabel}"/>
                 </Grid>

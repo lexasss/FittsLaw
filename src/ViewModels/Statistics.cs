@@ -17,50 +17,81 @@ internal partial class Statistics : ObservableObject
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
 
-    public WpfPlot MtAndTp { get; } = new WpfPlot();
+    public WpfPlot TpAndMt { get; } = new WpfPlot();
+    public WpfPlot EffTpAndMt { get; } = new WpfPlot();
 
     public event EventHandler? HideCopyToClipboardConfirmation;
 
     public Statistics()
     {
-        MtAndTp.Plot.Legend(location: Alignment.UpperLeft);
-        MtAndTp.Plot.BottomAxis.Label(Services.Statistics.Fields[5]);
-        MtAndTp.Plot.LeftAxis.Label(Services.Statistics.Fields[12]);
-        MtAndTp.Plot.RightAxis.Label(Services.Statistics.Fields[9]);
-        MtAndTp.Plot.RightAxis.Ticks(true);
+        TpAndMt.Plot.Legend(location: Alignment.UpperLeft);
+        TpAndMt.Plot.BottomAxis.Label(IDField);
+        TpAndMt.Plot.LeftAxis.Label(TPField);
+        TpAndMt.Plot.RightAxis.Label(MTField);
+        TpAndMt.Plot.RightAxis.Ticks(true);
+
+        EffTpAndMt.Plot.Legend(location: Alignment.UpperLeft);
+        EffTpAndMt.Plot.BottomAxis.Label(IDEffField);
+        EffTpAndMt.Plot.LeftAxis.Label(TPEffField);
+        EffTpAndMt.Plot.RightAxis.Label(MTField);
+        EffTpAndMt.Plot.RightAxis.Ticks(true);
     }
 
     #region Property Setters
 
     partial void OnItemsChanged(IReadOnlyDictionary<string, string[]> value)
     {
-        MtAndTp.Plot.Clear();
+        TpAndMt.Plot.Clear();
+        EffTpAndMt.Plot.Clear();
 
-        if (!value.ContainsKey(Services.Statistics.Fields[5]) || 
-            !value.ContainsKey(Services.Statistics.Fields[12]) || 
-            !value.ContainsKey(Services.Statistics.Fields[9]))
+        if (!value.ContainsKey(IDField) || 
+            !value.ContainsKey(TPField) || 
+            !value.ContainsKey(MTField) ||
+            !value.ContainsKey(TPEffField) || 
+            !value.ContainsKey(IDEffField))
             return;
 
-        var dataX = value.FirstOrDefault(kv => kv.Key == Services.Statistics.Fields[5])
+        var dataX = value.FirstOrDefault(kv => kv.Key == IDField)
             .Value
             .Select(double.Parse)
             .ToArray();
-        var dataY = value.FirstOrDefault(kv => kv.Key == Services.Statistics.Fields[12])
+        var dataY = value.FirstOrDefault(kv => kv.Key == TPField)
             .Value
             .Select(double.Parse)
             .ToArray();
-        MtAndTp.Plot
+        TpAndMt.Plot
             .AddScatter(dataX, dataY, Color.Blue, lineStyle: LineStyle.None, label: "TP", markerShape: MarkerShape.cross, markerSize: 10);
 
-        dataY = value.FirstOrDefault(kv => kv.Key == Services.Statistics.Fields[9])
+        dataY = value.FirstOrDefault(kv => kv.Key == MTField)
             .Value
             .Select(double.Parse)
             .ToArray();
-        MtAndTp.Plot
+        TpAndMt.Plot
             .AddScatter(dataX, dataY, Color.Red, lineStyle: LineStyle.None, label: "MT")
             .YAxisIndex = 1;
 
-        MtAndTp.Refresh();
+        TpAndMt.Refresh();
+
+        dataX = value.FirstOrDefault(kv => kv.Key == IDEffField)
+            .Value
+            .Select(double.Parse)
+            .ToArray();
+        dataY = value.FirstOrDefault(kv => kv.Key == TPEffField)
+            .Value
+            .Select(double.Parse)
+            .ToArray();
+        EffTpAndMt.Plot
+            .AddScatter(dataX, dataY, Color.Blue, lineStyle: LineStyle.None, label: "TPe", markerShape: MarkerShape.cross, markerSize: 10);
+
+        dataY = value.FirstOrDefault(kv => kv.Key == MTField)
+            .Value
+            .Select(double.Parse)
+            .ToArray();
+        EffTpAndMt.Plot
+            .AddScatter(dataX, dataY, Color.Red, lineStyle: LineStyle.None, label: "MT")
+            .YAxisIndex = 1;
+
+        EffTpAndMt.Refresh();
     }
 
     #endregion
@@ -109,6 +140,12 @@ internal partial class Statistics : ObservableObject
     #region Internal
 
     const int CONFIRMATION_VISIBILITY_DURATION = 2000;
+
+    static string IDField => Services.Statistics.Fields[5];
+    static string IDEffField => Services.Statistics.Fields[8];
+    static string MTField => Services.Statistics.Fields[9];
+    static string TPField => Services.Statistics.Fields[12];
+    static string TPEffField => Services.Statistics.Fields[13];
 
     private void ShowConfirmation()
     {
