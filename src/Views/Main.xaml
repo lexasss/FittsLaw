@@ -142,11 +142,13 @@
                 </WrapPanel.Resources>
 
                 <Ellipse Stroke="{Binding BorderBrush, Mode=OneWay}"
+                         Fill="{Binding Background, Mode=OneWay}"
                          ToolTip="Initial"/>
                 <Ellipse Stroke="{Binding ActiveTargetBorderBrush, Mode=OneWay}"
                          Fill="{Binding ActiveTargetBrush, Converter={StaticResource color2brush}, Mode=OneWay}"
                          ToolTip="Active"/>
                 <Ellipse Stroke="{Binding CompletedTargetBorderBrush, Mode=OneWay}"
+                         Fill="{Binding Background, Mode=OneWay}"
                          ToolTip="Completed"/>
             </WrapPanel>
         </StackPanel>

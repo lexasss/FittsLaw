@@ -137,7 +137,7 @@
                 </Grid.RowDefinitions>
                 <ContentControl Grid.Row="0"
                                 Content="{Binding TpAndMt, Mode=OneTime}"
-                                MinWidth="500"/>
+                                Width="500"/>
                 <Grid Grid.Row="1">
                     <WrapPanel Margin="4"
                                HorizontalAlignment="Center">
@@ -157,7 +157,7 @@
                 </Grid.RowDefinitions>
                 <ContentControl Grid.Row="0"
                                 Content="{Binding EffTpAndMt, Mode=OneTime}"
-                                MinWidth="500"/>
+                                Width="500"/>
                 <Grid Grid.Row="1">
                     <WrapPanel Margin="4"
                                HorizontalAlignment="Center">

@@ -10,6 +10,7 @@
       d:DesignWidth="800"
       Focusable="True"
       Title="Experiment"
+      Background="{Binding Background}"
       Loaded="Page_Loaded">
     
     <Page.DataContext>
@@ -51,6 +52,7 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Visibility="{Binding InstructionVisibility}"
+               Foreground="{Binding }"
                FontSize="26"/>
     </Grid>
 </Page>
