@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:vm="clr-namespace:FittsLaw.ViewModels"
+      xmlns:conv="clr-namespace:FittsLaw.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450"
       d:DesignWidth="800"
@@ -22,6 +23,10 @@
                     Command="{Binding ContinueCommand}" />
     </Page.InputBindings>
 
+    <Page.Resources>
+        <conv:TargetIsActiveToZIndex x:Key="TargetIsActiveToZIndex" />
+    </Page.Resources>
+
     <Grid>
         <ItemsControl x:Name="itemsControl"
                       ItemsSource="{Binding Targets}"
@@ -34,6 +39,12 @@
                     <Canvas/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.ZIndex" Value="{Binding IsActive, Converter={StaticResource TargetIsActiveToZIndex}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
         </ItemsControl>
 
         <Label Content="Press ENTER to continue"
