@@ -2,7 +2,7 @@
 
 internal static class RandomExtensions
 {
-    /*
+#if USE_CSHARP12_EXTENSION
     extension(Random rnd)
     {
         public Random Shuffle<T>(IList<T> array)
@@ -26,7 +26,7 @@ internal static class RandomExtensions
             return rnd;
         }
     }
-    */
+#else
     public static Random Shuffle<T>(this Random rnd, IList<T> array)
     {
         void Shuffle()
@@ -47,5 +47,5 @@ internal static class RandomExtensions
 
         return rnd;
     }
-
+#endif
 }

@@ -42,7 +42,7 @@ internal abstract class InputBase : IInput
 
     #region Internal
 
-    readonly Point ZeroPoint;
+    readonly Point ZeroPoint = new Point(0, 0);
 
     UIElement? _container;
     Func<IEnumerable<Models.Target>>? _targetProvider;

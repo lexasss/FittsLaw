@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <langVersion>preview</langVersion>
+    <LangVersion>preview</LangVersion>
     <ApplicationIcon>Assets\Images\icon.ico</ApplicationIcon>
     <Authors>Oleg Spakov</Authors>
     <Company>Tampere University</Company>
@@ -53,4 +53,7 @@
     <Resource Include="Assets\Images\icon.png" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(VisualStudioVersion)' >= '18.0'">
+    <DefineConstants>VS_VERSION_18_0_OR_GREATER</DefineConstants>
+  </PropertyGroup>
 </Project>
