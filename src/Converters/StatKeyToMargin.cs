@@ -14,8 +14,6 @@ public class StatKeyToMargin : IValueConverter
             : new Thickness(8, 2, 8, 2);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
         throw new NotImplementedException();
-    }
 }

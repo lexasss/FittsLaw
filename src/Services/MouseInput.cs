@@ -1,24 +1,29 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
+using System.Xml.Linq;
 
 namespace FittsLaw.Services;
 
 internal class MouseInput : IInput
 {
-    public void Register(Window window, IReadOnlyCollection<object> items, Experiment experiment)
+    public void Register(Experiment experiment, UIElement root, UIElement container, Func<IEnumerable<Models.Target>> targetProvider)
     {
         _experiment = experiment;
         _experiment.Finished += Experiment_Finished;
 
-        _window = window;
-        _window.PreviewMouseDown += Target_MouseDown;
+        _root = root;
+        _root.PreviewMouseDown += Target_MouseDown;
 
-        _items = items;
+        _container = container;
+
+        _targetProvider = targetProvider;
     }
 
     #region Internal
 
-    Window? _window;
-    IReadOnlyCollection<object> _items = [];
+    UIElement? _root;
+    UIElement? _container;
+    Func<IEnumerable<Models.Target>>? _targetProvider;
     Experiment? _experiment;
 
     private void Experiment_Finished(object? sender, bool interrupted)
@@ -29,22 +34,28 @@ internal class MouseInput : IInput
             _experiment = null;
         }
 
-        if (_window != null)
+        if (_root != null)
         {
-            _window.PreviewMouseDown -= Target_MouseDown;
-            _window = null;
+            _root.PreviewMouseDown -= Target_MouseDown;
+            _root = null;
         }
-
-        _items = [];
     }
 
-    private void Target_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void Target_MouseDown(object? sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        var target = _items
-            .OfType<Views.Target>()
-            .FirstOrDefault(t => ((ViewModels.Target)t.DataContext).IsActive);
-        if (target != null)
-            _experiment?.ResumeAfterTrial(e.GetPosition(target));
+        Point clickPoint = e.GetPosition(_root);
+
+        Models.Target? activeTarget = _targetProvider != null ?
+            _targetProvider().FirstOrDefault(t => t.IsActive) :
+            null;
+
+        if (activeTarget != null)
+        {
+            var offset = _container!.TranslatePoint(new Point(0, 0), _root);
+            _experiment?.ResumeAfterTrial(new Point(
+                clickPoint.X - offset.X - activeTarget.Position.X,
+                clickPoint.Y - offset.Y - activeTarget.Position.Y));
+        }
     }
 
     #endregion

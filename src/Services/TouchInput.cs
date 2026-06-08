@@ -4,21 +4,24 @@ namespace FittsLaw.Services;
 
 internal class TouchInput : IInput
 {
-    public void Register(Window window, IReadOnlyCollection<object> items, Experiment experiment)
+    public void Register(Experiment experiment, UIElement root, UIElement container, Func<IEnumerable<Models.Target>> targetProvider)
     {
         _experiment = experiment;
         _experiment.Finished += Experiment_Finished;
 
-        _window = window;
-        _window.TouchDown += Target_TouchDown;
+        _root = root;
+        _root.TouchDown += Target_TouchDown;
 
-        _items = items;
+        _containerOffset = container.TransformToAncestor(_root!).Transform(new Point(0, 0));
+
+        _targetProvider = targetProvider;
     }
 
     #region Internal
 
-    Window? _window;
-    IReadOnlyCollection<object> _items = [];
+    UIElement? _root;
+    Point _containerOffset;
+    Func<IEnumerable<Models.Target>>? _targetProvider;
     Experiment? _experiment;
 
     private void Experiment_Finished(object? sender, bool interrupted)
@@ -29,22 +32,25 @@ internal class TouchInput : IInput
             _experiment = null;
         }
 
-        if (_window != null)
+        if (_root != null)
         {
-            _window.TouchDown -= Target_TouchDown;
-            _window = null;
+            _root.TouchDown -= Target_TouchDown;
+            _root = null;
         }
-
-        _items = [];
     }
 
     private void Target_TouchDown(object? sender, System.Windows.Input.TouchEventArgs e)
     {
-        var target = _items
-            .OfType<Views.Target>()
-            .FirstOrDefault(t => ((ViewModels.Target)t.DataContext).IsActive);
-        if (target != null)
-            _experiment?.ResumeAfterTrial(e.GetTouchPoint(target).Position);
+        var clickPoint = e.GetTouchPoint(_root);
+
+        Models.Target? activeTarget = _targetProvider != null ?
+            _targetProvider().FirstOrDefault(t => t.IsActive) :
+            null;
+
+        if (activeTarget != null)
+            _experiment?.ResumeAfterTrial(new Point(
+                clickPoint.Position.X - _containerOffset.X - activeTarget.Position.X, 
+                clickPoint.Position.Y - _containerOffset.Y - activeTarget.Position.Y));
     }
 
     #endregion

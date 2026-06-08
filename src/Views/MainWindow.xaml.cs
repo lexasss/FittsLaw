@@ -52,7 +52,8 @@ public partial class MainWindow : Window
         _experimentViewModel.ExperimentStopped += ExpVm_ExperimentStopped;
 
         var input = _inputFactory(setup.InputType);
-        input.Register(this, experimentView.TargetContainer.ItemContainerGenerator.Items, _experiment);
+        input.Register(_experiment, this, experimentView.itemsControl,
+            () => ((ViewModels.Experiment)experimentView.DataContext).Targets);
 
         Content = experimentView;
     }

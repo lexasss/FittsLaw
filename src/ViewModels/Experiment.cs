@@ -9,7 +9,7 @@ namespace FittsLaw.ViewModels;
 
 internal partial class Experiment : ObservableObject, IDisposable
 {
-    public ObservableCollection<Views.Target> Targets { get; } = [];
+    public ObservableCollection<Models.Target> Targets { get; } = [];
 
     [ObservableProperty]
     public partial Visibility InstructionVisibility { get; set; } = Visibility.Collapsed;
@@ -70,15 +70,12 @@ internal partial class Experiment : ObservableObject, IDisposable
     readonly Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>() 
         ?? throw new InvalidOperationException("Statistics service not available");
 
-    Target[] _targetViewModels = [];
-
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
         InstructionVisibility = Visibility.Collapsed;
 
         var targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
-        _targetViewModels = targets.Select(t => (Target)t.DataContext).ToArray();
-        _experiment.SetTargets(_targetViewModels.Select(vm => vm.Data));
+        _experiment.SetTargets(targets);
 
         foreach (var target in targets)
         {
@@ -89,7 +86,6 @@ internal partial class Experiment : ObservableObject, IDisposable
     private void Experiment_BlockFinished(object? sender, bool hasNextBlock)
     {
         Targets.Clear();
-        _targetViewModels = [];
 
         if (_experiment.Setup?.IsContinueManually == false || !hasNextBlock)
         {
@@ -107,12 +103,12 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     private void Experiment_TargetChanged(object? sender, int index)
     {
-        foreach (var vm in _targetViewModels)
+        foreach (var target in Targets)
         {
-            vm.IsActive = false;
+            target.IsActive = false;
         }
 
-        _targetViewModels[index].IsActive = true;
+        Targets[index].IsActive = true;
     }
 
     private void Experiment_Finished(object? sender, bool wasInterrupted)

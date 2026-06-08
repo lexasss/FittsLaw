@@ -108,8 +108,8 @@ internal class Experiment
         if (target == null)
             return;
 
-        var dx = activationLocation.X - target.Size / 2;
-        var dy = activationLocation.Y - target.Size / 2;
+        var dx = activationLocation.X;
+        var dy = activationLocation.Y;
         if (_trialIndex == 0 && Math.Sqrt(dx * dx + dy * dy) > target.Size / 2)
             return; // ignore activations outside the target for the first trial of the block
 

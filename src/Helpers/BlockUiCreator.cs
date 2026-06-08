@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace FittsLaw.Helpers;
+﻿namespace FittsLaw.Helpers;
 
 internal static class BlockUiCreator
 {
@@ -12,8 +10,8 @@ internal static class BlockUiCreator
     /// <param name="block">block parameters</param>
     /// <param name="targetCount">number of targets (circles)</param>
     /// <param name="fieldSize">size of the parent</param>
-    /// <returns>List of controls</returns>
-    public static Views.Target[] Create(
+    /// <returns>List of targets</returns>
+    public static Models.Target[] Create(
         Models.Block block,
         int targetCount,
         double fieldSize)
@@ -22,7 +20,7 @@ internal static class BlockUiCreator
         var angle = 2.0 * Math.PI / targetCount;    // between two adjacent targets on the circle
         var radius = GetCircleRadius(targetCount, block.Amplitude);
 
-        var targets = new Views.Target[targetCount];
+        var targets = new Models.Target[targetCount];
 
         int halfTargetCount = targetCount / 2 + 1;
         int angleIndex = 0;
@@ -32,25 +30,14 @@ internal static class BlockUiCreator
             var x = center + radius * Math.Cos(angleIndex * angle);
             var y = center + radius * Math.Sin(angleIndex * angle);
 
-            var target = new Views.Target
+            var target = new Models.Target()
             {
-                Width = block.Width,
-                Height = block.Width,
-                DataContext = new ViewModels.Target()
-                {
-                    Data = new Models.Target()
-                    {
-                        Id = i,
-                        Size = block.Width,
-                        Position = new System.Windows.Point(x, y)
-                    }
-                }
+                Id = i,
+                Size = block.Width,
+                Position = new System.Windows.Point(x, y)
             };
 
             angleIndex = (angleIndex + halfTargetCount) % targetCount;
-
-            Canvas.SetLeft(target, x - block.Width / 2);
-            Canvas.SetTop(target, y - block.Width / 2);
 
             targets[i] = target;
         }
