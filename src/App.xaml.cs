@@ -13,11 +13,10 @@ public partial class App : Application
 
         services.AddSingleton<Services.Experiment, Services.Experiment>();
         services.AddSingleton<Services.Statistics, Services.Statistics>();
-        services.AddSingleton<Services.MouseInput>();
-        services.AddSingleton<Services.TouchInput>();
 
         services.AddSingleton<Func<string, Services.IInput>>(sp => key =>
         {
+            string className = key.Replace(" ", string.Empty) + "Input";
             var serviceType = typeof(Services.IInput)
                 .Assembly
                 .GetTypes()
@@ -26,17 +25,12 @@ public partial class App : Application
                     typeof(Services.IInput).IsAssignableFrom(type) &&
                     !type.IsAbstract &&
                     type.IsClass &&
-                    type.Name == key);
+                    type.Name == className);
 
             if (serviceType != null)
                 return (Services.IInput)ActivatorUtilities.GetServiceOrCreateInstance(sp, serviceType);
 
-            return key.ToLower() switch
-            {
-                "mouse" => sp.GetRequiredService<Services.MouseInput>(),
-                "touch" => sp.GetRequiredService<Services.TouchInput>(),
-                _ => throw new ArgumentException($"Unknown input type: {key}")
-            };
+            throw new ArgumentException($"Unknown input type: {key}");
         });
 
         ServiceProvider = services.BuildServiceProvider();
