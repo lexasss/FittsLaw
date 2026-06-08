@@ -51,8 +51,8 @@ internal class TouchInput : IInput
         {
             var offset = _container!.TranslatePoint(new Point(0, 0), _root);
             _experiment?.ResumeAfterTrial(new Point(
-                clickPoint.X - offset.X - activeTarget.Position.X,
-                clickPoint.Y - offset.Y - activeTarget.Position.Y));
+                clickPoint.Position.X - offset.X - activeTarget.Position.X,
+                clickPoint.Position.Y - offset.Y - activeTarget.Position.Y));
         }
     }
 
