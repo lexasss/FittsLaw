@@ -61,7 +61,7 @@ internal partial class MainWindow : ObservableObject
 
         var input = _inputFactory(setup.InputType);
         input.Register(_experiment, _window, experimentView.itemsControl,
-            () => ((Experiment)experimentView.DataContext).Targets);
+            () => _experimentViewModel.Targets);
 
         Page = experimentView;
     }

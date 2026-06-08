@@ -1,7 +1,7 @@
 using System.Windows.Controls;
 using FittsLaw.Helpers;
 using FittsLaw.Models;
-using TargetViewModel = FittsLaw.ViewModels.Target;
+using TargetModel = FittsLaw.Models.Target;
 
 namespace FittsLaw.Tests;
 
@@ -19,9 +19,8 @@ public class BlockUiCreatorTests
             Assert.Equal(7, targets.Length);
             Assert.All(targets, target =>
             {
-                Assert.Equal(24, target.Width);
-                Assert.Equal(24, target.Height);
-                Assert.IsType<TargetViewModel>(target.DataContext);
+                Assert.Equal(24, target.Size);
+                Assert.Equal(24, target.Size);
             });
         });
     }
@@ -38,8 +37,8 @@ public class BlockUiCreatorTests
 
             Assert.All(targets, target =>
             {
-                Assert.InRange(Canvas.GetLeft(target), 0, fieldSize - block.Width);
-                Assert.InRange(Canvas.GetTop(target), 0, fieldSize - block.Width);
+                Assert.InRange(target.Position.X, 0, fieldSize - block.Width);
+                Assert.InRange(target.Position.Y, 0, fieldSize - block.Width);
             });
         });
     }
@@ -52,12 +51,11 @@ public class BlockUiCreatorTests
             var block = new Block(0, amplitude: 120, width: 24);
 
             var targets = BlockUiCreator.Create(block, targetCount: 7, fieldSize: 168);
-            var viewModels = targets.Select(t => (TargetViewModel)t.DataContext).ToArray();
 
-            for (int i = 1; i < viewModels.Length; i++)
+            for (int i = 1; i < targets.Length; i++)
             {
-                var previous = viewModels[i - 1].Data.Position;
-                var current = viewModels[i].Data.Position;
+                var previous = targets[i - 1].Position;
+                var current = targets[i].Position;
                 var distance = Math.Sqrt(
                     Math.Pow(current.X - previous.X, 2) +
                     Math.Pow(current.Y - previous.Y, 2));
