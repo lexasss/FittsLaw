@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows;
-using System.Xml.Linq;
+﻿using System.Windows;
 
 namespace FittsLaw.Services;
 

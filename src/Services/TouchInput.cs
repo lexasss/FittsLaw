@@ -12,7 +12,7 @@ internal class TouchInput : IInput
         _root = root;
         _root.TouchDown += Target_TouchDown;
 
-        _containerOffset = container.TransformToAncestor(_root!).Transform(new Point(0, 0));
+        _container = container;
 
         _targetProvider = targetProvider;
     }
@@ -20,7 +20,7 @@ internal class TouchInput : IInput
     #region Internal
 
     UIElement? _root;
-    Point _containerOffset;
+    UIElement? _container;
     Func<IEnumerable<Models.Target>>? _targetProvider;
     Experiment? _experiment;
 
@@ -48,9 +48,12 @@ internal class TouchInput : IInput
             null;
 
         if (activeTarget != null)
+        {
+            var offset = _container!.TranslatePoint(new Point(0, 0), _root);
             _experiment?.ResumeAfterTrial(new Point(
-                clickPoint.Position.X - _containerOffset.X - activeTarget.Position.X, 
-                clickPoint.Position.Y - _containerOffset.Y - activeTarget.Position.Y));
+                clickPoint.X - offset.X - activeTarget.Position.X,
+                clickPoint.Y - offset.Y - activeTarget.Position.Y));
+        }
     }
 
     #endregion
