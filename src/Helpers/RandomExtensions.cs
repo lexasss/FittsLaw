@@ -2,7 +2,7 @@
 
 internal static class RandomExtensions
 {
-#if USE_CSHARP12_EXTENSION
+#if VS_VERSION_18_0_OR_GREATER
     extension(Random rnd)
     {
         public Random Shuffle<T>(IList<T> array)
