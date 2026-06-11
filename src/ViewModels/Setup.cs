@@ -6,11 +6,9 @@ namespace FittsLaw.ViewModels;
 
 internal partial class Setup : ObservableObject
 {
-    public int[] TargetCounts { get; init; }
     public string[] InputTypes { get; init; }
 
-    [ObservableProperty]
-    public partial int TargetCount { get; set; }
+    public Models.ExperimentSetup Model { get; private set; }
 
     [ObservableProperty]
     public partial string Amplitudes { get; set; }
@@ -18,32 +16,8 @@ internal partial class Setup : ObservableObject
     [ObservableProperty]
     public partial string Widths { get; set; }
 
-    [ObservableProperty]
-    public partial bool IsRandomized { get; set; }
-
-    [ObservableProperty]
-    public partial bool HasAudioFeedback { get; set; } = false;
-    [ObservableProperty]
-    public partial bool IsDistinctErrorAudioFeedback { get; set; } = false;
-
-    [ObservableProperty]
-    public partial bool IsContinueManually { get; set; } = false;
-
-    [ObservableProperty]
-    public partial string InputType { get; set; }
-
-    [ObservableProperty]
-    public partial int DisplayId { get; set; } = 0;
-
     public Setup()
     {
-        var counts = new List<int>();
-        for (int i = 3; i < 50; i += 2)
-        {
-            counts.Add(i);
-        }
-
-        TargetCounts = counts.ToArray();
         InputTypes = typeof(Services.IInput)
             .Assembly
             .GetTypes()
@@ -53,22 +27,20 @@ internal partial class Setup : ObservableObject
                 !type.IsAbstract &&
                 type.IsClass)
             .Select(type => _wordSeparationRegex
-                    .Replace(type.Name, " $1")
+                    .Replace(type.Name, " $1")      // this affects service provider functionality
                     .Split(' ',  StringSplitOptions.RemoveEmptyEntries)[0])
             .Order()
             .ToArray();
 
-        var props = Properties.Settings.Default;
+        Model = Models.ExperimentSetup.Load();
 
-        TargetCount = props.TrialCount;
-        Amplitudes = props.Amplitudes;
-        Widths = props.Widths;
-        IsRandomized = props.IsRandomized;
-        HasAudioFeedback = props.HasAudioFeedback;
-        IsDistinctErrorAudioFeedback = props.IsDistinctErrorAudioFeedback;
-        IsContinueManually = props.IsContinueManually;
-        InputType = InputTypes.Contains(props.InputType) ? props.InputType : InputTypes.FirstOrDefault() ?? string.Empty;
-        DisplayId = Math.Min(props.DisplayId, Helpers.Displays.Count - 1);
+        if (!InputTypes.Contains(Model.InputType))
+        {
+            Model = Model with { InputType = InputTypes.FirstOrDefault() ?? string.Empty };
+        }
+
+        Amplitudes = Models.ExperimentSetup.ToString(Model.Amplitudes);
+        Widths = Models.ExperimentSetup.ToString(Model.Widths);
     }
 
     #region Commands
@@ -76,19 +48,7 @@ internal partial class Setup : ObservableObject
     [RelayCommand]
     private void Start()
     {
-        var props = Properties.Settings.Default;
-
-        props.TrialCount = TargetCount;
-        props.Amplitudes = Amplitudes;
-        props.Widths = Widths;
-        props.IsRandomized = IsRandomized;
-        props.HasAudioFeedback = HasAudioFeedback;
-        props.IsDistinctErrorAudioFeedback = IsDistinctErrorAudioFeedback;
-        props.IsContinueManually = IsContinueManually;
-        props.InputType = InputType;
-        props.DisplayId = DisplayId;
-
-        props.Save();
+        Model.Save();
     }
 
     #endregion
@@ -96,6 +56,16 @@ internal partial class Setup : ObservableObject
     #region Internals
 
     public static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
+
+    partial void OnAmplitudesChanged(string value)
+    {
+        Model = Model with { Amplitudes = Models.ExperimentSetup.ToNumbers(value) };
+    }
+
+    partial void OnWidthsChanged(string value)
+    {
+        Model = Model with { Widths = Models.ExperimentSetup.ToNumbers(value) };
+    }
 
     #endregion
 }

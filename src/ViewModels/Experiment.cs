@@ -74,7 +74,10 @@ internal partial class Experiment : ObservableObject, IDisposable
     {
         InstructionVisibility = Visibility.Collapsed;
 
-        var targets = Helpers.BlockUiCreator.Create(block, _experiment.Setup!.TrialCount, ParentSize);
+        var targets = Helpers.LayoutCreator.Create(
+            block,
+            _experiment.Setup!.TrialCount,
+            ParentSize);
         _experiment.SetTargets(targets);
 
         foreach (var target in targets)

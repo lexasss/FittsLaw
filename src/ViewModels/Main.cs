@@ -75,10 +75,9 @@ internal partial class Main : ObservableObject
         var dialog = new Views.Setup();
         if (dialog.ShowDialog() == true)
         {
-            var model = (Setup)dialog.DataContext;
             try
             {
-                var setup = Models.ExperimentSetup.From(model);
+                var setup = ((Setup)dialog.DataContext).Model;
                 var experiment = App.ServiceProvider.GetService<Services.Experiment>();
                 if (experiment != null)
                 {

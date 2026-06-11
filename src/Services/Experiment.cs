@@ -166,11 +166,14 @@ internal class Experiment
     {
         var result = new List<Models.Block>();
         int i = 0;
-        foreach (var amplitude in setup.Amplitudes)
+        for (int session = 0; session < setup.SessionCount; session++)
         {
-            foreach (var width in setup.Widths)
+            foreach (var amplitude in setup.Amplitudes)
             {
-                result.Add(new(i++, amplitude, width));
+                foreach (var width in setup.Widths)
+                {
+                    result.Add(new(i++, amplitude, width));
+                }
             }
         }
 

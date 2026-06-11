@@ -1,6 +1,12 @@
 ﻿namespace FittsLaw.Helpers;
 
-internal static class BlockUiCreator
+internal enum LayoutType
+{
+    Circular,
+    Grid
+}
+
+internal static class LayoutCreator
 {
     /// <summary>
     /// Creates an array of targets for the given block, arranged in a circle.

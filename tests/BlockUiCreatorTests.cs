@@ -14,7 +14,7 @@ public class BlockUiCreatorTests
         {
             var block = new Block(0, amplitude: 120, width: 24);
 
-            var targets = BlockUiCreator.Create(block, targetCount: 7, fieldSize: 168);
+            var targets = LayoutCreator.Create(block, targetCount: 7, fieldSize: 168);
 
             Assert.Equal(7, targets.Length);
             Assert.All(targets, target =>
@@ -33,7 +33,7 @@ public class BlockUiCreatorTests
             var block = new Block(0, amplitude: 120, width: 24);
             var fieldSize = block.Amplitude + 2 * block.Width;
 
-            var targets = BlockUiCreator.Create(block, targetCount: 7, fieldSize);
+            var targets = LayoutCreator.Create(block, targetCount: 7, fieldSize);
 
             Assert.All(targets, target =>
             {
@@ -50,7 +50,7 @@ public class BlockUiCreatorTests
         {
             var block = new Block(0, amplitude: 120, width: 24);
 
-            var targets = BlockUiCreator.Create(block, targetCount: 7, fieldSize: 168);
+            var targets = LayoutCreator.Create(block, targetCount: 7, fieldSize: 168);
 
             for (int i = 1; i < targets.Length; i++)
             {

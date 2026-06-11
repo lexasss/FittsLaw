@@ -1,6 +1,7 @@
 ﻿namespace FittsLaw.Models;
 
 internal record class ExperimentSetup(
+    int SessionCount,
     int TrialCount,
     double[] Amplitudes,
     double[] Widths,
@@ -12,18 +13,45 @@ internal record class ExperimentSetup(
     int ScreenIndex
 )
 {
-    public static ExperimentSetup From(ViewModels.Setup vm) =>
-        new(vm.TargetCount,
-            ToNumbers(vm.Amplitudes),
-            ToNumbers(vm.Widths),
-            vm.IsRandomized,
-            vm.HasAudioFeedback,
-            vm.IsDistinctErrorAudioFeedback,
-            vm.IsContinueManually,
-            vm.InputType,
-            vm.DisplayId);
+    public void Save()
+    {
+        var props = Properties.Settings.Default;
 
-    private static double[] ToNumbers(string input)
+        props.SessionCount = SessionCount;
+        props.TrialCount = TrialCount;
+        props.Amplitudes = ToString(Amplitudes);
+        props.Widths = ToString(Widths);
+        props.IsRandomized = IsRandomized;
+        props.HasAudioFeedback = HasAudioFeedback;
+        props.IsDistinctErrorAudioFeedback = IsDistinctErrorAudioFeedback;
+        props.IsContinueManually = IsContinueManually;
+        props.InputType = InputType;
+        props.DisplayId = ScreenIndex;
+
+        props.Save();
+    }
+
+    public static ExperimentSetup Load()
+    {
+        var props = Properties.Settings.Default;
+
+        return new(
+            props.SessionCount,
+            props.TrialCount,
+            ToNumbers(props.Amplitudes),
+            ToNumbers(props.Widths),
+            props.IsRandomized,
+            props.HasAudioFeedback,
+            props.IsDistinctErrorAudioFeedback,
+            props.IsContinueManually,
+            props.InputType,
+            Math.Min(props.DisplayId, Helpers.Displays.Count - 1));
+    }
+
+    public static string ToString(double[] Array) =>
+        string.Join(' ', Array);
+
+    public static double[] ToNumbers(string input)
     {
         var parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
         var numbers = new double[parts.Length];
