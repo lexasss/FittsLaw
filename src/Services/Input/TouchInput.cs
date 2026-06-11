@@ -15,14 +15,14 @@ internal class TouchInput : InputBase
 
     protected override void Experiment_Finished(object? sender, bool interrupted)
     {
-        _root?.TouchDown += Target_TouchDown;
+        _root?.TouchDown -= Target_TouchDown;
 
         base.Experiment_Finished(sender, interrupted);
     }
 
     private void Target_TouchDown(object? sender, System.Windows.Input.TouchEventArgs e)
     {
-        var clickPoint = e.GetTouchPoint(_root);
+        System.Windows.Input.TouchPoint clickPoint = e.GetTouchPoint(_root);
         SetClickPoint(clickPoint.Position);
     }
 
