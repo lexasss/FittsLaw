@@ -202,5 +202,29 @@ namespace FittsLaw.Properties {
                 this["SessionCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LayoutType {
+            get {
+                return ((int)(this["LayoutType"]));
+            }
+            set {
+                this["LayoutType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5 4")]
+        public string GridSize {
+            get {
+                return ((string)(this["GridSize"]));
+            }
+            set {
+                this["GridSize"] = value;
+            }
+        }
     }
 }

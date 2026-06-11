@@ -36,7 +36,7 @@ internal partial class Setup : ObservableObject
 
         if (!InputTypes.Contains(Model.InputType))
         {
-            Model = Model with { InputType = InputTypes.FirstOrDefault() ?? string.Empty };
+            Model.InputType = InputTypes.FirstOrDefault() ?? string.Empty;
         }
 
         Amplitudes = Models.ExperimentSetup.ToString(Model.Amplitudes);
@@ -59,12 +59,12 @@ internal partial class Setup : ObservableObject
 
     partial void OnAmplitudesChanged(string value)
     {
-        Model = Model with { Amplitudes = Models.ExperimentSetup.ToNumbers(value) };
+        Model.Amplitudes = Models.ExperimentSetup.ToNumbers(value);
     }
 
     partial void OnWidthsChanged(string value)
     {
-        Model = Model with { Widths = Models.ExperimentSetup.ToNumbers(value) };
+        Model.Widths = Models.ExperimentSetup.ToNumbers(value);
     }
 
     #endregion
