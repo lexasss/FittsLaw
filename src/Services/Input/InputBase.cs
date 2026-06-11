@@ -42,7 +42,7 @@ internal abstract class InputBase : IInput
 
     #region Internal
 
-    readonly Point ZeroPoint = new Point(0, 0);
+    readonly Point ZeroPoint = new(0, 0);
 
     UIElement? _container;
     Func<IEnumerable<Models.Target>>? _targetProvider;
@@ -50,13 +50,12 @@ internal abstract class InputBase : IInput
 
     protected virtual void Experiment_Finished(object? sender, bool interrupted)
     {
-        if (_experiment != null)
-        {
-            _experiment.Finished -= Experiment_Finished;
-            _experiment = null;
-        }
+        _experiment?.Finished -= Experiment_Finished;
+        _experiment = null;
 
         _root = null;
+        _targetProvider = null;
+        _container = null;
     }
 
     #endregion
