@@ -1,4 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO;
+using System.Numerics;
+using System.Text.Json;
 
 namespace FittsLaw.Models;
 
@@ -12,7 +15,7 @@ internal partial class ExperimentSetup : ObservableObject
     public partial Helpers.LayoutType LayoutType { get; set; }
     public double[] Amplitudes { get; set; } = [];
     public double[] Widths { get; set; } = [];
-    public System.Windows.Size GridSize { get; set; }
+    public Size GridSize { get; set; } = Size.Default;
     [ObservableProperty]
     public partial bool IsRandomized { get; set; }
     [ObservableProperty]
@@ -46,19 +49,42 @@ internal partial class ExperimentSetup : ObservableObject
         props.Save();
     }
 
+    public bool SaveToFile(string filename)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(this);
+            using var stream = new StreamWriter(filename);
+            stream.Write(json);
+            return true;
+        }
+        catch { return false; }
+    }
+
+    public static ExperimentSetup? LoadFromFile(string filename)
+    {
+        try
+        {
+            using var stream = new StreamReader(filename);
+            var json = stream.ReadToEnd();
+            return JsonSerializer.Deserialize<ExperimentSetup>(json);
+        }
+        catch { return null; }
+    }
+
     public static ExperimentSetup Load()
     {
         var props = Properties.Settings.Default;
-        var gridSize = ToNumbers(props.GridSize);
+        var gridSize = ToNumbers<int>(props.GridSize);
 
         return new()
         {
             SessionCount = props.SessionCount,
             TrialCount = props.TrialCount,
             LayoutType = (Helpers.LayoutType)props.LayoutType,
-            Amplitudes = ToNumbers(props.Amplitudes),
-            Widths = ToNumbers(props.Widths),
-            GridSize = new System.Windows.Size(gridSize[0], gridSize[1]),
+            Amplitudes = ToNumbers<double>(props.Amplitudes),
+            Widths = ToNumbers<double>(props.Widths),
+            GridSize = new Size { Width = gridSize[0], Height = gridSize[1] },
             IsRandomized = props.IsRandomized,
             HasAudioFeedback = props.HasAudioFeedback,
             IsDistinctErrorAudioFeedback = props.IsDistinctErrorAudioFeedback,
@@ -71,13 +97,14 @@ internal partial class ExperimentSetup : ObservableObject
     public static string ToString(double[] Array) =>
         string.Join(' ', Array);
 
-    public static double[] ToNumbers(string input, uint? exactCount = null)
+    public static T[] ToNumbers<T>(string input, uint? exactCount = null)
+        where T : INumber<T>
     {
         var parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
-        var numbers = new double[parts.Length];
+        var numbers = new T[parts.Length];
         for (int i = 0; i < parts.Length; i++)
         {
-            if (double.TryParse(parts[i], out double num) && num > 0)
+            if (T.TryParse(parts[i], null, out T? num))
             {
                 numbers[i] = num;
             }

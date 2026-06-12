@@ -14,7 +14,7 @@ internal partial class Experiment : ObservableObject, IDisposable
     [ObservableProperty]
     public partial Visibility InstructionVisibility { get; set; } = Visibility.Collapsed;
 
-    public double ParentSize { get; }
+    public Size ParentSize { get; }
     public Brush Background { get; }
     public Brush Foreground { get; }
 
@@ -30,7 +30,12 @@ internal partial class Experiment : ObservableObject, IDisposable
         _experiment.Finished += Experiment_Finished;
 
         InstructionVisibility = _experiment.Setup?.IsContinueManually == true ? Visibility.Visible : Visibility.Collapsed;
-        ParentSize = _experiment.Blocks.Max(b => b.Amplitude + 2 * b.Width);
+        ParentSize = _experiment.Setup!.LayoutType switch
+        {
+            Helpers.LayoutType.Circular => _experiment.GetCirculerSize(),
+            Helpers.LayoutType.Grid => Helpers.Displays.GetScreenSize(_experiment.Setup.ScreenIndex),
+            _ => throw new NotImplementedException(),
+        };
 
         var uiSettings = Models.UiSettings.From(Properties.Settings.Default);
         Background = uiSettings.Background;
@@ -73,11 +78,21 @@ internal partial class Experiment : ObservableObject, IDisposable
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
         InstructionVisibility = Visibility.Collapsed;
-
-        var targets = Helpers.LayoutCreator.Create(
-            block,
-            _experiment.Setup!.TrialCount,
-            ParentSize);
+        
+        var setup = _experiment.Setup!;
+        var targets = setup.LayoutType switch
+        {
+            Helpers.LayoutType.Circular => Helpers.LayoutCreator.CreateCircular(
+                block,
+                setup.TrialCount,
+                ParentSize.Width),
+            Helpers.LayoutType.Grid => Helpers.LayoutCreator.CreateGrid(
+                block,
+                setup.GridSize,
+                ParentSize),
+            _ => throw new InvalidOperationException($"Layout type {setup.LayoutType} is not yet implemented")
+        };
+   
         _experiment.SetTargets(targets);
 
         foreach (var target in targets)

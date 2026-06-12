@@ -46,6 +46,12 @@ internal class Experiment
         _targets = targets;
     }
 
+    public Size GetCirculerSize()
+    {
+        var size = Blocks.Max(b => b.Amplitude + 2 * b.Width);
+        return new(size, size);
+    }
+
     public async Task Run(Models.ExperimentSetup setup)
     {
         if (_isRunning)

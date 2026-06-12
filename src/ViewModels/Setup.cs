@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace FittsLaw.ViewModels;
 
@@ -11,10 +12,10 @@ internal partial class Setup : ObservableObject
     public Models.ExperimentSetup Model { get; private set; }
 
     [ObservableProperty]
-    public partial string Amplitudes { get; set; }
+    public partial string Amplitudes { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string Widths { get; set; }
+    public partial string Widths { get; set; } = string.Empty;
 
     public Setup()
     {
@@ -34,13 +35,8 @@ internal partial class Setup : ObservableObject
 
         Model = Models.ExperimentSetup.Load();
 
-        if (!InputTypes.Contains(Model.InputType))
-        {
-            Model.InputType = InputTypes.FirstOrDefault() ?? string.Empty;
-        }
-
-        Amplitudes = Models.ExperimentSetup.ToString(Model.Amplitudes);
-        Widths = Models.ExperimentSetup.ToString(Model.Widths);
+        ValidateModelValues(Model);
+        UpdateModelDependentProperties(Model);
     }
 
     #region Commands
@@ -51,20 +47,89 @@ internal partial class Setup : ObservableObject
         Model.Save();
     }
 
+    [RelayCommand]
+    private void Save()
+    {
+        var ofd = new SaveFileDialog()
+        {
+            Filter = "Setup file (*.fls)|*.fls",
+            InitialDirectory = GetCacheFolder(),
+        };
+        if (ofd.ShowDialog() == DialogResult.OK)
+        {
+            if (!Model.SaveToFile(ofd.FileName))
+            {
+                MessageBox.Show("Failed to save the setup file", MsgBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void Load()
+    {
+        var ofd = new OpenFileDialog()
+        {
+            Filter = "Setup file (*.fls)|*.fls",
+            InitialDirectory = GetCacheFolder(),
+        };
+        if (ofd.ShowDialog() == DialogResult.OK)
+        {
+            var newModel = Models.ExperimentSetup.LoadFromFile(ofd.FileName);
+            if (newModel != null)
+            {
+                ValidateModelValues(newModel);
+                UpdateModelDependentProperties(newModel);
+
+                Model = newModel;
+                OnPropertyChanged("");
+            }
+            else
+            {
+                MessageBox.Show("Failed to load the setup file", MsgBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
     #endregion
 
     #region Internals
 
-    public static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
+    const string MsgBoxTitle = "Fitts' law";
+
+    static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
+
+    private string GetCacheFolder()
+    {
+        var result = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FittsLaw");
+        if (!System.IO.Directory.Exists(result))
+        {
+            System.IO.Directory.CreateDirectory(result);
+        }
+        return result;
+    }
+
+    private void ValidateModelValues(Models.ExperimentSetup model)
+    {
+        if (!InputTypes.Contains(model.InputType))
+        {
+            model.InputType = InputTypes.FirstOrDefault() ?? string.Empty;
+        }
+    }
+
+    private void UpdateModelDependentProperties(Models.ExperimentSetup model)
+    {
+        Amplitudes = Models.ExperimentSetup.ToString(model.Amplitudes);
+        Widths = Models.ExperimentSetup.ToString(model.Widths);
+    }
 
     partial void OnAmplitudesChanged(string value)
     {
-        Model.Amplitudes = Models.ExperimentSetup.ToNumbers(value);
+        Model.Amplitudes = Models.ExperimentSetup.ToNumbers<double>(value);
     }
 
     partial void OnWidthsChanged(string value)
     {
-        Model.Widths = Models.ExperimentSetup.ToNumbers(value);
+        Model.Widths = Models.ExperimentSetup.ToNumbers<double>(value);
     }
 
     #endregion

@@ -17,7 +17,7 @@ internal static class LayoutCreator
     /// <param name="targetCount">number of targets (circles)</param>
     /// <param name="fieldSize">size of the parent</param>
     /// <returns>List of targets</returns>
-    public static Models.Target[] Create(
+    public static Models.Target[] CreateCircular(
         Models.Block block,
         int targetCount,
         double fieldSize)
@@ -50,6 +50,43 @@ internal static class LayoutCreator
 
         return targets;
     }
+    /// <summary>
+    /// Creates an array of targets arranged on a grid.
+    /// The targets appear in the middle of each grid cell.
+    /// The size of each target equals to the width of the block.
+    /// </summary>
+    /// <param name="block">block parameters</param>
+    /// <param name="targetCount">number of targets (circles)</param>
+    /// <param name="fieldSize">size of the parent</param>
+    /// <returns>List of targets</returns>
+    public static Models.Target[] CreateGrid(
+        Models.Block block,
+        Models.Size gridSize,
+        System.Windows.Size fieldSize)
+    {
+        var targets = new Models.Target[gridSize.Height * gridSize.Width];
+
+        for (int row = 0; row < gridSize.Height; row++)
+        {
+            for (int col = 0; col < gridSize.Width; col++)
+            {
+                double x = 0, y = 0;
+                int i = row * gridSize.Width + col;
+                var target = new Models.Target()
+                {
+                    Id = i,
+                    Size = block.Width,
+                    Position = new System.Windows.Point(x, y)
+                };
+                targets[i] = target;
+            }
+
+        }
+
+        throw new NotImplementedException();
+        return targets;
+    }
+
 
     #region Internal
 

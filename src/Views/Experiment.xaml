@@ -34,8 +34,8 @@
                       ItemsSource="{Binding Targets}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"
-                      Width="{Binding ParentSize}"
-                      Height="{Binding ParentSize}">
+                      Width="{Binding ParentSize.Width}"
+                      Height="{Binding ParentSize.Height}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas/>

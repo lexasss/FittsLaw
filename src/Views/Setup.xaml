@@ -205,33 +205,50 @@
                           SelectedIndex="{Binding Model.ScreenIndex}" />
             </WrapPanel>
 
-            <WrapPanel>
-                <Label Content="" />
-                <CheckBox IsChecked="{Binding Model.IsRandomized}"
-                          Content="Randomized"/>
-            </WrapPanel>
-
-            <WrapPanel>
-                <Label Content="" />
-                <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.Column="0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    <WrapPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Width" Value="32"/>
+                            <Setter Property="Height" Value="32"/>
+                            <Setter Property="FontSize" Value="16"/>
+                            <Setter Property="Margin" Value="2"/>
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Button Content="💾"
+                            ToolTip="Save into a file"
+                            Command="{Binding SaveCommand}"/>
+                    <Button Content="📂"
+                            ToolTip="Load from a file"
+                            Command="{Binding LoadCommand}"/>
+                </WrapPanel>
+                <StackPanel Grid.Column="1">
+                    <CheckBox IsChecked="{Binding Model.IsRandomized}"
+                              Content="Randomized"
+                              Margin="0,8,0,0"/>
                     <CheckBox IsChecked="{Binding Model.HasAudioFeedback}"
-                              Content="Audio feedback"/>
+                              Content="Audio feedback"
+                              Margin="0,8,0,0"/>
                     <CheckBox IsChecked="{Binding Model.IsDistinctErrorAudioFeedback}"
                               IsEnabled="{Binding Model.HasAudioFeedback}"
                               Content="distinct on errors"
                               Margin="20,4,0,0"/>
+                    <CheckBox IsChecked="{Binding Model.IsContinueManually}"
+                              Content="Manual continuation"
+                              Margin="0,8,0,0"/>
                 </StackPanel>
-            </WrapPanel>
-
-            <WrapPanel>
-                <Label Content="" />
-                <CheckBox IsChecked="{Binding Model.IsContinueManually}"
-                          Content="Manual continuation"/>
-            </WrapPanel>
+            </Grid>
         </StackPanel>
 
         <WrapPanel Grid.Row="1"
-                   HorizontalAlignment="Center">
+                   HorizontalAlignment="Center"
+                   Margin="0,8,0,0">
             <WrapPanel.Resources>
                 <Style TargetType="Button">
                     <Setter Property="Width" Value="80" />

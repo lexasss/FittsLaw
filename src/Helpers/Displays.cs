@@ -87,6 +87,11 @@ internal static class Displays
         return screens.ToList().FindIndex(s => s.Primary);
     }
 
+    public static Size GetScreenSize(int screenIndex)
+    {
+        throw new NotImplementedException();
+    }
+
     #region Internal
 
     private static Models.MonitorInfo[] GetMonitorInfo()
