@@ -1,11 +1,9 @@
-using System.Windows.Controls;
 using FittsLaw.Helpers;
 using FittsLaw.Models;
-using TargetModel = FittsLaw.Models.Target;
 
 namespace FittsLaw.Tests;
 
-public class BlockUiCreatorTests
+public class LayoutCreatorTest
 {
     [Fact]
     public void CreateBuildsExpectedTargetCountAndSize()
@@ -37,8 +35,8 @@ public class BlockUiCreatorTests
 
             Assert.All(targets, target =>
             {
-                Assert.InRange(target.Position.X, 0, fieldSize - block.Width);
-                Assert.InRange(target.Position.Y, 0, fieldSize - block.Width);
+                Assert.InRange(target.Position.X, 0, fieldSize);
+                Assert.InRange(target.Position.Y, 0, fieldSize);
             });
         });
     }

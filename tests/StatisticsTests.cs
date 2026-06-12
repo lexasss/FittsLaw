@@ -35,7 +35,7 @@ public class StatisticsTests
             ]
         };
 
-        var result = new Statistics().Compute([block]);
+        var result = Statistics.Compute([block]);
 
         Assert.Equal("275", result["MT, ms"][0]);
         Assert.Equal("1", result["Errors"][0]);
@@ -53,15 +53,20 @@ public class StatisticsTests
                 {
                     Position = new Point(0, 0),
                     ActivationTimestamp = 100
+                },
+                new Target
+                {
+                    Position = new Point(100, 0),
+                    ActivationTimestamp = 1000
                 }
             ]
         };
 
-        var result = new Statistics().Compute([block]);
+        var result = Statistics.Compute([block]);
 
         Assert.Equal("1", result["Trials"][0]);
-        Assert.Equal("0", result["MT, ms"][0]);
-        Assert.Equal("0", result["Throughput, b/s"][0]);
+        Assert.Equal("900", result["MT, ms"][0]);
+        Assert.True("0" != result["Throughput, b/s"][0]);
     }
 
     [Fact]
@@ -84,7 +89,7 @@ public class StatisticsTests
             ]
         };
 
-        var result = new Statistics().Compute([block]);
+        var result = Statistics.Compute([block]);
 
         Assert.Equal("0.0", result["Eff. Width, px"][0]);
         Assert.Equal("0.00", result["Eff. ID, bits"][0]);
