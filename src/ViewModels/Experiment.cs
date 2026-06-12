@@ -133,7 +133,7 @@ internal partial class Experiment : ObservableObject, IDisposable
 
         if (!wasInterrupted)
         {
-            var statisticsData = _statistics.Compute(_experiment.Blocks);
+            var statisticsData = Services.Statistics.Compute(_experiment.Blocks);
 
             var dialog = new Views.Statistics(statisticsData);
             dialog.ShowDialog();

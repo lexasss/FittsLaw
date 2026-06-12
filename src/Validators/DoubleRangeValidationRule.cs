@@ -1,18 +1,18 @@
 ﻿using System.Globalization;
 using System.Windows.Controls;
 
-namespace FittsLaw.Helpers;
+namespace FittsLaw.Validators;
 
-internal class IntegerRangeValidationRule : ValidationRule
+internal class DoubleRangeValidationRule : ValidationRule
 {
-    public int Minimum { get; set; }
-    public int Maximum { get; set; }
+    public double Minimum { get; set; }
+    public double Maximum { get; set; }
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        if (!int.TryParse(value?.ToString(), out int number))
+        if (!double.TryParse(value?.ToString(), out double number))
         {
-            return new ValidationResult(false, "Enter a valid integer.");
+            return new ValidationResult(false, "Enter a valid number.");
         }
 
         if (number < Minimum || number > Maximum)

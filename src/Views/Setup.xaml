@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
         xmlns:helpers="clr-namespace:FittsLaw.Helpers"
         xmlns:conv="clr-namespace:FittsLaw.Converters"
+        xmlns:valid="clr-namespace:FittsLaw.Validators"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Setup"
@@ -19,13 +20,6 @@
     </Window.DataContext>
     <Window.Resources>
         <conv:LayoutTypeToVisibility x:Key="LayoutToVisibility"/>
-        <!--ObjectDataProvider x:Key="Displays"
-                            ObjectType="{x:Type helpers:Displays}"
-                            MethodName="GetValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="helpers:Displays" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider-->
         <ObjectDataProvider x:Key="LayoutTypes"
                             ObjectType="{x:Type sys:Enum}"
                             MethodName="GetValues">
@@ -83,7 +77,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:IntegerRangeValidationRule
+                                <valid:IntegerRangeValidationRule
                                     Minimum="1"
                                     Maximum="20" />
                             </Binding.ValidationRules>
@@ -109,7 +103,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:IntegerRangeValidationRule
+                                <valid:IntegerRangeValidationRule
                                     Minimum="3"
                                     Maximum="50" />
                             </Binding.ValidationRules>
@@ -129,7 +123,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:NumberArrayValidationRule
+                                <valid:NumberArrayValidationRule
                                     Minimum="20"
                                     Maximum="2000"/>
                             </Binding.ValidationRules>
@@ -147,7 +141,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:NumberArrayValidationRule
+                                <valid:NumberArrayValidationRule
                                     Minimum="5"
                                     Maximum="200"/>
                             </Binding.ValidationRules>
@@ -167,7 +161,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:IntegerRangeValidationRule
+                                <valid:IntegerRangeValidationRule
                                     Minimum="2"
                                     Maximum="10" />
                             </Binding.ValidationRules>
@@ -184,7 +178,7 @@
                                  ValidatesOnNotifyDataErrors="True"
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
-                                <helpers:IntegerRangeValidationRule
+                                <valid:IntegerRangeValidationRule
                                     Minimum="2"
                                     Maximum="10" />
                             </Binding.ValidationRules>

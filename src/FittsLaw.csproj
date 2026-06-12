@@ -53,7 +53,7 @@
     <Resource Include="Assets\Images\icon.png" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(VisualStudioVersion)' >= '18.0'">
+  <PropertyGroup Condition="'$(VisualStudioVersion)' &gt;= '18.0'">
     <DefineConstants>VS_VERSION_18_0_OR_GREATER</DefineConstants>
   </PropertyGroup>
 </Project>

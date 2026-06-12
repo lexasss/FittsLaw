@@ -53,5 +53,8 @@
     <Setting Name="GridSize" Type="System.String" Scope="User">
       <Value Profile="(Default)">5 4</Value>
     </Setting>
+    <Setting Name="CriticalErrorRate" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -5,15 +5,17 @@ internal class Statistics
     public static string[] Fields { get; } = StatFields.Select(sf => sf.Name).ToArray();
     public static int FirstComputedFieldIndex { get; } = 4;
 
-    public IReadOnlyDictionary<string, string[]> Compute(Models.Block[] experimentBlocks)
+    public static IReadOnlyDictionary<string, string[]> Compute(Models.Block[] experimentBlocks)
     {
+        var settings = Models.StatisticsSettings.From(Properties.Settings.Default);
+
         if (experimentBlocks[0].Amplitude == 0)
         {
-            return ComputeForVaryingAmplitude(experimentBlocks);
+            return ComputeForVaryingAmplitude(experimentBlocks, settings);
         }
         else
         {
-            return ComputeForFixedAmplitude(experimentBlocks);
+            return ComputeForFixedAmplitude(experimentBlocks, settings);
         }
     }
 
@@ -45,7 +47,9 @@ internal class Statistics
 
     static string[] Formats { get; } = StatFields.Select(sf => sf.Format).ToArray();
 
-    public static IReadOnlyDictionary<string, string[]> ComputeForVaryingAmplitude(Models.Block[] experimentBlocks)
+    public static IReadOnlyDictionary<string, string[]> ComputeForVaryingAmplitude(
+        Models.Block[] experimentBlocks,
+        Models.StatisticsSettings settings)
     {
         // Because of varying amplitude, statistics is computed in few steps
 
@@ -76,7 +80,9 @@ internal class Statistics
         }
 
         // Then, compute statistics for each trial separately
-        var targetStats = ComputeForFixedAmplitude(newBlocks.ToArray());
+        var targetStats = ComputeForFixedAmplitude(
+            newBlocks.ToArray(),
+            new Models.StatisticsSettings(1)); // do not filter errors yet
 
         // Next, unite trials with the same amplitude and width into their own blocks
 
@@ -130,31 +136,43 @@ internal class Statistics
 
         blocks.Sort((a, b) => (a[3] != b[3] ? a[3] > b[3] : a[2] > b[2]) ? 1 : -1);
 
-        // Finally, create 
+        // Finally, create statitics rows..
 
-        Dictionary<string, string[]> result = [];
+        Dictionary<string, string[]> statRows = [];
         foreach (var field in Fields)
-            result.Add(field, new string[blocks.Length]);
+            statRows.Add(field, new string[blocks.Length]);
 
         for (int i = 0; i < blocks.Length; i++)
         {
             var block = blocks[i];
             for (int j = 0; j < StatFields.Length; j++)
             {
-                result[Fields[j]][i] = block[j].ToString(Formats[j]);
+                statRows[Fields[j]][i] = block[j].ToString(Formats[j]);
             }
         }
 
+        // .. and filter too-many-errors blocks
+
+        var errorPercentageThreshold = settings.CriticalErrorRate * 100;
+        var errorPercentages = statRows[Fields[11]].Select(double.Parse).ToArray();
+
+        Dictionary<string, string[]> result = [];
+        foreach (var kv in statRows)
+        {
+            result[kv.Key] = kv.Value.Where((_, j) => errorPercentages[j] <= errorPercentageThreshold).ToArray();
+        }
         return result;
     }
 
-    public static IReadOnlyDictionary<string, string[]> ComputeForFixedAmplitude(Models.Block[] experimentBlocks)
+    public static IReadOnlyDictionary<string, string[]> ComputeForFixedAmplitude(
+        Models.Block[] experimentBlocks,
+        Models.StatisticsSettings settings)
     {
         int blockCount = experimentBlocks.Length;
 
-        Dictionary<string, string[]> result = [];
+        Dictionary<string, string[]> statRows = [];
         foreach (var field in Fields)
-            result.Add(field, new string[blockCount]);
+            statRows.Add(field, new string[blockCount]);
 
         experimentBlocks.Sort((b1, b2) => b1.Index.CompareTo(b2.Index));
 
@@ -207,15 +225,15 @@ internal class Statistics
                 prevTargetY = target.Position.Y;
             }
 
-            result[Fields[0]][i] = (i + 1).ToString(Formats[0]);
-            result[Fields[1]][i] = validTrialCount.ToString(Formats[1]);
-            result[Fields[2]][i] = block.Amplitude.ToString(Formats[2]);
-            result[Fields[3]][i] = block.Width.ToString(Formats[3]);
+            statRows[Fields[0]][i] = (i + 1).ToString(Formats[0]);
+            statRows[Fields[1]][i] = validTrialCount.ToString(Formats[1]);
+            statRows[Fields[2]][i] = block.Amplitude.ToString(Formats[2]);
+            statRows[Fields[3]][i] = block.Width.ToString(Formats[3]);
 
             if (validTrialCount == 0)
             {   // the computed values are set to 0 indicating the block is invalid for analysis
                 for (int j = FirstComputedFieldIndex; j < Fields.Length; j++)
-                    result[Fields[j]][i] = ZERO;
+                    statRows[Fields[j]][i] = ZERO;
                 continue;
             }
 
@@ -232,16 +250,27 @@ internal class Statistics
             double effectiveId = effectiveWidth > 0 ? Math.Log2(effectiveAmplitude / effectiveWidth + 1) : 0;
             double effectiveThroughput = effectiveId / (0.001 * meanDuration);  // bits per second
 
-            result[Fields[4]][i] = meanOffset.ToString(Formats[4]);
-            result[Fields[5]][i] = id.ToString(Formats[5]);
-            result[Fields[6]][i] = effectiveAmplitude.ToString(Formats[6]);
-            result[Fields[7]][i] = effectiveWidth.ToString(Formats[7]);
-            result[Fields[8]][i] = effectiveId.ToString(Formats[8]);
-            result[Fields[9]][i] = meanDuration.ToString(Formats[9]);
-            result[Fields[10]][i] = errorCount.ToString(Formats[10]);
-            result[Fields[11]][i] = (100.0 * errors).ToString(Formats[11]);
-            result[Fields[12]][i] = throughput.ToString(Formats[12]);
-            result[Fields[13]][i] = effectiveThroughput.ToString(Formats[13]);
+            statRows[Fields[4]][i] = meanOffset.ToString(Formats[4]);
+            statRows[Fields[5]][i] = id.ToString(Formats[5]);
+            statRows[Fields[6]][i] = effectiveAmplitude.ToString(Formats[6]);
+            statRows[Fields[7]][i] = effectiveWidth.ToString(Formats[7]);
+            statRows[Fields[8]][i] = effectiveId.ToString(Formats[8]);
+            statRows[Fields[9]][i] = meanDuration.ToString(Formats[9]);
+            statRows[Fields[10]][i] = errorCount.ToString(Formats[10]);
+            statRows[Fields[11]][i] = (100.0 * errors).ToString(Formats[11]);
+            statRows[Fields[12]][i] = throughput.ToString(Formats[12]);
+            statRows[Fields[13]][i] = effectiveThroughput.ToString(Formats[13]);
+        }
+
+        // Filtering
+
+        var errorPercentageThreshold = settings.CriticalErrorRate * 100;
+        var errorPercentages = statRows[Fields[11]].Select(double.Parse).ToArray();
+
+        Dictionary<string, string[]> result = [];
+        foreach (var kv in statRows)
+        {
+            result[kv.Key] = kv.Value.Where((_, j) => errorPercentages[j] <= errorPercentageThreshold).ToArray();
         }
 
         return result;

@@ -65,6 +65,17 @@ internal partial class Main : ObservableObject
         }
     }
 
+    public double CriticalErrorRate
+    {
+        get => _statisticsSettings.CriticalErrorRate;
+        set
+        {
+            _statisticsSettings = _statisticsSettings with { CriticalErrorRate = value };
+            _uiSettings.Save();
+            OnPropertyChanged(nameof(CriticalErrorRate));
+        }
+    }
+
     public event EventHandler<Models.ExperimentSetup>? ExperimentStarted;
 
     #region Commands
@@ -101,6 +112,7 @@ internal partial class Main : ObservableObject
     #region Internal
 
     Models.UiSettings _uiSettings = Models.UiSettings.From(Properties.Settings.Default);
+    Models.StatisticsSettings _statisticsSettings = Models.StatisticsSettings.From(Properties.Settings.Default);
 
     #endregion
 }

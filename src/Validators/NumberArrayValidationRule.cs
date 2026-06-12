@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Controls;
 
-namespace FittsLaw.Helpers;
+namespace FittsLaw.Validators;
 
 internal class NumberArrayValidationRule : ValidationRule
 {

@@ -9,11 +9,6 @@ internal record class UiSettings(
     Brush ActiveTargetBorderBrush,
     Brush CompletedTargetBorderBrush)
 {
-    public static UiSettings From(ViewModels.Main main)
-    {
-        return new UiSettings(main.Background, main.BorderBrush, main.ActiveTargetBrush, main.ActiveTargetBorderBrush, main.CompletedTargetBorderBrush);
-    }
-
     public static UiSettings From(Properties.Settings settings)
     {
         return new UiSettings(
