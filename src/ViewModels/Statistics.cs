@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FittsLaw.Models;
 using ScottPlot;
 using System.Drawing;
 using System.Windows;
@@ -43,6 +44,9 @@ internal partial class Statistics : ObservableObject
     {
         TpAndMt.Plot.Clear();
         EffTpAndMt.Plot.Clear();
+
+        if (value.First().Value.Length == 0)
+            return;
 
         if (!value.ContainsKey(IDField) || 
             !value.ContainsKey(TPField) || 

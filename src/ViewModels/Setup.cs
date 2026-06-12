@@ -59,7 +59,7 @@ internal partial class Setup : ObservableObject
         {
             if (!Model.SaveToFile(ofd.FileName))
             {
-                MessageBox.Show("Failed to save the setup file", MsgBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Failed to save the setup file", App.Current.MainWindow.Title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
@@ -85,7 +85,7 @@ internal partial class Setup : ObservableObject
             }
             else
             {
-                MessageBox.Show("Failed to load the setup file", MsgBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Failed to load the setup file", App.Current.MainWindow.Title, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
@@ -93,8 +93,6 @@ internal partial class Setup : ObservableObject
     #endregion
 
     #region Internals
-
-    const string MsgBoxTitle = "Fitts' law";
 
     static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
 

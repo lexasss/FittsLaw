@@ -12,6 +12,7 @@
         Title="Setup"
         Width="296"
         Icon="/Assets/Images/icon.png"
+        ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         SizeToContent="Height">

@@ -134,9 +134,15 @@ internal partial class Experiment : ObservableObject, IDisposable
         if (!wasInterrupted)
         {
             var statisticsData = Services.Statistics.Compute(_experiment.Blocks);
-
-            var dialog = new Views.Statistics(statisticsData);
-            dialog.ShowDialog();
+            if (statisticsData.First().Value.Length == 0)
+            {
+                MessageBox.Show("No valid blocks.", App.Current.MainWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                var dialog = new Views.Statistics(statisticsData);
+                dialog.ShowDialog();
+            }
         }
     }
 

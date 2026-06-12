@@ -71,7 +71,7 @@ internal partial class Main : ObservableObject
         set
         {
             _statisticsSettings = _statisticsSettings with { CriticalErrorRate = value };
-            _uiSettings.Save();
+            _statisticsSettings.Save();
             OnPropertyChanged(nameof(CriticalErrorRate));
         }
     }
@@ -84,6 +84,7 @@ internal partial class Main : ObservableObject
     private void Setup()
     {
         var dialog = new Views.Setup();
+        dialog.Owner = App.Current.MainWindow;
         if (dialog.ShowDialog() == true)
         {
             try
