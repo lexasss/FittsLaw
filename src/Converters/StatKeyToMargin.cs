@@ -8,7 +8,7 @@ namespace FittsLaw.Converters;
 public class StatKeyToMargin : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        (string)value == Services.Statistics.Fields[4]
+        (string)value == Services.Statistics.Fields[Services.Statistics.FirstComputedFieldIndex]
             ? new Thickness(8, 8, 8, 2)
             : new Thickness(8, 2, 8, 2);
 

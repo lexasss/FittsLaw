@@ -59,13 +59,11 @@
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                     <Setter Property="Padding" Value="2" />
                     <Style.Triggers>
-                        <Trigger Property="Validation.HasError"
-                                 Value="True">
-                            <Setter Property="BorderBrush"
-                                    Value="Red" />
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter Property="BorderBrush" Value="Red" />
                             <Setter Property="ToolTip"
                                     Value="{Binding RelativeSource={RelativeSource Self},
-                                            Path=(Validation.Errors)[0].ErrorContent}" />
+                                            Path=(Validation.Errors)/ErrorContent}" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -95,6 +93,14 @@
             </WrapPanel>
 
             <WrapPanel>
+                <Label Content="Layout" />
+                <ComboBox ItemsSource="{Binding Source={StaticResource LayoutTypes}}"
+                          SelectedItem="{Binding Model.LayoutType}" />
+            </WrapPanel>
+
+            <WrapPanel Visibility="{Binding Model.LayoutType,
+                                    Converter={StaticResource LayoutToVisibility},
+                                    ConverterParameter={x:Static helpers:LayoutType.Circular}}">
                 <Label Content="Number of targets" />
                 <TextBox>
                     <TextBox.Text>
@@ -110,12 +116,6 @@
                         </Binding>
                     </TextBox.Text>
                 </TextBox>
-            </WrapPanel>
-
-            <WrapPanel>
-                <Label Content="Layout" />
-                <ComboBox ItemsSource="{Binding Source={StaticResource LayoutTypes}}"
-                          SelectedItem="{Binding Model.LayoutType}" />
             </WrapPanel>
 
             <WrapPanel Visibility="{Binding Model.LayoutType,
@@ -168,7 +168,7 @@
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
                                 <helpers:IntegerRangeValidationRule
-                                    Minimum="1"
+                                    Minimum="2"
                                     Maximum="10" />
                             </Binding.ValidationRules>
                         </Binding>
@@ -185,7 +185,7 @@
                                  NotifyOnValidationError="True">
                             <Binding.ValidationRules>
                                 <helpers:IntegerRangeValidationRule
-                                    Minimum="1"
+                                    Minimum="2"
                                     Maximum="10" />
                             </Binding.ValidationRules>
                         </Binding>

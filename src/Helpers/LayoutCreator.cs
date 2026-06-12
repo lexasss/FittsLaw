@@ -15,7 +15,7 @@ internal static class LayoutCreator
     /// </summary>
     /// <param name="block">block parameters</param>
     /// <param name="targetCount">number of targets (circles)</param>
-    /// <param name="fieldSize">size of the parent</param>
+    /// <param name="fieldSize">size of the container</param>
     /// <returns>List of targets</returns>
     public static Models.Target[] CreateCircular(
         Models.Block block,
@@ -57,7 +57,7 @@ internal static class LayoutCreator
     /// </summary>
     /// <param name="block">block parameters</param>
     /// <param name="targetCount">number of targets (circles)</param>
-    /// <param name="fieldSize">size of the parent</param>
+    /// <param name="fieldSize">size of the container</param>
     /// <returns>List of targets</returns>
     public static Models.Target[] CreateGrid(
         Models.Block block,
@@ -66,12 +66,18 @@ internal static class LayoutCreator
     {
         var targets = new Models.Target[gridSize.Height * gridSize.Width];
 
+        double cellWidth = fieldSize.Width / gridSize.Width;
+        double cellHeight = fieldSize.Height / gridSize.Height;
+        double cellCenterX = cellWidth / 2;
+        double cellCenterY = cellHeight / 2;
+
         for (int row = 0; row < gridSize.Height; row++)
         {
             for (int col = 0; col < gridSize.Width; col++)
             {
-                double x = 0, y = 0;
                 int i = row * gridSize.Width + col;
+                double x = cellWidth * col + cellCenterX;
+                double y = cellHeight * row + cellCenterY;
                 var target = new Models.Target()
                 {
                     Id = i,
@@ -83,7 +89,8 @@ internal static class LayoutCreator
 
         }
 
-        throw new NotImplementedException();
+        Random.Shared.Shuffle(targets);
+
         return targets;
     }
 

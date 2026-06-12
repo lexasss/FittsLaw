@@ -18,9 +18,7 @@ internal partial class Experiment : ObservableObject, IDisposable
     public Brush Background { get; }
     public Brush Foreground { get; }
 
-
     public event EventHandler<Models.ExperimentSetup>? ExperimentStopped;
-
 
     public Experiment()
     {
@@ -32,7 +30,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         InstructionVisibility = _experiment.Setup?.IsContinueManually == true ? Visibility.Visible : Visibility.Collapsed;
         ParentSize = _experiment.Setup!.LayoutType switch
         {
-            Helpers.LayoutType.Circular => _experiment.GetCirculerSize(),
+            Helpers.LayoutType.Circular => _experiment.GetCircularSize(),
             Helpers.LayoutType.Grid => Helpers.Displays.GetScreenSize(_experiment.Setup.ScreenIndex),
             _ => throw new NotImplementedException(),
         };

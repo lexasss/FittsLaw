@@ -8,6 +8,7 @@ namespace FittsLaw.Helpers;
 internal static class Displays
 {
     public static int Count => Screen.AllScreens.Length;
+
     public static Models.MonitorInfo[] Items => Screen.AllScreens
         .Select(s => GetMonitorFromDeviceName(s.DeviceName))
         .OfType<Models.MonitorInfo>()
@@ -15,8 +16,6 @@ internal static class Displays
 
     public static bool MoveToScreen(Window window, int screenIndex)
     {
-        ArgumentNullException.ThrowIfNull(window);
-
         if (screenIndex == GetScreenIndex(window))
             return true;
 
@@ -57,8 +56,6 @@ internal static class Displays
 
     public static int GetScreenIndex(Window window)
     {
-        ArgumentNullException.ThrowIfNull(window);
-
         // Get DPI transform (WPF → device pixels)
         var source = PresentationSource.FromVisual(window);
         double dpiX = 1.0, dpiY = 1.0;
@@ -89,7 +86,8 @@ internal static class Displays
 
     public static Size GetScreenSize(int screenIndex)
     {
-        throw new NotImplementedException();
+        var rect = Screen.AllScreens[screenIndex].Bounds;
+        return new Size(rect.Width, rect.Height);
     }
 
     #region Internal
@@ -222,6 +220,10 @@ internal static class Displays
 
         return null;
     }
+
+    #endregion
+
+    #region WinAPI
 
     private const int ERROR_SUCCESS = 0;
 

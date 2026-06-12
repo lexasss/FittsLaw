@@ -46,7 +46,7 @@ internal class Experiment
         _targets = targets;
     }
 
-    public Size GetCirculerSize()
+    public Size GetCircularSize()
     {
         var size = Blocks.Max(b => b.Amplitude + 2 * b.Width);
         return new(size, size);
@@ -80,7 +80,7 @@ internal class Experiment
 
             _stopwatch.Restart();
 
-            for (_trialIndex = 0; _trialIndex < Setup.TrialCount; _trialIndex++)
+            for (_trialIndex = 0; _trialIndex < _targets.Count(); _trialIndex++)
             {
                 TargetChanged?.Invoke(this, _trialIndex);
 
@@ -174,12 +174,26 @@ internal class Experiment
         int i = 0;
         for (int session = 0; session < setup.SessionCount; session++)
         {
-            foreach (var amplitude in setup.Amplitudes)
+            if (setup.LayoutType == LayoutType.Circular)
+            {
+                foreach (var amplitude in setup.Amplitudes)
+                {
+                    foreach (var width in setup.Widths)
+                    {
+                        result.Add(new(i++, amplitude, width));
+                    }
+                }
+            }
+            else if (setup.LayoutType == LayoutType.Grid)
             {
                 foreach (var width in setup.Widths)
                 {
-                    result.Add(new(i++, amplitude, width));
+                    result.Add(new(i++, 0, width));
                 }
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 
