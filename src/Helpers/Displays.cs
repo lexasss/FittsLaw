@@ -1,5 +1,4 @@
 ﻿using System.Management;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -115,32 +114,16 @@ internal static class Displays
             string manufacturer = Decode((ushort[])obj["ManufacturerName"]) ?? "Unknown";
             string model = Decode((ushort[])obj["UserFriendlyName"]) ?? "Integrated Monitor";
             string serial = Decode((ushort[])obj["SerialNumberID"]) ?? string.Empty;
+            string productCode = Decode((ushort[])obj["ProductCodeID"]) ?? string.Empty;
+            string deviceId = (string)obj["InstanceName"] ?? string.Empty;
             monitors.Add(new Models.MonitorInfo
             {
                 SerialNumberID = serial,
                 Name = model,
                 Manufacturer = manufacturer,
                 FrendlyName = model,
+                DeviceID = deviceId.Split('_')[0],
             });
-        }
-
-        searcher = new ManagementObjectSearcher(
-            @"root\cimv2",
-            @"SELECT * FROM Win32_PnPEntity WHERE PNPClass='Monitor'");
-
-        foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
-        {
-            string deviceId = obj["DeviceID"]?.ToString() ?? string.Empty;
-            foreach (var monitor in monitors)
-            {
-                if (deviceId.StartsWith($"DISPLAY\\{monitor.Manufacturer}"))
-                {
-                    monitor.DeviceID = deviceId;
-                    monitor.FullFrendlyName = obj["Name"]?.ToString() ?? string.Empty;
-                    monitor.Description = obj["Description"]?.ToString() ?? string.Empty;
-                    break;
-                }
-            }
         }
 
         return monitors.ToArray();
@@ -215,9 +198,6 @@ internal static class Displays
             {
                 string devicePath = targetName.monitorDevicePath[4..].Replace('#', '\\');  // remove \\.\ from the path start
                 return monitors.FirstOrDefault(m => devicePath.StartsWith(m.DeviceID, StringComparison.OrdinalIgnoreCase));
-                /* return !string.IsNullOrEmpty(targetName.monitorFriendlyDeviceName)
-                    ? targetName.monitorFriendlyDeviceName
-                    : "Integrated Monitor";*/
             }
         }
 
