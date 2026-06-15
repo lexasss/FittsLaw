@@ -9,9 +9,11 @@
         Title="Statistics"
         Height="450"
         Width="500"
-        ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner"
         MaxWidth="1260"
+        Icon="/Assets/Images/icon.png"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
         SizeToContent="Width">
     <Window.DataContext>
         <vm:Statistics />
