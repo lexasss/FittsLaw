@@ -1,7 +1,9 @@
 ﻿using System.Management;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace FittsLaw.Helpers;
 
@@ -86,8 +88,9 @@ internal static class Displays
 
     public static Size GetScreenSize(int screenIndex)
     {
+        var dpi = VisualTreeHelper.GetDpi(App.Current.MainWindow);
         var rect = Screen.AllScreens[screenIndex].Bounds;
-        return new Size(rect.Width, rect.Height);
+        return new Size(rect.Width / dpi.DpiScaleX, rect.Height / dpi.DpiScaleY);
     }
 
     #region Internal
