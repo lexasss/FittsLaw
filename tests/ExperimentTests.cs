@@ -8,7 +8,6 @@ namespace FittsLaw.Tests;
 
 public class ExperimentTests
 {
-    /* These tests cannot be executed anymore as they require manual input
     [Fact]
     public async Task InterruptProducesExactlyOneInterruptedFinishedEvent()
     {
@@ -42,7 +41,7 @@ public class ExperimentTests
                 }
             ]);
         };
-        experiment.TargetChanged += (_, _) => ResumeAfterTrialOnNextTick(experiment, new Point(10, 10));
+        experiment.TargetChanged += (_, _) => ResumeAfterTrialOnNextTick(experiment, new Point(0, 0));
         experiment.BlockFinished += (_, _) => ResumeAfterBlockOnNextTick(experiment);
         experiment.Finished += (_, wasInterrupted) => results.Add(wasInterrupted);
 
@@ -72,7 +71,7 @@ public class ExperimentTests
         experiment.TargetChanged += (_, _) =>
         {
             events.Add("target-changed");
-            ResumeAfterTrialOnNextTick(experiment, new Point(10, 10));
+            ResumeAfterTrialOnNextTick(experiment, new Point(0, 0));
         };
         experiment.BlockFinished += (_, _) =>
         {
@@ -106,7 +105,7 @@ public class ExperimentTests
             if (targetChangedCount == 1)
             {
                 ResumeAfterTrialOnNextTick(experiment, new Point(100, 100));
-                ResumeAfterTrialOnNextTick(experiment, new Point(10, 10), delayMs: 30);
+                ResumeAfterTrialOnNextTick(experiment, new Point(0, 0), delayMs: 30);
             }
         };
         experiment.BlockFinished += (_, _) => ResumeAfterBlockOnNextTick(experiment);
@@ -116,7 +115,7 @@ public class ExperimentTests
         Assert.True(target.ActivationTimestamp > 0);
         Assert.Equal(new Point(0, 0), target.ActivationOffset);
     }
-    */
+
     private static ExperimentSetup CreateSetup(int trialCount = 1) =>
         new()
         {
