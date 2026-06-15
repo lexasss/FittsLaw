@@ -196,7 +196,7 @@
 
             <WrapPanel>
                 <Label Content="Display" />
-                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Displays.Items}}"
+                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Display.Monitors}}"
                           SelectedIndex="{Binding Model.ScreenIndex}" />
             </WrapPanel>
 

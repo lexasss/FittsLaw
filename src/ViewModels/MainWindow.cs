@@ -41,14 +41,14 @@ internal partial class MainWindow : ObservableObject
     private void MainVm_ExperimentStarted(object? sender, Models.ExperimentSetup setup)
     {
         _originalWindowState = State;
-        _originalScreenIndex = Helpers.Displays.GetScreenIndex(_window);
+        _originalScreenIndex = Helpers.Display.GetScreenIndex(_window);
 
         if (setup.ScreenIndex != _originalScreenIndex && State == WindowState.Maximized)
         {
             State = WindowState.Normal;
         }
 
-        Helpers.Displays.MoveToScreen(_window, setup.ScreenIndex);
+        Helpers.Display.MoveToScreen(_window, setup.ScreenIndex);
 
         //Topmost = true;
         Style = WindowStyle.None;
@@ -74,7 +74,7 @@ internal partial class MainWindow : ObservableObject
         if (setup.ScreenIndex != _originalScreenIndex)
         {
             State = WindowState.Normal;
-            Helpers.Displays.MoveToScreen(_window, _originalScreenIndex);
+            Helpers.Display.MoveToScreen(_window, _originalScreenIndex);
         }
 
         State = _originalWindowState;

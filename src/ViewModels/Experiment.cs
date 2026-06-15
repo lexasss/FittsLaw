@@ -31,7 +31,7 @@ internal partial class Experiment : ObservableObject, IDisposable
         ParentSize = _experiment.Setup!.LayoutType switch
         {
             Helpers.LayoutType.Circular => _experiment.GetCircularSize(),
-            Helpers.LayoutType.Grid => Helpers.Displays.GetScreenSize(_experiment.Setup.ScreenIndex),
+            Helpers.LayoutType.Grid => Helpers.Display.GetScreenSize(_experiment.Setup.ScreenIndex),
             _ => throw new NotImplementedException(),
         };
 

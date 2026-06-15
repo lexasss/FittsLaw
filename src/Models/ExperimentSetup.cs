@@ -90,7 +90,7 @@ internal partial class ExperimentSetup : ObservableObject
             IsDistinctErrorAudioFeedback = props.IsDistinctErrorAudioFeedback,
             IsContinueManually = props.IsContinueManually,
             InputType = props.InputType,
-            ScreenIndex = Math.Min(props.DisplayId, Helpers.Displays.Count - 1),
+            ScreenIndex = Math.Min(props.DisplayId, Helpers.Display.Count - 1),
         };
     }
 

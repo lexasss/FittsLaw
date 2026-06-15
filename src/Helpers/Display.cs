@@ -6,11 +6,11 @@ using System.Windows.Media;
 
 namespace FittsLaw.Helpers;
 
-internal static class Displays
+internal static class Display
 {
     public static int Count => Screen.AllScreens.Length;
 
-    public static Models.MonitorInfo[] Items => Screen.AllScreens
+    public static Models.MonitorInfo[] Monitors => Screen.AllScreens
         .Select(s => GetMonitorFromDeviceName(s.DeviceName))
         .OfType<Models.MonitorInfo>()
         .ToArray();
@@ -31,23 +31,15 @@ internal static class Displays
 
         var target = screens[screenIndex];
 
-        // Get DPI scaling for WPF → device pixel conversion
-        var source = PresentationSource.FromVisual(window);
-        double dpiX = 1.0, dpiY = 1.0;
-
-        if (source?.CompositionTarget != null)
-        {
-            dpiX = source.CompositionTarget.TransformFromDevice.M11;
-            dpiY = source.CompositionTarget.TransformFromDevice.M22;
-        }
-
         // Convert screen working area to WPF units
-        double x = target.WorkingArea.Left * dpiX;
-        double y = target.WorkingArea.Top * dpiY;
+        var dpi = VisualTreeHelper.GetDpi(window);
+
+        double x = target.WorkingArea.Left * dpi.DpiScaleX;
+        double y = target.WorkingArea.Top * dpi.DpiScaleX;
 
         // Optionally center the window on that screen
-        double centeredX = x + (target.WorkingArea.Width * dpiX - window.Width) / 2;
-        double centeredY = y + (target.WorkingArea.Height * dpiY - window.Height) / 2;
+        double centeredX = x + (target.WorkingArea.Width * dpi.DpiScaleX - window.Width) / 2;
+        double centeredY = y + (target.WorkingArea.Height * dpi.DpiScaleY - window.Height) / 2;
 
         window.Left = centeredX;
         window.Top = centeredY;
@@ -57,19 +49,11 @@ internal static class Displays
 
     public static int GetScreenIndex(Window window)
     {
-        // Get DPI transform (WPF → device pixels)
-        var source = PresentationSource.FromVisual(window);
-        double dpiX = 1.0, dpiY = 1.0;
-
-        if (source?.CompositionTarget != null)
-        {
-            dpiX = 1 / source.CompositionTarget.TransformToDevice.M11;
-            dpiY = 1 / source.CompositionTarget.TransformToDevice.M22;
-        }
-
         // Convert window center to device pixels
-        double centerX = (window.Left + window.Width / 2) * dpiX;
-        double centerY = (window.Top + window.Height / 2) * dpiY;
+        var dpi = VisualTreeHelper.GetDpi(window);
+
+        double centerX = (window.Left + window.Width / 2) / dpi.DpiScaleX;
+        double centerY = (window.Top + window.Height / 2) / dpi.DpiScaleY;
 
         var point = new System.Drawing.Point((int)centerX, (int)centerY);
 
@@ -94,7 +78,7 @@ internal static class Displays
 
     #region Internal
 
-    private static Models.MonitorInfo[] GetMonitorInfo()
+    private static Models.MonitorInfo[] GetMonitors()
     {
         static string? Decode(ushort[] chars)
         {
@@ -111,18 +95,15 @@ internal static class Displays
             "SELECT * FROM WmiMonitorID");
         foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
         {
-            string manufacturer = Decode((ushort[])obj["ManufacturerName"]) ?? "Unknown";
             string model = Decode((ushort[])obj["UserFriendlyName"]) ?? "Integrated Monitor";
-            string serial = Decode((ushort[])obj["SerialNumberID"]) ?? string.Empty;
-            string productCode = Decode((ushort[])obj["ProductCodeID"]) ?? string.Empty;
             string deviceId = (string)obj["InstanceName"] ?? string.Empty;
             monitors.Add(new Models.MonitorInfo
             {
-                SerialNumberID = serial,
+                SerialNumberID = Decode((ushort[])obj["SerialNumberID"]) ?? string.Empty,
                 Name = model,
-                Manufacturer = manufacturer,
+                Manufacturer = Decode((ushort[])obj["ManufacturerName"]) ?? "Unknown",
                 FrendlyName = model,
-                DeviceID = deviceId.Split('_')[0],
+                DeviceID = deviceId.Split('_')[0],  // removes weird _0 at the end
             });
         }
 
@@ -131,7 +112,7 @@ internal static class Displays
 
     private static Models.MonitorInfo? GetMonitorFromDeviceName(string screenDeviceName)
     {
-        var monitors = GetMonitorInfo();
+        var monitors = GetMonitors();
 
         int err = GetDisplayConfigBufferSizes(
             QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
