@@ -34,12 +34,12 @@ internal static class Display
         // Convert screen working area to WPF units
         var dpi = VisualTreeHelper.GetDpi(window);
 
-        double x = target.WorkingArea.Left * dpi.DpiScaleX;
-        double y = target.WorkingArea.Top * dpi.DpiScaleX;
+        double x = target.WorkingArea.Left / dpi.DpiScaleX;
+        double y = target.WorkingArea.Top / dpi.DpiScaleX;
 
         // Optionally center the window on that screen
-        double centeredX = x + (target.WorkingArea.Width * dpi.DpiScaleX - window.Width) / 2;
-        double centeredY = y + (target.WorkingArea.Height * dpi.DpiScaleY - window.Height) / 2;
+        double centeredX = x + (target.WorkingArea.Width / dpi.DpiScaleX - window.Width) / 2;
+        double centeredY = y + (target.WorkingArea.Height / dpi.DpiScaleY - window.Height) / 2;
 
         window.Left = centeredX;
         window.Top = centeredY;
@@ -52,8 +52,8 @@ internal static class Display
         // Convert window center to device pixels
         var dpi = VisualTreeHelper.GetDpi(window);
 
-        double centerX = (window.Left + window.Width / 2) / dpi.DpiScaleX;
-        double centerY = (window.Top + window.Height / 2) / dpi.DpiScaleY;
+        double centerX = (window.Left + window.Width / 2) * dpi.DpiScaleX;
+        double centerY = (window.Top + window.Height / 2) * dpi.DpiScaleY;
 
         var point = new System.Drawing.Point((int)centerX, (int)centerY);
 
