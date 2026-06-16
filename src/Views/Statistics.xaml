@@ -54,7 +54,6 @@
         </Style>
         <Style x:Key="copiedLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Content" Value="Copied"/>
             <Setter Property="Margin" Value="4"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -125,8 +124,31 @@
                                 </ToolTip>
                             </Button.ToolTip>
                         </Button>
+                        <Button Style="{StaticResource copy}"
+                                Content="💾"
+                                Margin="4,0,0,0"
+                                Padding="0"
+                                Command="{Binding SaveRawDataToFileCommand}">
+                            <Button.ContentTemplate>
+                                <DataTemplate>
+                                    <Label Content="💾"
+                                           FontSize="18"
+                                           Foreground="#444"
+                                           Padding="0"/>
+                                </DataTemplate>
+                            </Button.ContentTemplate>
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <StackPanel>
+                                        <TextBlock>Copies all numeric data to the clipboard.</TextBlock>
+                                        <TextBlock>Keep Control button to include headers.</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
                     </WrapPanel>
-                    <Label Style="{StaticResource copiedLabel}"/>
+                    <Label Style="{StaticResource copiedLabel}"
+                           Content="{Binding ActionName}"/>
                 </Grid>
             </Grid>
         </TabItem>

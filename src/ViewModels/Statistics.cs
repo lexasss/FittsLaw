@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FittsLaw.Models;
+using Microsoft.Extensions.DependencyInjection;
 using ScottPlot;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -14,6 +17,8 @@ internal partial class Statistics : ObservableObject
 {
     [ObservableProperty]
     public partial Visibility CopyToClipboardConfirmationVisibility { get; set; } = Visibility.Collapsed;
+    [ObservableProperty]
+    public partial string ActionName { get; set; } = ACTION_COPY;
 
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
@@ -103,6 +108,59 @@ internal partial class Statistics : ObservableObject
     #region Commands
 
     [RelayCommand]
+    private void SaveRawDataToFile()
+    {
+        var experiment = App.ServiceProvider.GetService<Services.Experiment>()
+            ?? throw new InvalidOperationException("Experiment service not available");
+        var setup = experiment.Setup
+            ?? throw new InvalidOperationException("Setup is undefined");
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"# {nameof(setup.InputType)}: {setup.InputType}");
+        sb.AppendLine($"# {nameof(setup.LayoutType)}: {setup.LayoutType}");
+        sb.AppendLine($"# {nameof(setup.GridSize)}: {setup.GridSize.Width} x {setup.GridSize.Height}");
+        sb.AppendLine($"# {nameof(setup.SessionCount)}: {setup.SessionCount}");
+        sb.AppendLine($"# {nameof(setup.TrialCount)}: {setup.LayoutType switch {
+            Helpers.LayoutType.Circular => setup.TrialCount,
+            Helpers.LayoutType.Grid => setup.GridSize.Width * setup.GridSize.Height,
+            _ => throw new NotImplementedException("Layout type is not supported")
+        }}");
+        sb.AppendLine($"# {nameof(setup.IsRandomized)}: {setup.IsRandomized}");
+        sb.AppendLine($"# {nameof(setup.HasAudioFeedback)}: {setup.HasAudioFeedback}");
+        sb.AppendLine($"# {nameof(setup.IsContinueManually)}: {setup.IsContinueManually}");
+        sb.AppendLine($"# {nameof(setup.IsDistinctErrorAudioFeedback)}: {setup.IsDistinctErrorAudioFeedback}");
+
+        sb.AppendLine(string.Join('\t', [
+            "Block" + nameof(Block.Index),
+            nameof(Block.Amplitude),
+            nameof(Block.Width),
+            ..Target.Fields
+        ]));
+
+        foreach (var block in experiment.Blocks)
+            foreach (var target in block.Targets)
+                sb.AppendLine(string.Join('\t', new object[] { 
+                    block.Index,
+                    block.Amplitude,
+                    block.Width,
+                    target
+                }));
+
+        var sfd = new System.Windows.Forms.SaveFileDialog()
+        {
+            Filter = "Text files (*.txt)|*.txt"
+        };
+
+        if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            using var stream = new StreamWriter(sfd.FileName);
+            stream.Write(sb.ToString());
+
+            ShowConfirmation(ACTION_SAVE);
+        }
+    }
+
+    [RelayCommand]
     private void CopyTableToClipboard()
     {
         List<string> lines = [];
@@ -120,9 +178,8 @@ internal partial class Statistics : ObservableObject
 
         Clipboard.SetText(string.Join('\n', lines));
 
-        ShowConfirmation();
+        ShowConfirmation(ACTION_COPY);
     }
-
 
     [RelayCommand]
     private void CopyPlotToClipboard(WpfPlot plot)
@@ -136,7 +193,7 @@ internal partial class Statistics : ObservableObject
             Clipboard.SetImage(ToBitmapSource(plot.Plot.GetBitmap()));
         }
 
-        ShowConfirmation();
+        ShowConfirmation(ACTION_COPY);
     }
 
     #endregion
@@ -144,6 +201,8 @@ internal partial class Statistics : ObservableObject
     #region Internal
 
     const int CONFIRMATION_VISIBILITY_DURATION = 2000;
+    const string ACTION_COPY = "Copied";
+    const string ACTION_SAVE = "Saved";
 
     static string IDField => Services.Statistics.Fields[5];
     static string IDEffField => Services.Statistics.Fields[8];
@@ -151,9 +210,11 @@ internal partial class Statistics : ObservableObject
     static string TPField => Services.Statistics.Fields[12];
     static string TPEffField => Services.Statistics.Fields[13];
 
-    private void ShowConfirmation()
+    private void ShowConfirmation(string actionName)
     {
+        ActionName = actionName;
         CopyToClipboardConfirmationVisibility = Visibility.Visible;
+
         Task.Run(async () =>
         {
             await Task.Delay(CONFIRMATION_VISIBILITY_DURATION);
