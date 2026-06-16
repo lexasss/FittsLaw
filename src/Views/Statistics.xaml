@@ -31,7 +31,7 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="copy" TargetType="Button">
+        <Style x:Key="copy" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="FontSize" Value="20"/>
@@ -52,7 +52,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="copiedLabel" TargetType="Label">
+        <Style x:Key="copiedLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Content" Value="Copied"/>
             <Setter Property="Margin" Value="4"/>

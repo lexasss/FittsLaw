@@ -23,38 +23,6 @@
     <Page.Resources>
         <conv:Inverse x:Key="inverse"/>
         <conv:BrushToColor x:Key="brush2color"/>
-
-        <Style x:Key="ToolbarIconButton" TargetType="Button">
-            <Setter Property="Height" Value="56"/>
-            <Setter Property="MinWidth" Value="42"/>
-            <Setter Property="Padding" Value="2"/>
-            <Setter Property="Margin" Value="2,0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#BBB"/>
-            <Style.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="5"/>
-                </Style>
-            </Style.Resources>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="#666"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="BorderBrush" Value="#20BBBBBB"/>
-                    <Setter Property="Background" Value="#60BBBBBB"/>
-                    <Setter Property="Foreground" Value="#80000000"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </Page.Resources>
 
     <Grid Background="{Binding Background}">
@@ -66,11 +34,16 @@
         <ToolBarTray Grid.Row="0">
             <ToolBar>
                 <Button Style="{StaticResource ToolbarIconButton}"
-                        Content="☰"
-                        FontSize="20"
                         ToolTip="Setup"
                         Command="{Binding SetupCommand}"
                         IsEnabled="{Binding IsExperimentRunning, Converter={StaticResource inverse}}">
+                    <StackPanel>
+                        <Label Content="☰"
+                               FontSize="22"
+                               Padding="0"
+                               HorizontalAlignment="Center"/>
+                        <TextBlock Padding="2,4">Setup</TextBlock>
+                    </StackPanel>
                 </Button>
             </ToolBar>
             <ToolBar>
@@ -91,9 +64,12 @@
                                       Click="Color_Click"/>
             </ToolBar>
             <ToolBar>
-                <StackPanel>
-                    <Label>Critical error rate</Label>
-                    <TextBox Width="40">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBox Width="26"
+                             Height="26"
+                             Margin="0,4,0,0"
+                             VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Center">
                         <TextBox.Text>
                             <Binding Path="CriticalErrorRate"
                                      UpdateSourceTrigger="PropertyChanged"
@@ -107,7 +83,7 @@
                             </Binding>
                         </TextBox.Text>
                         <TextBox.Style>
-                            <Style TargetType="TextBox">
+                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                 <Style.Triggers>
                                     <Trigger Property="Validation.HasError" Value="True">
                                         <Setter Property="BorderBrush" Value="Red" />
@@ -119,6 +95,7 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
+                    <Label>Critical error rate</Label>
                 </StackPanel>
             </ToolBar>
         </ToolBarTray>
@@ -136,7 +113,7 @@
                         <Setter Property="Margin" Value="8"/>
                         <Setter Property="Stroke" Value="{Binding BorderBrush, Mode=OneWay}"/>
                     </Style>
-                    <Style TargetType="Label">
+                    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                     </Style>
                 </UniformGrid.Resources>

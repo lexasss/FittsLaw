@@ -38,8 +38,8 @@
                                        Stroke="Gray"/>
 
                             <!-- Bottom text -->
-                            <TextBlock  x:Name="TextLabel"
-                                        Text="{Binding Text,
+                            <TextBlock x:Name="TextLabel"
+                                       Text="{Binding Text,
                                            RelativeSource={RelativeSource TemplatedParent}}"
                                        HorizontalAlignment="Center"
                                        Margin="0,6,0,0"/>
@@ -52,14 +52,14 @@
 
                         <!-- Hover -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#CFE6FD"/>
+                            <Setter TargetName="RootBorder" Property="Background" Value="#BEE6FD"/>
                             <Setter TargetName="RootBorder" Property="BorderBrush" Value="#666"/>
                             <Setter TargetName="ColorRect" Property="Opacity" Value="0.9"/>
                         </Trigger>
 
                         <!-- Pressed -->
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#B2D8FE"/>
+                            <Setter TargetName="RootBorder" Property="Background" Value="#ACD7F0"/>
                             <Setter TargetName="RootBorder" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
@@ -75,7 +75,7 @@
 
                         <!-- Keyboard focus -->
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="#68A8E9"/>
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="#ACD7F0"/>
                         </Trigger>
 
                     </ControlTemplate.Triggers>
@@ -84,4 +84,39 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ToolbarIconButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="MinWidth" Value="42"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="Margin" Value="2,0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#BBB"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Style.Resources>
+            <Style TargetType="Border">
+                <Setter Property="CornerRadius" Value="5"/>
+            </Style>
+        </Style.Resources>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="#666"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#ACD7F0"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="#20BBBBBB"/>
+                <Setter Property="Background" Value="#60BBBBBB"/>
+                <Setter Property="Foreground" Value="#80000000"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="#ACD7F0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
