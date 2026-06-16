@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ctrl="clr-namespace:FittsLaw.Controls"
       xmlns:vm="clr-namespace:FittsLaw.ViewModels"
       xmlns:conv="clr-namespace:FittsLaw.Converters"
       xmlns:valid="clr-namespace:FittsLaw.Validators"
@@ -20,58 +21,37 @@
     </Page.InputBindings>
 
     <Page.Resources>
-        <conv:ColorToBrush x:Key="color2brush"/>
         <conv:Inverse x:Key="inverse"/>
+        <conv:BrushToColor x:Key="brush2color"/>
 
         <Style x:Key="ToolbarIconButton" TargetType="Button">
-            <Setter Property="Height" Value="26"/>
-            <Setter Property="MinWidth" Value="32"/>
-            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="MinWidth" Value="42"/>
+            <Setter Property="Padding" Value="2"/>
             <Setter Property="Margin" Value="2,0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#FFBBBBBB"/>
+            <Setter Property="BorderBrush" Value="#BBB"/>
             <Style.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="5"/>
                 </Style>
             </Style.Resources>
             <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#666"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="BorderBrush" Value="#00BBBBBB"/>
+                    <Setter Property="BorderBrush" Value="#20BBBBBB"/>
                     <Setter Property="Background" Value="#60BBBBBB"/>
                     <Setter Property="Foreground" Value="#80000000"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ToolbarIconToggleButton" TargetType="ToggleButton">
-            <Setter Property="Height" Value="26"/>
-            <Setter Property="MinWidth" Value="32"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="2,0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#FFBBBBBB"/>
-            <Style.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="5"/>
-                </Style>
-            </Style.Resources>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="BorderBrush" Value="#00BBBBBB"/>
-                    <Setter Property="Background" Value="#60BBBBBB"/>
-                    <Setter Property="Foreground" Value="#80000000"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ButtonIcon" TargetType="Image">
-            <Setter Property="Opacity" Value="0.8"/>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.35"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -85,74 +65,61 @@
 
         <ToolBarTray Grid.Row="0">
             <ToolBar>
-                <ToolBar.Resources>
-                    <Style TargetType="Rectangle">
-                        <Setter Property="Width" Value="16"/>
-                        <Setter Property="Height" Value="16"/>
-                        <Setter Property="Stroke" Value="#FFBBBBBB"/>
-                        <Setter Property="StrokeThickness" Value="1"/>
-                    </Style>
-                </ToolBar.Resources>
-
                 <Button Style="{StaticResource ToolbarIconButton}"
                         Content="☰"
+                        FontSize="20"
                         ToolTip="Setup"
                         Command="{Binding SetupCommand}"
-                        IsEnabled="{Binding IsExperimentRunning, Converter={StaticResource inverse}}"/>
-                <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Background"
-                        Click="Color_Click">
-                    <Rectangle Fill="{Binding Background, Mode=TwoWay}"/>
-                </Button>
-                <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Target border"
-                        Click="Color_Click">
-                    <Rectangle Fill="{Binding BorderBrush, Mode=TwoWay}"/>
-                </Button>
-                <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Active target color"
-                        Click="Color_Click">
-                    <Rectangle Fill="{Binding ActiveTargetBrush, Mode=TwoWay}"/>
-                </Button>
-                <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Active target border color"
-                        Click="Color_Click">
-                    <Rectangle Fill="{Binding ActiveTargetBorderBrush, Mode=TwoWay}"/>
-                </Button>
-                <Button Style="{StaticResource ToolbarIconButton}" 
-                        ToolTip="Completed target border color"
-                        Click="Color_Click">
-                    <Rectangle Fill="{Binding CompletedTargetBorderBrush, Mode=TwoWay}"/>
+                        IsEnabled="{Binding IsExperimentRunning, Converter={StaticResource inverse}}">
                 </Button>
             </ToolBar>
             <ToolBar>
-                <Label>Critical error rate</Label>
-                <TextBox Width="40">
-                    <TextBox.Text>
-                        <Binding Path="CriticalErrorRate"
-                                 UpdateSourceTrigger="PropertyChanged"
-                                 ValidatesOnNotifyDataErrors="True"
-                                 NotifyOnValidationError="True">
-                            <Binding.ValidationRules>
-                                <valid:DoubleRangeValidationRule
-                                    Minimum="0.3"
-                                    Maximum="1.0" />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="True">
-                                    <Setter Property="BorderBrush" Value="Red" />
-                                    <Setter Property="ToolTip"
-                                    Value="{Binding RelativeSource={RelativeSource Self},
-                                            Path=(Validation.Errors)/ErrorContent}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                <ctrl:ColorTextButton Color="{Binding Background, Mode=TwoWay, Converter={StaticResource brush2color}}"
+                                      Text="Background"
+                                      Click="Color_Click"/>
+                <ctrl:ColorTextButton Color="{Binding BorderBrush, Mode=TwoWay, Converter={StaticResource brush2color}}"
+                                      Text="Target border"
+                                      Click="Color_Click"/>
+                <ctrl:ColorTextButton Color="{Binding ActiveTargetBrush, Mode=TwoWay, Converter={StaticResource brush2color}}"
+                                      Text="Active target"
+                                      Click="Color_Click"/>
+                <ctrl:ColorTextButton Color="{Binding ActiveTargetBorderBrush, Mode=TwoWay, Converter={StaticResource brush2color}}"
+                                      Text="Active border"
+                                      Click="Color_Click"/>
+                <ctrl:ColorTextButton Color="{Binding CompletedTargetBorderBrush, Mode=TwoWay, Converter={StaticResource brush2color}}"
+                                      Text="Completed border"
+                                      Click="Color_Click"/>
+            </ToolBar>
+            <ToolBar>
+                <StackPanel>
+                    <Label>Critical error rate</Label>
+                    <TextBox Width="40">
+                        <TextBox.Text>
+                            <Binding Path="CriticalErrorRate"
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnNotifyDataErrors="True"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <valid:DoubleRangeValidationRule
+                                        Minimum="0.3"
+                                        Maximum="1.0" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Triggers>
+                                    <Trigger Property="Validation.HasError" Value="True">
+                                        <Setter Property="BorderBrush" Value="Red" />
+                                        <Setter Property="ToolTip"
+                                        Value="{Binding RelativeSource={RelativeSource Self},
+                                                Path=(Validation.Errors)/ErrorContent}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
             </ToolBar>
         </ToolBarTray>
 
@@ -161,26 +128,32 @@
                    VerticalAlignment="Center">
             <Label Content="Target preview" 
                    HorizontalAlignment="Center"/>
-            <WrapPanel>
-                <WrapPanel.Resources>
+            <UniformGrid Columns="3" Rows="2">
+                <UniformGrid.Resources>
                     <Style TargetType="Ellipse">
                         <Setter Property="Width" Value="40"/>
                         <Setter Property="Height" Value="40"/>
                         <Setter Property="Margin" Value="8"/>
                         <Setter Property="Stroke" Value="{Binding BorderBrush, Mode=OneWay}"/>
                     </Style>
-                </WrapPanel.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                    </Style>
+                </UniformGrid.Resources>
 
                 <Ellipse Stroke="{Binding BorderBrush, Mode=OneWay}"
                          Fill="{Binding Background, Mode=OneWay}"
                          ToolTip="Initial"/>
                 <Ellipse Stroke="{Binding ActiveTargetBorderBrush, Mode=OneWay}"
-                         Fill="{Binding ActiveTargetBrush, Converter={StaticResource color2brush}, Mode=OneWay}"
+                         Fill="{Binding ActiveTargetBrush, Mode=OneWay}"
                          ToolTip="Active"/>
                 <Ellipse Stroke="{Binding CompletedTargetBorderBrush, Mode=OneWay}"
                          Fill="{Binding Background, Mode=OneWay}"
                          ToolTip="Completed"/>
-            </WrapPanel>
+                <Label>Initial</Label>
+                <Label>Active</Label>
+                <Label>Done</Label>
+            </UniformGrid>
         </StackPanel>
     </Grid>
 </Page>

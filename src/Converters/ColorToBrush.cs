@@ -4,12 +4,12 @@ using System.Windows.Media;
 
 namespace FittsLaw.Converters;
 
-[ValueConversion(typeof(SolidColorBrush), typeof(Brush))]
+[ValueConversion(typeof(Color), typeof(Brush))]
 internal class ColorToBrush : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => 
-        (Brush)value;
+        new SolidColorBrush((Color)value);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => 
-        (SolidColorBrush)value;
+        ((SolidColorBrush)value).Color;
 }
