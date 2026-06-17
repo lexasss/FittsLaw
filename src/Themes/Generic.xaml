@@ -4,11 +4,20 @@
     xmlns:controls="clr-namespace:FittsLaw.Controls"
     xmlns:conv="clr-namespace:FittsLaw.Converters">
 
+    <SolidColorBrush x:Key="BrushButtonFill" Color="#D9F1FF" />
+    <SolidColorBrush x:Key="BrushButtonFillHovered" Color="#BEE6FD" />
+    <SolidColorBrush x:Key="BrushButtonFillPressed" Color="#B2E2FE" />
+    <SolidColorBrush x:Key="BrushButtonFillDisabled" Color="#CCC" />
+    <SolidColorBrush x:Key="BrushButtonBorder" Color="#BBB" />
+    <SolidColorBrush x:Key="BrushButtonBorderHovered" Color="#89A" />
+    <SolidColorBrush x:Key="BrushButtonTextDisabled" Color="#AAA" />
+
     <conv:ColorToBrush x:Key="ColorToBrushConverter"/>
 
     <Style TargetType="{x:Type controls:ColorTextButton}">
         <Setter Property="MinWidth" Value="42"/>
-        <Setter Property="BorderBrush" Value="#BBBBBB"/>
+        <Setter Property="Background" Value="{StaticResource BrushButtonFill}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushButtonBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="4"/>
         <Setter Property="Margin" Value="1,0"/>
@@ -42,6 +51,7 @@
                                        Text="{Binding Text,
                                            RelativeSource={RelativeSource TemplatedParent}}"
                                        HorizontalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"
                                        Margin="0,6,0,0"/>
                         </StackPanel>
 
@@ -52,14 +62,14 @@
 
                         <!-- Hover -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#BEE6FD"/>
-                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="#666"/>
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource BrushButtonFillHovered}"/>
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{StaticResource BrushButtonBorderHovered}"/>
                             <Setter TargetName="ColorRect" Property="Opacity" Value="0.9"/>
                         </Trigger>
 
                         <!-- Pressed -->
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#ACD7F0"/>
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource BrushButtonFillPressed}"/>
                             <Setter TargetName="RootBorder" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
@@ -70,12 +80,13 @@
                         <!-- Disabled -->
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="RootBorder" Property="Opacity" Value="0.5"/>
-                            <Setter TargetName="TextLabel" Property="Foreground" Value="#AAAAAA"/>
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource BrushButtonFillDisabled}"/>
+                            <Setter TargetName="TextLabel" Property="Foreground" Value="{StaticResource BrushButtonTextDisabled}"/>
                         </Trigger>
 
                         <!-- Keyboard focus -->
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="#ACD7F0"/>
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{StaticResource BrushButtonFillHovered}"/>
                         </Trigger>
 
                     </ControlTemplate.Triggers>
@@ -89,8 +100,9 @@
         <Setter Property="Padding" Value="2"/>
         <Setter Property="Margin" Value="2,0"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="#BBB"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushButtonBorder}"/>
+        <Setter Property="Background" Value="{StaticResource BrushButtonFill}"/>
+
         <Style.Resources>
             <Style TargetType="Border">
                 <Setter Property="CornerRadius" Value="5"/>
@@ -110,12 +122,13 @@
                 </Setter>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="BorderBrush" Value="#20BBBBBB"/>
-                <Setter Property="Background" Value="#60BBBBBB"/>
-                <Setter Property="Foreground" Value="#80000000"/>
+                <Setter Property="Opacity" Value="0.5"/>
+                <Setter Property="Background" Value="{StaticResource BrushButtonFillDisabled}"/>
+                <Setter Property="Foreground" Value="{StaticResource BrushButtonTextDisabled}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter Property="BorderBrush" Value="#ACD7F0"/>
+                <Setter Property="Background" Value="{StaticResource BrushButtonFillHovered}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource BrushButtonBorderHovered}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
