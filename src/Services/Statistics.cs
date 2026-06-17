@@ -134,6 +134,7 @@ internal class Statistics
             }
         }
 
+        // Sort by Widths, then by Amplitudes
         blocks.Sort((a, b) => (a[3] != b[3] ? a[3] > b[3] : a[2] > b[2]) ? 1 : -1);
 
         // Finally, create statitics rows..
@@ -224,7 +225,7 @@ internal class Statistics
             statRows[Fields[2]][i] = block.Amplitude.ToString(Formats[2]);
             statRows[Fields[3]][i] = block.Width.ToString(Formats[3]);
 
-            if (validTrialCount == 0)
+            if (validTrialCount < 2)        // at least 2 trials must be valid
             {   // the computed values are set to 0 indicating the block is invalid for analysis
                 for (int j = FirstComputedFieldIndex; j < Fields.Length; j++)
                     statRows[Fields[j]][i] = ZERO;

@@ -34,11 +34,11 @@ internal partial class Target : ObservableObject
         Position.X,
         Position.Y,
         ActivationTimestamp,
-        ActivationOffset.X,
-        ActivationOffset.Y,
+        ActivationOffset.X.ToString("F0"),
+        ActivationOffset.Y.ToString("F0"),
     ];
 
-    public static string[] Fields => [
+    public static string[] LogFields => [
         "Target" + nameof(Id),
         nameof(Position) + "X",
         nameof(Position) + "Y",
@@ -53,7 +53,7 @@ internal partial class Target : ObservableObject
 
     static Target()
     {
-        if (new Target().LogValues.Length != Fields.Length)
+        if (new Target().LogValues.Length != LogFields.Length)
             throw new ApplicationException("Invalid log output");
     }
 

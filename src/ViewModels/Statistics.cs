@@ -229,7 +229,7 @@ internal partial class Statistics : ObservableObject
             "Block" + nameof(Models.Block.Id),
             nameof(Models.Block.Amplitude),
             nameof(Models.Block.Width),
-            ..Models.Target.Fields
+            ..Models.Target.LogFields
         ]));
 
         foreach (var block in experiment.Blocks)
