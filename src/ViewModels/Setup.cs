@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace FittsLaw.ViewModels;
 
@@ -27,7 +26,7 @@ internal partial class Setup : ObservableObject
                 typeof(Services.IInput).IsAssignableFrom(type) &&
                 !type.IsAbstract &&
                 type.IsClass)
-            .Select(type => _wordSeparationRegex
+            .Select(type => WordSeparationRegex()
                     .Replace(type.Name, " $1")      // this affects service provider functionality
                     .Split(' ',  StringSplitOptions.RemoveEmptyEntries)[0])
             .Order()
@@ -50,61 +49,61 @@ internal partial class Setup : ObservableObject
     [RelayCommand]
     private void Save()
     {
-        var ofd = new SaveFileDialog()
+        _setupFileStorage.Save(filename =>
         {
-            Filter = "Setup file (*.fls)|*.fls",
-            InitialDirectory = GetCacheFolder(),
-        };
-        if (ofd.ShowDialog() == DialogResult.OK)
-        {
-            if (!Model.SaveToFile(ofd.FileName))
+            if (!Model.SaveToFile(filename))
             {
-                MessageBox.Show("Failed to save the setup file", App.Current.MainWindow.Title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Helpers.Message.Error("Failed to save the setup file");
             }
-        }
+        });
     }
 
     [RelayCommand]
     private void Load()
     {
-        var ofd = new OpenFileDialog()
+        _setupFileStorage.Save(filename =>
         {
-            Filter = "Setup file (*.fls)|*.fls",
-            InitialDirectory = GetCacheFolder(),
-        };
-        if (ofd.ShowDialog() == DialogResult.OK)
-        {
-            var newModel = Models.ExperimentSetup.LoadFromFile(ofd.FileName);
+            var newModel = Models.ExperimentSetup.LoadFromFile(filename);
             if (newModel != null)
             {
                 ValidateModelValues(newModel);
                 UpdateModelDependentProperties(newModel);
 
                 Model = newModel;
-                OnPropertyChanged("");
+                OnPropertyChanged(""); // updates all fields
             }
             else
             {
-                MessageBox.Show("Failed to load the setup file", App.Current.MainWindow.Title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Helpers.Message.Error("Failed to load the setup file");
             }
-        }
+        });
+    }
+
+    #endregion
+
+    #region Property setters
+
+    partial void OnAmplitudesChanged(string value)
+    {
+        Model.Amplitudes = Models.ExperimentSetup.ToNumbers<double>(value);
+    }
+
+    partial void OnWidthsChanged(string value)
+    {
+        Model.Widths = Models.ExperimentSetup.ToNumbers<double>(value);
     }
 
     #endregion
 
     #region Internals
 
-    static Regex _wordSeparationRegex = new(@"([A-Z])", RegexOptions.Compiled);
+    const string STORAGE_FILTER = "Setup files (*.fls)|*.fls";
+    static readonly string STORAGE_FOLDER = Helpers.Storage.GetFolder("Setups");
 
-    private string GetCacheFolder()
-    {
-        var result = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FittsLaw");
-        if (!System.IO.Directory.Exists(result))
-        {
-            System.IO.Directory.CreateDirectory(result);
-        }
-        return result;
-    }
+    readonly Helpers.Storage _setupFileStorage = Helpers.Storage.For(STORAGE_FILTER, STORAGE_FOLDER);
+
+    [GeneratedRegex(@"([A-Z])", RegexOptions.Compiled)]
+    private static partial Regex WordSeparationRegex();
 
     private void ValidateModelValues(Models.ExperimentSetup model)
     {
@@ -118,16 +117,6 @@ internal partial class Setup : ObservableObject
     {
         Amplitudes = Models.ExperimentSetup.ToString(model.Amplitudes);
         Widths = Models.ExperimentSetup.ToString(model.Widths);
-    }
-
-    partial void OnAmplitudesChanged(string value)
-    {
-        Model.Amplitudes = Models.ExperimentSetup.ToNumbers<double>(value);
-    }
-
-    partial void OnWidthsChanged(string value)
-    {
-        Model.Widths = Models.ExperimentSetup.ToNumbers<double>(value);
     }
 
     #endregion

@@ -1,4 +1,7 @@
-﻿namespace FittsLaw.Services;
+﻿using System.Windows;
+using FittsLaw.Extensions;
+
+namespace FittsLaw.Services;
 
 internal class Statistics
 {
@@ -65,10 +68,7 @@ internal class Statistics
             {
                 if (prevTarget != null)
                 {
-                    var dx = target.Position.X - prevTarget.Position.X;
-                    var dy = target.Position.Y - prevTarget.Position.Y;
-                    var amplitude = Math.Sqrt(dx * dx + dy * dy);
-
+                    var amplitude = Distance(target.Position, prevTarget.Position);
                     newBlocks.Add(new Models.Block(0, amplitude, block.Width)
                     {
                         Targets = [prevTarget, target]
@@ -174,7 +174,7 @@ internal class Statistics
         foreach (var field in Fields)
             statRows.Add(field, new string[blockCount]);
 
-        experimentBlocks.Sort((b1, b2) => b1.Index.CompareTo(b2.Index));
+        experimentBlocks.Sort((b1, b2) => b1.Id.CompareTo(b2.Id));
 
         for (int i = 0; i < experimentBlocks.Length; i++)
         {
@@ -187,31 +187,27 @@ internal class Statistics
             int errorCount = 0;
 
             long startTimestamp = 0;
-            double prevActivationX = 0,
-                   prevActivationY = 0;
-            double prevTargetX = 0,
-                   prevTargetY = 0;
+            Point prevActivation = new(0, 0);
+            Point prevTarget = new(0, 0);
 
             int validTrialCount = 0;
             foreach (var target in block.Targets)
             {
-                double activationX = target.Position.X + target.ActivationOffset.X;
-                double activationY = target.Position.Y + target.ActivationOffset.Y;
+                Point activation = target.Position.Add(target.ActivationOffset);
 
                 if (startTimestamp > 0)
                 {
-                    double dx = target.ActivationOffset.X;
-                    double dy = target.ActivationOffset.Y;
-                    double offset = Math.Sqrt(dx * dx + dy * dy);
+                    double offset = target.ActivationOffset.Amplitude();
                     bool isError = offset > block.Width / 2;
                     errorCount += isError ? 1 : 0;
 
                     meanOffset += offset;
-
                     sd += offset * offset;
-                    dx = activationX - prevActivationX;
-                    dy = activationY - prevActivationY;
-                    effectiveAmplitude += Math.Sqrt(dx * dx + dy * dy);
+
+                    effectiveAmplitude += GetEffectiveAmplitude(
+                        in prevTarget,
+                        target.Position,
+                        in activation);
 
                     meanDuration += target.ActivationTimestamp - startTimestamp;
 
@@ -219,10 +215,8 @@ internal class Statistics
                 }
 
                 startTimestamp = target.ActivationTimestamp;
-                prevActivationX = activationX;
-                prevActivationY = activationY;
-                prevTargetX = target.Position.X;
-                prevTargetY = target.Position.Y;
+                prevActivation = activation;
+                prevTarget = target.Position;
             }
 
             statRows[Fields[0]][i] = (i + 1).ToString(Formats[0]);
@@ -240,7 +234,7 @@ internal class Statistics
             meanDuration /= validTrialCount;
             effectiveAmplitude /= validTrialCount;
             meanOffset /= validTrialCount;
-            sd = Math.Sqrt(sd / validTrialCount);
+            sd = Math.Sqrt(sd / (validTrialCount - 1)); // -1, as this is a SAMPLE, not POPULATION
 
             double id = Math.Log2(block.Amplitude / block.Width + 1);
             double errors = (double)errorCount / validTrialCount;
@@ -274,6 +268,32 @@ internal class Statistics
         }
 
         return result;
+    }
+
+    #endregion
+
+    #region Internal
+
+    private static double GetEffectiveAmplitude(
+        in Point from,
+        in Point to,
+        in Point activation)
+    {
+        double a = Distance(from, to);
+        double b = Distance(to, activation);
+        double c = Distance(from, activation);
+
+        double dx = (c * c - b * b - a * a) / (2.0 * a);
+        return a + dx;
+    }
+
+    private static double Distance(
+        in Point p1,
+        in Point p2)
+    {
+        double dx = p1.X - p2.X;
+        double dy = p1.Y - p2.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 
     #endregion

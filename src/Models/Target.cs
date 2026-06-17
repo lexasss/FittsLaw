@@ -29,22 +29,33 @@ internal partial class Target : ObservableObject
                 ? _settings.BorderBrush
                 : _settings.CompletedTargetBorderBrush;
 
-    public override string ToString()
-    {
-        return string.Join('\t', new object[] {
-            Id,
-            ActivationTimestamp,
-            ActivationOffset.X,
-            ActivationOffset.Y,
-        });
-    }
+    public object[] LogValues => [
+        Id,
+        Position.X,
+        Position.Y,
+        ActivationTimestamp,
+        ActivationOffset.X,
+        ActivationOffset.Y,
+    ];
 
     public static string[] Fields => [
-            "Target" + nameof(Id),
-            nameof(ActivationTimestamp),
-            nameof(ActivationOffset) + "X",
-            nameof(ActivationOffset) + "Y",
-        ];
+        "Target" + nameof(Id),
+        nameof(Position) + "X",
+        nameof(Position) + "Y",
+        nameof(ActivationTimestamp),
+        nameof(ActivationOffset) + "X",
+        nameof(ActivationOffset) + "Y",
+    ];
+
+    #region Internal
 
     private readonly UiSettings _settings = UiSettings.From(Properties.Settings.Default);
+
+    static Target()
+    {
+        if (new Target().LogValues.Length != Fields.Length)
+            throw new ApplicationException("Invalid log output");
+    }
+
+    #endregion
 }

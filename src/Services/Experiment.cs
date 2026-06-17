@@ -1,4 +1,5 @@
-﻿using FittsLaw.Helpers;
+﻿using FittsLaw.Extensions;
+using FittsLaw.Helpers;
 using System.Windows;
 
 namespace FittsLaw.Services;

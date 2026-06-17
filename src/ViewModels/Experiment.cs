@@ -136,7 +136,7 @@ internal partial class Experiment : ObservableObject, IDisposable
             var statisticsData = Services.Statistics.Compute(_experiment.Blocks);
             if (statisticsData.First().Value.Length == 0)
             {
-                MessageBox.Show("No valid blocks.", App.Current.MainWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                Helpers.Message.Error("No valid blocks.");
             }
             else
             {

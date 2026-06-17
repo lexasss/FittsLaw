@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FittsLaw.Models;
+using FittsLaw.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using ScottPlot;
 using System.Drawing;
@@ -30,6 +30,8 @@ internal partial class Statistics : ObservableObject
 
     public Statistics()
     {
+        // Configure plots
+
         TpAndMt.Plot.Legend(location: Alignment.UpperLeft);
         TpAndMt.Plot.BottomAxis.Label(IDField);
         TpAndMt.Plot.LeftAxis.Label(TPField);
@@ -41,9 +43,20 @@ internal partial class Statistics : ObservableObject
         EffTpAndMt.Plot.LeftAxis.Label(TPEffField);
         EffTpAndMt.Plot.RightAxis.Label(MTField);
         EffTpAndMt.Plot.RightAxis.Ticks(true);
+
+        // Write log file
+        try
+        {
+            string text = CreateRawStatisticsText();
+
+            var filename = Path.Combine(LogFolder, $"fitts-{DateTime.Now:u}.txt".ToPath());
+            using var stream = new StreamWriter(filename);
+            stream.Write(text);
+        }
+        catch { }
     }
 
-    #region Property Setters
+    #region Property setters
 
     partial void OnItemsChanged(IReadOnlyDictionary<string, string[]> value)
     {
@@ -60,6 +73,7 @@ internal partial class Statistics : ObservableObject
             !value.ContainsKey(IDEffField))
             return;
 
+        // Update graphs
         var dataX = value.FirstOrDefault(kv => kv.Key == IDField)
             .Value
             .Select(double.Parse)
@@ -110,54 +124,15 @@ internal partial class Statistics : ObservableObject
     [RelayCommand]
     private void SaveRawDataToFile()
     {
-        var experiment = App.ServiceProvider.GetService<Services.Experiment>()
-            ?? throw new InvalidOperationException("Experiment service not available");
-        var setup = experiment.Setup
-            ?? throw new InvalidOperationException("Setup is undefined");
-
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"# {nameof(setup.InputType)}: {setup.InputType}");
-        sb.AppendLine($"# {nameof(setup.LayoutType)}: {setup.LayoutType}");
-        sb.AppendLine($"# {nameof(setup.GridSize)}: {setup.GridSize.Width} x {setup.GridSize.Height}");
-        sb.AppendLine($"# {nameof(setup.SessionCount)}: {setup.SessionCount}");
-        sb.AppendLine($"# {nameof(setup.TrialCount)}: {setup.LayoutType switch {
-            Helpers.LayoutType.Circular => setup.TrialCount,
-            Helpers.LayoutType.Grid => setup.GridSize.Width * setup.GridSize.Height,
-            _ => throw new NotImplementedException("Layout type is not supported")
-        }}");
-        sb.AppendLine($"# {nameof(setup.IsRandomized)}: {setup.IsRandomized}");
-        sb.AppendLine($"# {nameof(setup.HasAudioFeedback)}: {setup.HasAudioFeedback}");
-        sb.AppendLine($"# {nameof(setup.IsContinueManually)}: {setup.IsContinueManually}");
-        sb.AppendLine($"# {nameof(setup.IsDistinctErrorAudioFeedback)}: {setup.IsDistinctErrorAudioFeedback}");
-
-        sb.AppendLine(string.Join('\t', [
-            "Block" + nameof(Block.Index),
-            nameof(Block.Amplitude),
-            nameof(Block.Width),
-            ..Target.Fields
-        ]));
-
-        foreach (var block in experiment.Blocks)
-            foreach (var target in block.Targets)
-                sb.AppendLine(string.Join('\t', new object[] { 
-                    block.Index,
-                    block.Amplitude,
-                    block.Width,
-                    target
-                }));
-
-        var sfd = new System.Windows.Forms.SaveFileDialog()
+        _logFileStorage.Save(filename =>
         {
-            Filter = "Text files (*.txt)|*.txt"
-        };
+            string text = CreateRawStatisticsText();
 
-        if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        {
-            using var stream = new StreamWriter(sfd.FileName);
-            stream.Write(sb.ToString());
+            using var stream = new StreamWriter(filename);
+            stream.Write(text);
 
             ShowConfirmation(ACTION_SAVE);
-        }
+        });
     }
 
     [RelayCommand]
@@ -203,12 +178,17 @@ internal partial class Statistics : ObservableObject
     const int CONFIRMATION_VISIBILITY_DURATION = 2000;
     const string ACTION_COPY = "Copied";
     const string ACTION_SAVE = "Saved";
+    const string STORAGE_FILTER = "Text files (*.txt)|*.txt";
 
     static string IDField => Services.Statistics.Fields[5];
     static string IDEffField => Services.Statistics.Fields[8];
     static string MTField => Services.Statistics.Fields[9];
     static string TPField => Services.Statistics.Fields[12];
     static string TPEffField => Services.Statistics.Fields[13];
+
+    static readonly string LogFolder = Helpers.Storage.GetFolder("Logs");
+
+    readonly Helpers.Storage _logFileStorage = Helpers.Storage.For(STORAGE_FILTER);
 
     private void ShowConfirmation(string actionName)
     {
@@ -220,6 +200,48 @@ internal partial class Statistics : ObservableObject
             await Task.Delay(CONFIRMATION_VISIBILITY_DURATION);
             HideCopyToClipboardConfirmation?.Invoke(this, EventArgs.Empty);
         });
+    }
+
+    private string CreateRawStatisticsText()
+    {
+        var experiment = App.ServiceProvider.GetService<Services.Experiment>()
+            ?? throw new InvalidOperationException("Experiment service not available");
+        var setup = experiment.Setup
+            ?? throw new InvalidOperationException("Setup is undefined");
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"# {nameof(setup.InputType)}: {setup.InputType}");
+        sb.AppendLine($"# {nameof(setup.LayoutType)}: {setup.LayoutType}");
+        sb.AppendLine($"# {nameof(setup.GridSize)}: {setup.GridSize.Width} x {setup.GridSize.Height}");
+        sb.AppendLine($"# {nameof(setup.SessionCount)}: {setup.SessionCount}");
+        sb.AppendLine($"# {nameof(setup.TrialCount)}: {setup.LayoutType switch
+        {
+            Helpers.LayoutType.Circular => setup.TrialCount,
+            Helpers.LayoutType.Grid => setup.GridSize.Width * setup.GridSize.Height,
+            _ => throw new NotImplementedException("Layout type is not supported")
+        }}");
+        sb.AppendLine($"# {nameof(setup.IsRandomized)}: {setup.IsRandomized}");
+        sb.AppendLine($"# {nameof(setup.HasAudioFeedback)}: {setup.HasAudioFeedback}");
+        sb.AppendLine($"# {nameof(setup.IsContinueManually)}: {setup.IsContinueManually}");
+        sb.AppendLine($"# {nameof(setup.IsDistinctErrorAudioFeedback)}: {setup.IsDistinctErrorAudioFeedback}");
+
+        sb.AppendLine("# " + string.Join('\t', [
+            "Block" + nameof(Models.Block.Id),
+            nameof(Models.Block.Amplitude),
+            nameof(Models.Block.Width),
+            ..Models.Target.Fields
+        ]));
+
+        foreach (var block in experiment.Blocks)
+            foreach (var target in block.Targets)
+                sb.AppendLine(string.Join('\t', [
+                    block.Id,
+                    block.Amplitude.ToString("F0"),
+                    block.Width,
+                    ..target.LogValues
+                ]));
+
+        return sb.ToString();
     }
 
     private static BitmapSource ToBitmapSource(Bitmap bitmap)

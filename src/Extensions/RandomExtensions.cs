@@ -1,4 +1,4 @@
-﻿namespace FittsLaw.Helpers;
+﻿namespace FittsLaw.Extensions;
 
 internal static class RandomExtensions
 {
