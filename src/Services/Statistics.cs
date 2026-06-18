@@ -206,9 +206,10 @@ internal class Statistics
                     sd += offset * offset;
 
                     effectiveAmplitude += GetEffectiveAmplitude(
-                        in prevTarget,
-                        target.Position,
-                        in activation);
+                        //in prevTarget,
+                        //target.Position,
+                        prevActivation,
+                        activation);
 
                     meanDuration += target.ActivationTimestamp - startTimestamp;
 
@@ -275,6 +276,7 @@ internal class Statistics
 
     #region Internal
 
+    // based on https://www.yorku.ca/mack/FittsLawSoftware/doc/Throughput.html
     private static double GetEffectiveAmplitude(
         in Point from,
         in Point to,
@@ -287,6 +289,12 @@ internal class Statistics
         double dx = (c * c - b * b - a * a) / (2.0 * a);
         return a + dx;
     }
+
+    // based on https://www.yorku.ca/mack/ijhcs2004.pdf
+    private static double GetEffectiveAmplitude(
+        in Point previousActivation,
+        in Point activation) =>
+        Distance(previousActivation, activation);
 
     private static double Distance(
         in Point p1,
