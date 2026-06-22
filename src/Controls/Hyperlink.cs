@@ -7,17 +7,17 @@ namespace FittsLaw.Controls;
 [TemplatePart(Name = "PART_TextBlock", Type = typeof(TextBlock))]
 public partial class Hyperlink : Control
 {
-    public static readonly DependencyProperty UriProperty =
-        DependencyProperty.Register("Uri",
-            typeof(string),
-            typeof(Hyperlink),
-            new PropertyMetadata(null));
+    public static readonly DependencyProperty UriProperty = DependencyProperty.Register(
+        nameof(Uri),
+        typeof(string),
+        typeof(Hyperlink),
+        new PropertyMetadata(null));
 
-    public static readonly DependencyProperty TextProperty =
-        DependencyProperty.Register("Text",
-            typeof(string),
-            typeof(Hyperlink),
-            new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+        nameof(Text),
+        typeof(string),
+        typeof(Hyperlink),
+        new PropertyMetadata(string.Empty));
 
     public string Uri
     {
