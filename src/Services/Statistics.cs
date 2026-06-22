@@ -68,7 +68,7 @@ internal class Statistics
             {
                 if (prevTarget != null)
                 {
-                    var amplitude = Distance(target.Position, prevTarget.Position);
+                    var amplitude = target.Position.DistanceTo(prevTarget.Position);
                     newBlocks.Add(new Models.Block(0, amplitude, block.Width)
                     {
                         Targets = [prevTarget, target]
@@ -282,9 +282,9 @@ internal class Statistics
         in Point to,
         in Point activation)
     {
-        double a = Distance(from, to);
-        double b = Distance(to, activation);
-        double c = Distance(from, activation);
+        double a = from.DistanceTo(to);
+        double b = to.DistanceTo(activation);
+        double c = from.DistanceTo(activation);
 
         double dx = (c * c - b * b - a * a) / (2.0 * a);
         return a + dx;
@@ -294,16 +294,7 @@ internal class Statistics
     private static double GetEffectiveAmplitude(
         in Point previousActivation,
         in Point activation) =>
-        Distance(previousActivation, activation);
-
-    private static double Distance(
-        in Point p1,
-        in Point p2)
-    {
-        double dx = p1.X - p2.X;
-        double dy = p1.Y - p2.Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
+        activation.DistanceTo(previousActivation);
 
     #endregion
 }
