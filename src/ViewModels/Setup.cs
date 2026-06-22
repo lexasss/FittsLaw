@@ -98,7 +98,7 @@ internal partial class Setup : ObservableObject
     #region Internals
 
     const string STORAGE_FILTER = "Setup files (*.fls)|*.fls";
-    static readonly string STORAGE_FOLDER = Helpers.Storage.GetFolder("Setups");
+    static readonly string STORAGE_FOLDER = Helpers.Storage.GetFolder(Helpers.Storage.Folders.Setups);
 
     readonly Helpers.Storage _setupFileStorage = Helpers.Storage.For(STORAGE_FILTER, STORAGE_FOLDER);
 

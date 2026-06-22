@@ -4,11 +4,18 @@ namespace FittsLaw.Helpers;
 
 internal class Storage
 {
-    public static string GetFolder(string? internalFolder = null)
+    public enum Folders
     {
+        Setups,
+        Logs
+    }
+
+    public static string GetFolder(Folders? internalFolderId = null)
+    {
+        string internalFolder = internalFolderId?.ToString() ?? string.Empty;
         var result = System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "FittsLaw", internalFolder ?? string.Empty);
+            "FittsLaw", internalFolder);
         if (!System.IO.Directory.Exists(result))
         {
             System.IO.Directory.CreateDirectory(result);

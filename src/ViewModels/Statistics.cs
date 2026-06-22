@@ -23,6 +23,8 @@ internal partial class Statistics : ObservableObject
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
 
+    public string LogFolder { get; } = Helpers.Storage.GetFolder(Helpers.Storage.Folders.Logs);
+
     public WpfPlot TpAndMt { get; } = new WpfPlot();
     public WpfPlot EffTpAndMt { get; } = new WpfPlot();
 
@@ -185,8 +187,6 @@ internal partial class Statistics : ObservableObject
     static string MTField => Services.Statistics.Fields[9];
     static string TPField => Services.Statistics.Fields[12];
     static string TPEffField => Services.Statistics.Fields[13];
-
-    static readonly string LogFolder = Helpers.Storage.GetFolder("Logs");
 
     readonly Helpers.Storage _logFileStorage = Helpers.Storage.For(STORAGE_FILTER);
 

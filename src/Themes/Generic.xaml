@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:FittsLaw.Controls"
+    xmlns:ctrl="clr-namespace:FittsLaw.Controls"
     xmlns:conv="clr-namespace:FittsLaw.Converters">
 
     <SolidColorBrush x:Key="BrushButtonFill" Color="#D9F1FF" />
@@ -14,7 +14,21 @@
 
     <conv:ColorToBrush x:Key="ColorToBrushConverter"/>
 
-    <Style TargetType="{x:Type controls:ColorTextButton}">
+    <Style TargetType="{x:Type ctrl:Hyperlink}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrl:Hyperlink}">
+                    <TextBlock x:Name="PART_TextBlock">
+                        <Hyperlink Name="PART_Link">
+                            <TextBlock Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ctrl:ColorTextButton}">
         <Setter Property="MinWidth" Value="42"/>
         <Setter Property="Background" Value="{StaticResource BrushButtonFill}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BrushButtonBorder}"/>
@@ -24,7 +38,7 @@
 
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:ColorTextButton}">
+                <ControlTemplate TargetType="{x:Type ctrl:ColorTextButton}">
                     <Border x:Name="RootBorder"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
