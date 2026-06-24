@@ -16,8 +16,6 @@
 
   <ItemGroup>
     <None Remove="Assets\Images\icon.png" />
-    <None Remove="Assets\Sounds\activation.mp3" />
-    <None Remove="Assets\Sounds\error.wav" />
   </ItemGroup>
 
   <ItemGroup>
