@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
-namespace FittsLaw.Helpers;
+namespace FittsLaw.Services;
 
 internal static class Display
 {
@@ -71,7 +71,7 @@ internal static class Display
 
     public static Size GetScreenSize(int screenIndex)
     {
-        var dpi = VisualTreeHelper.GetDpi(App.Current.MainWindow);
+        var dpi = VisualTreeHelper.GetDpi(System.Windows.Application.Current.MainWindow);
         var rect = Screen.AllScreens[screenIndex].Bounds;
         return new Size(rect.Width / dpi.DpiScaleX, rect.Height / dpi.DpiScaleY);
     }
@@ -131,7 +131,7 @@ internal static class Display
             paths,
             ref modeCount,
             modes,
-            IntPtr.Zero);
+            nint.Zero);
 
         if (err != ERROR_SUCCESS)
             throw new InvalidOperationException($"QueryDisplayConfig failed: {err}");
@@ -204,7 +204,7 @@ internal static class Display
         [Out] DISPLAYCONFIG_PATH_INFO[] pathArray,
         ref uint numModeInfoArrayElements,
         [Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray,
-        IntPtr currentTopologyId);
+        nint currentTopologyId);
 
     [DllImport("user32.dll")]
     private static extern int DisplayConfigGetDeviceInfo(

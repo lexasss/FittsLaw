@@ -1,4 +1,4 @@
-﻿namespace FittsLaw.Helpers;
+﻿namespace FittsLaw.Services;
 
 internal enum LayoutType
 {

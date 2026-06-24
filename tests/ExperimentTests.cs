@@ -1,4 +1,3 @@
-using FittsLaw.Helpers;
 using FittsLaw.Models;
 using FittsLaw.Services;
 using System.Windows;

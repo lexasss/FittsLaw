@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FittsLaw.Services;
 using System.IO;
 using System.Numerics;
 using System.Text.Json;
@@ -12,7 +13,7 @@ internal partial class ExperimentSetup : ObservableObject
     [ObservableProperty]
     public partial int TrialCount { get; set; }
     [ObservableProperty]
-    public partial Helpers.LayoutType LayoutType { get; set; }
+    public partial LayoutType LayoutType { get; set; }
     public double[] Amplitudes { get; set; } = [];
     public double[] Widths { get; set; } = [];
     public Size GridSize { get; set; } = Size.Default;
@@ -81,7 +82,7 @@ internal partial class ExperimentSetup : ObservableObject
         {
             SessionCount = props.SessionCount,
             TrialCount = props.TrialCount,
-            LayoutType = (Helpers.LayoutType)props.LayoutType,
+            LayoutType = (LayoutType)props.LayoutType,
             Amplitudes = ToNumbers<double>(props.Amplitudes),
             Widths = ToNumbers<double>(props.Widths),
             GridSize = new Size { Width = gridSize[0], Height = gridSize[1] },
@@ -90,7 +91,7 @@ internal partial class ExperimentSetup : ObservableObject
             IsDistinctErrorAudioFeedback = props.IsDistinctErrorAudioFeedback,
             IsContinueManually = props.IsContinueManually,
             InputType = props.InputType,
-            ScreenIndex = Math.Min(props.DisplayId, Helpers.Display.Count - 1),
+            ScreenIndex = Math.Min(props.DisplayId, Display.Count - 1),
         };
     }
 

@@ -1,5 +1,5 @@
-using FittsLaw.Helpers;
 using FittsLaw.Models;
+using FittsLaw.Services;
 
 namespace FittsLaw.Tests;
 

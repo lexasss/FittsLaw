@@ -30,8 +30,8 @@ internal partial class Experiment : ObservableObject, IDisposable
         InstructionVisibility = _experiment.Setup?.IsContinueManually == true ? Visibility.Visible : Visibility.Collapsed;
         ParentSize = _experiment.Setup!.LayoutType switch
         {
-            Helpers.LayoutType.Circular => _experiment.GetCircularSize(),
-            Helpers.LayoutType.Grid => Helpers.Display.GetScreenSize(_experiment.Setup.ScreenIndex),
+            Services.LayoutType.Circular => _experiment.GetCircularSize(),
+            Services.LayoutType.Grid => Services.Display.GetScreenSize(_experiment.Setup.ScreenIndex),
             _ => throw new NotImplementedException(),
         };
 
@@ -70,8 +70,6 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     readonly Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>() 
         ?? throw new InvalidOperationException("Experiment service not available");
-    readonly Services.Statistics _statistics = App.ServiceProvider.GetService<Services.Statistics>() 
-        ?? throw new InvalidOperationException("Statistics service not available");
 
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
@@ -80,11 +78,11 @@ internal partial class Experiment : ObservableObject, IDisposable
         var setup = _experiment.Setup!;
         var targets = setup.LayoutType switch
         {
-            Helpers.LayoutType.Circular => Helpers.LayoutCreator.CreateCircular(
+            Services.LayoutType.Circular => Services.LayoutCreator.CreateCircular(
                 block,
                 setup.TrialCount,
                 ParentSize.Width),
-            Helpers.LayoutType.Grid => Helpers.LayoutCreator.CreateGrid(
+            Services.LayoutType.Grid => Services.LayoutCreator.CreateGrid(
                 block,
                 setup.GridSize,
                 ParentSize),
@@ -136,7 +134,7 @@ internal partial class Experiment : ObservableObject, IDisposable
             var statisticsData = Services.Statistics.Compute(_experiment.Blocks);
             if (statisticsData.First().Value.Length == 0)
             {
-                Helpers.Message.Error("No valid blocks.");
+                Services.Message.Error("No valid blocks.");
             }
             else
             {

@@ -23,7 +23,7 @@ internal partial class Statistics : ObservableObject
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string[]> Items { get; set; } = new Dictionary<string, string[]>();
 
-    public string LogFolder { get; } = Helpers.Storage.GetFolder(Helpers.Storage.Folders.Logs);
+    public string LogFolder { get; } = Services.Storage.GetFolder(Services.Storage.Folders.Logs);
 
     public WpfPlot TpAndMt { get; } = new WpfPlot();
     public WpfPlot EffTpAndMt { get; } = new WpfPlot();
@@ -188,7 +188,7 @@ internal partial class Statistics : ObservableObject
     static string TPField => Services.Statistics.Fields[12];
     static string TPEffField => Services.Statistics.Fields[13];
 
-    readonly Helpers.Storage _logFileStorage = Helpers.Storage.For(STORAGE_FILTER);
+    readonly Services.Storage _logFileStorage = Services.Storage.For(STORAGE_FILTER);
 
     private void ShowConfirmation(string actionName)
     {
@@ -216,8 +216,8 @@ internal partial class Statistics : ObservableObject
         sb.AppendLine($"# {nameof(setup.SessionCount)}: {setup.SessionCount}");
         sb.AppendLine($"# {nameof(setup.TrialCount)}: {setup.LayoutType switch
         {
-            Helpers.LayoutType.Circular => setup.TrialCount,
-            Helpers.LayoutType.Grid => setup.GridSize.Width * setup.GridSize.Height,
+            Services.LayoutType.Circular => setup.TrialCount,
+            Services.LayoutType.Grid => setup.GridSize.Width * setup.GridSize.Height,
             _ => throw new NotImplementedException("Layout type is not supported")
         }}");
         sb.AppendLine($"# {nameof(setup.IsRandomized)}: {setup.IsRandomized}");

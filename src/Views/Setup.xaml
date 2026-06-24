@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:FittsLaw.ViewModels"
-        xmlns:helpers="clr-namespace:FittsLaw.Helpers"
+        xmlns:srv="clr-namespace:FittsLaw.Services"
         xmlns:conv="clr-namespace:FittsLaw.Converters"
         xmlns:valid="clr-namespace:FittsLaw.Validators"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -27,7 +27,7 @@
                             ObjectType="{x:Type sys:Enum}"
                             MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="helpers:LayoutType" />
+                <x:Type TypeName="srv:LayoutType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
@@ -95,7 +95,7 @@
 
             <WrapPanel Visibility="{Binding Model.LayoutType,
                                     Converter={StaticResource LayoutToVisibility},
-                                    ConverterParameter={x:Static helpers:LayoutType.Circular}}">
+                                    ConverterParameter={x:Static srv:LayoutType.Circular}}">
                 <Label Content="Number of targets" />
                 <TextBox>
                     <TextBox.Text>
@@ -115,7 +115,7 @@
 
             <WrapPanel Visibility="{Binding Model.LayoutType,
                                     Converter={StaticResource LayoutToVisibility},
-                                    ConverterParameter={x:Static helpers:LayoutType.Circular}}">
+                                    ConverterParameter={x:Static srv:LayoutType.Circular}}">
                 <Label Content="Amplitudes" />
                 <TextBox>
                     <TextBox.Text>
@@ -153,7 +153,7 @@
 
             <WrapPanel Visibility="{Binding Model.LayoutType,
                                     Converter={StaticResource LayoutToVisibility},
-                                    ConverterParameter={x:Static helpers:LayoutType.Grid}}">
+                                    ConverterParameter={x:Static srv:LayoutType.Grid}}">
                 <Label Content="Rows and columns" />
                 <TextBox Width="50">
                     <TextBox.Text>
@@ -196,7 +196,7 @@
 
             <WrapPanel>
                 <Label Content="Display" />
-                <ComboBox ItemsSource="{Binding Source={x:Static helpers:Display.Monitors}}"
+                <ComboBox ItemsSource="{Binding Source={x:Static srv:Display.Monitors}}"
                           SelectedIndex="{Binding Model.ScreenIndex}" />
             </WrapPanel>
 

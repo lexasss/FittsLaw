@@ -53,7 +53,7 @@ internal partial class Setup : ObservableObject
         {
             if (!Model.SaveToFile(filename))
             {
-                Helpers.Message.Error("Failed to save the setup file");
+                Services.Message.Error("Failed to save the setup file");
             }
         });
     }
@@ -74,7 +74,7 @@ internal partial class Setup : ObservableObject
             }
             else
             {
-                Helpers.Message.Error("Failed to load the setup file");
+                Services.Message.Error("Failed to load the setup file");
             }
         });
     }
@@ -98,9 +98,9 @@ internal partial class Setup : ObservableObject
     #region Internals
 
     const string STORAGE_FILTER = "Setup files (*.fls)|*.fls";
-    static readonly string STORAGE_FOLDER = Helpers.Storage.GetFolder(Helpers.Storage.Folders.Setups);
+    static readonly string STORAGE_FOLDER = Services.Storage.GetFolder(Services.Storage.Folders.Setups);
 
-    readonly Helpers.Storage _setupFileStorage = Helpers.Storage.For(STORAGE_FILTER, STORAGE_FOLDER);
+    readonly Services.Storage _setupFileStorage = Services.Storage.For(STORAGE_FILTER, STORAGE_FOLDER);
 
     [GeneratedRegex(@"([A-Z])", RegexOptions.Compiled)]
     private static partial Regex WordSeparationRegex();

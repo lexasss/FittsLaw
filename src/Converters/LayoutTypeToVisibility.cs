@@ -1,14 +1,15 @@
-﻿using System.Globalization;
+﻿using FittsLaw.Services;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace FittsLaw.Converters;
 
-[ValueConversion(typeof(Helpers.LayoutType), typeof(Visibility))]
+[ValueConversion(typeof(LayoutType), typeof(Visibility))]
 internal class LayoutTypeToVisibility : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => 
-        (Helpers.LayoutType)value == (Helpers.LayoutType)parameter
+        (LayoutType)value == (LayoutType)parameter
             ? Visibility.Visible
             : Visibility.Collapsed;
 

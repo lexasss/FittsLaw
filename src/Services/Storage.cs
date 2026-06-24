@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace FittsLaw.Helpers;
+namespace FittsLaw.Services;
 
 internal class Storage
 {
