@@ -76,7 +76,7 @@ internal class Experiment
         {
             BlockStarted?.Invoke(this, block);
 
-            block.Targets = _targets;
+            block.Targets.AddRange(_targets);
 
             _stopwatch.Restart();
 

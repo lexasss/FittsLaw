@@ -3,6 +3,12 @@ using FittsLaw.Extensions;
 
 namespace FittsLaw.Services;
 
+public enum InitialTargetSetup
+{
+    TheFirst,
+    Odds,
+}
+
 internal class Statistics
 {
     public static string[] Fields { get; } = StatFields.Select(sf => sf.Name).ToArray();
@@ -18,7 +24,7 @@ internal class Statistics
         }
         else
         {
-            return ComputeForFixedAmplitude(experimentBlocks, settings);
+            return ComputeForFixedAmplitude(experimentBlocks, settings, InitialTargetSetup.TheFirst);
         }
     }
 
@@ -69,105 +75,53 @@ internal class Statistics
                 if (prevTarget != null)
                 {
                     var amplitude = target.Position.DistanceTo(prevTarget.Position);
-                    newBlocks.Add(new Models.Block(0, amplitude, block.Width)
-                    {
-                        Targets = [prevTarget, target]
-                    });
+                    var newBlock = new Models.Block(0, amplitude, block.Width);
+                    newBlock.Targets.Add(prevTarget);
+                    newBlock.Targets.Add(target);
+                    newBlocks.Add(newBlock);
                 }
 
                 prevTarget = target;
             }
         }
 
-        // Then, compute statistics for each trial separately
-        var targetStats = ComputeForFixedAmplitude(
-            newBlocks.ToArray(),
-            new Models.StatisticsSettings(1)); // do not filter errors yet
-
-        // Next, unite trials with the same amplitude and width into their own blocks
-
-        var unitedStats = new Dictionary<int, double[]>();
-
-        var amplitudes = targetStats[Fields[2]];
-        var widths = targetStats[Fields[3]];
-
-        for (int i = 0; i < amplitudes.Length; i++)
+        // Unite blocks of the same amplitude and width
+        var unitedBlocks = new Dictionary<int, Models.Block>();
+        foreach (var block in newBlocks)
         {
-            var amplitude = double.Parse(amplitudes[i]);
-            var width = double.Parse(widths[i]);
-
-            var hash = HashCode.Combine(amplitude, width);
-            if (unitedStats.TryGetValue(hash, out var unitedStat))
+            var hash = HashCode.Combine(block.Amplitude, block.Width);
+            if (unitedBlocks.TryGetValue(hash, out var unitedBlock))
             {
-                unitedStat[1]++;    // trial count
-                for (int j = FirstComputedFieldIndex; j < Fields.Length; j++)
-                    unitedStat[j] += double.Parse(targetStats[Fields[j]][i]);
+                unitedBlock.Targets.AddRange(block.Targets);
             }
             else
             {
-                unitedStats.Add(hash, [
-                    0,
-                    1,
-                    amplitude,
-                    width,
-                    double.Parse(targetStats[Fields[4]][i]),
-                    double.Parse(targetStats[Fields[5]][i]),
-                    double.Parse(targetStats[Fields[6]][i]),
-                    double.Parse(targetStats[Fields[7]][i]),
-                    double.Parse(targetStats[Fields[8]][i]),
-                    double.Parse(targetStats[Fields[9]][i]),
-                    double.Parse(targetStats[Fields[10]][i]),
-                    double.Parse(targetStats[Fields[11]][i]),
-                    double.Parse(targetStats[Fields[12]][i]),
-                    double.Parse(targetStats[Fields[13]][i])
-                ]);
+                unitedBlocks.Add(hash, block);
             }
         }
 
-        var blocks = unitedStats.Values.ToArray();
-        foreach (var block in blocks)
-        {
-            for (int j = FirstComputedFieldIndex; j < block.Length; j++)
-            {
-                if (j != 10)    // errors remain a sum of errors, not the average
-                    block[j] /= block[1];
-            }
-        }
+        // Sort according width and amplitude
+        var blocks = unitedBlocks.Values.ToArray();
+        blocks.Sort((a, b) => {
+            double d = a.Width - b.Width;
+            if (d == 0)
+                d = a.Amplitude - b.Amplitude;
+            return Math.Sign(d);
+        });
 
-        // Sort by Widths, then by Amplitudes
-        blocks.Sort((a, b) => (a[3] != b[3] ? a[3] > b[3] : a[2] > b[2]) ? 1 : -1);
+        // Finally compute statistics with a special flag to skip every odd target, not just the first one
+        var statRows = ComputeForFixedAmplitude(
+            blocks,
+            settings,
+            InitialTargetSetup.Odds);
 
-        // Finally, create statitics rows..
-
-        Dictionary<string, string[]> statRows = [];
-        foreach (var field in Fields)
-            statRows.Add(field, new string[blocks.Length]);
-
-        for (int i = 0; i < blocks.Length; i++)
-        {
-            var block = blocks[i];
-            for (int j = 0; j < StatFields.Length; j++)
-            {
-                statRows[Fields[j]][i] = block[j].ToString(Formats[j]);
-            }
-        }
-
-        // .. and filter too-many-errors blocks
-
-        var errorPercentageThreshold = settings.CriticalErrorRate * 100;
-        var errorPercentages = statRows[Fields[11]].Select(double.Parse).ToArray();
-
-        Dictionary<string, string[]> result = [];
-        foreach (var kv in statRows)
-        {
-            result[kv.Key] = kv.Value.Where((_, j) => errorPercentages[j] <= errorPercentageThreshold).ToArray();
-        }
-        return result;
+        return statRows;
     }
 
     public static IReadOnlyDictionary<string, string[]> ComputeForFixedAmplitude(
         Models.Block[] experimentBlocks,
-        Models.StatisticsSettings settings)
+        Models.StatisticsSettings settings,
+        InitialTargetSetup initialTargets)
     {
         int blockCount = experimentBlocks.Length;
 
@@ -214,9 +168,19 @@ internal class Statistics
                     meanDuration += target.ActivationTimestamp - startTimestamp;
 
                     validTrialCount += 1;
+
+                    startTimestamp = initialTargets switch
+                    {
+                        InitialTargetSetup.Odds => 0,
+                        InitialTargetSetup.TheFirst => target.ActivationTimestamp,
+                        _ => throw new NotImplementedException()
+                    };
+                }
+                else
+                {
+                    startTimestamp = target.ActivationTimestamp;
                 }
 
-                startTimestamp = target.ActivationTimestamp;
                 prevActivation = activation;
                 prevTarget = target.Position;
             }
@@ -226,7 +190,7 @@ internal class Statistics
             statRows[Fields[2]][i] = block.Amplitude.ToString(Formats[2]);
             statRows[Fields[3]][i] = block.Width.ToString(Formats[3]);
 
-            if (validTrialCount < 2)        // at least 2 trials must be valid
+            if (validTrialCount < 1)        // at least 1 trial must be valid
             {   // the computed values are set to 0 indicating the block is invalid for analysis
                 for (int j = FirstComputedFieldIndex; j < Fields.Length; j++)
                     statRows[Fields[j]][i] = ZERO;
@@ -236,7 +200,7 @@ internal class Statistics
             meanDuration /= validTrialCount;
             effectiveAmplitude /= validTrialCount;
             meanOffset /= validTrialCount;
-            sd = Math.Sqrt(sd / (validTrialCount - 1)); // -1, as this is a SAMPLE, not POPULATION
+            sd = Math.Sqrt(sd / validTrialCount); // it used to be validTrialCount - 1, as this is a SAMPLE, not POPULATION, but rejected due to grid
 
             double id = Math.Log2(block.Amplitude / block.Width + 1);
             double errors = (double)errorCount / validTrialCount;
