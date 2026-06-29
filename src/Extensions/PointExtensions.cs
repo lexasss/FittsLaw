@@ -12,6 +12,13 @@ internal static class PointExtensions
 
         public Point Add(in Point p) =>
             new(point.X + p.X, point.Y + p.Y);
+
+        public double DistanceTo(in Point p)
+        {
+            double dx = p.X - point.X;
+            double dy = p.Y - point.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
     }
 #else
     public static double Amplitude(this Point point) =>
