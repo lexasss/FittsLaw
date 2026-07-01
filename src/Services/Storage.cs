@@ -24,7 +24,7 @@ internal class Storage
     }
 
     public static Storage For(string filter, string? initialFolder = null) =>
-        new Storage(filter, initialFolder);
+        new(filter, initialFolder);
 
     public bool Open(Action<string> action,
         string? filter = null,
@@ -67,8 +67,8 @@ internal class Storage
 
     #region Internal
 
-    string? _filter = null;
-    string? _initialFolder = null;
+    readonly string? _filter = null;
+    readonly string? _initialFolder = null;
 
     Storage(string? filter, string? initialFolder)
     {

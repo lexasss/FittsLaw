@@ -2,10 +2,8 @@
 
 internal record class StatisticsSettings(double CriticalErrorRate)
 {
-    public static StatisticsSettings From(Properties.Settings settings)
-    {
-        return new StatisticsSettings(settings.CriticalErrorRate);
-    }
+    public static StatisticsSettings From(Properties.Settings settings) =>
+        new(settings.CriticalErrorRate);
 
     public void Save()
     {

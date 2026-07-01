@@ -3,14 +3,14 @@ using FittsLaw.Extensions;
 
 namespace FittsLaw.Services;
 
-public enum InitialTargetSetup
-{
-    TheFirst,
-    Odds,
-}
-
 internal class Statistics
 {
+    public enum TargetsToSkip
+    {
+        First,
+        Odds,
+    }
+
     public static string[] Fields { get; } = StatFields.Select(sf => sf.Name).ToArray();
     public static int FirstComputedFieldIndex { get; } = 4;
 
@@ -24,7 +24,7 @@ internal class Statistics
         }
         else
         {
-            return ComputeForFixedAmplitude(experimentBlocks, settings, InitialTargetSetup.TheFirst);
+            return ComputeForFixedAmplitude(experimentBlocks, settings, TargetsToSkip.First);
         }
     }
 
@@ -113,7 +113,7 @@ internal class Statistics
         var statRows = ComputeForFixedAmplitude(
             blocks,
             settings,
-            InitialTargetSetup.Odds);
+            TargetsToSkip.Odds);
 
         return statRows;
     }
@@ -121,7 +121,7 @@ internal class Statistics
     public static IReadOnlyDictionary<string, string[]> ComputeForFixedAmplitude(
         Models.Block[] experimentBlocks,
         Models.StatisticsSettings settings,
-        InitialTargetSetup initialTargets)
+        TargetsToSkip targetsToSkip)
     {
         int blockCount = experimentBlocks.Length;
 
@@ -169,10 +169,10 @@ internal class Statistics
 
                     validTrialCount += 1;
 
-                    startTimestamp = initialTargets switch
+                    startTimestamp = targetsToSkip switch
                     {
-                        InitialTargetSetup.Odds => 0,
-                        InitialTargetSetup.TheFirst => target.ActivationTimestamp,
+                        TargetsToSkip.Odds => 0,
+                        TargetsToSkip.First => target.ActivationTimestamp,
                         _ => throw new NotImplementedException()
                     };
                 }

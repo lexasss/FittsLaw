@@ -20,7 +20,7 @@ internal class NumberArrayValidationRule : ValidationRule
         {
             return new ValidationResult(false, $"Please enter an array of numbers between {Minimum} and {Maximum}.");
         }
-        if (ExactCount != null && ExactCount != parts.Count())
+        if (ExactCount != null && ExactCount != parts.Length)
         {
             return new ValidationResult(false, $"Please enter exactly {ExactCount} numbers.");
         }

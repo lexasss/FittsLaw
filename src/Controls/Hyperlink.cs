@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace FittsLaw.Controls;
@@ -7,29 +6,33 @@ namespace FittsLaw.Controls;
 [TemplatePart(Name = "PART_TextBlock", Type = typeof(TextBlock))]
 public partial class Hyperlink : Control
 {
+    #region Uri
     public static readonly DependencyProperty UriProperty = DependencyProperty.Register(
         nameof(Uri),
         typeof(string),
         typeof(Hyperlink),
         new PropertyMetadata(null));
 
+    public string Uri
+    {
+        get => (string)GetValue(UriProperty);
+        set => SetValue(UriProperty, value);
+    }
+    #endregion
+
+    #region Text
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
         nameof(Text),
         typeof(string),
         typeof(Hyperlink),
         new PropertyMetadata(string.Empty));
 
-    public string Uri
-    {
-        get => (string)GetValue(UriProperty);
-        set => SetValue(UriProperty, value);
-    }
-
     public string Text
     {
         get => (string)GetValue(TextProperty);
         set => SetValue(TextProperty, value);
     }
+    #endregion
 
     public override void OnApplyTemplate()
     {
@@ -50,7 +53,7 @@ public partial class Hyperlink : Control
     {
         if (System.IO.Directory.Exists(Uri))
         {
-            Process.Start("explorer.exe", Uri);
+            System.Diagnostics.Process.Start("explorer.exe", Uri);
         }
     }
 

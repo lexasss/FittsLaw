@@ -8,11 +8,16 @@
         Title="Fitts' Law"
         Height="450"
         Width="800"
-        Content="{Binding Page, Mode=OneWay}"
+        MinHeight="200"
+        MinWidth="450"
         WindowState="{Binding State, Mode=OneWay}"
         WindowStyle="{Binding Style, Mode=OneWay}"
         Icon="/Assets/Images/icon.png">
     <Window.DataContext>
         <vm:MainWindow />
     </Window.DataContext>
+    <Grid>
+        <Frame Content="{Binding Page}" 
+               NavigationUIVisibility="Hidden"/>
+    </Grid>
 </Window>

@@ -1,5 +1,4 @@
 using FittsLaw.Models;
-using FittsLaw.ViewModels;
 
 namespace FittsLaw.Tests;
 

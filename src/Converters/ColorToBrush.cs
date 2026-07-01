@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace FittsLaw.Converters;
 
-[ValueConversion(typeof(Color), typeof(Brush))]
+[ValueConversion(typeof(Color), typeof(SolidColorBrush))]
 internal class ColorToBrush : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => 

@@ -6,13 +6,7 @@ namespace FittsLaw.Controls;
 
 public partial class ColorTextButton : Button
 {
-    static ColorTextButton()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(
-            typeof(ColorTextButton),
-            new FrameworkPropertyMetadata(typeof(ColorTextButton)));
-    }
-
+    #region Color
     public static readonly DependencyProperty ColorProperty =
         DependencyProperty.Register(
             nameof(Color),
@@ -26,7 +20,9 @@ public partial class ColorTextButton : Button
         get => (Color)GetValue(ColorProperty);
         set => SetValue(ColorProperty, value);
     }
+    #endregion
 
+    #region Text
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register(
             nameof(Text),
@@ -38,5 +34,12 @@ public partial class ColorTextButton : Button
     {
         get => (string)GetValue(TextProperty);
         set => SetValue(TextProperty, value);
+    }
+    #endregion
+
+    static ColorTextButton()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorTextButton),
+            new FrameworkPropertyMetadata(typeof(ColorTextButton)));
     }
 }

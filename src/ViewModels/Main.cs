@@ -84,7 +84,7 @@ internal partial class Main : ObservableObject
     private void Setup()
     {
         var dialog = new Views.Setup();
-        dialog.Owner = App.Current.MainWindow;
+
         if (dialog.ShowDialog() == true)
         {
             try
@@ -99,11 +99,7 @@ internal partial class Main : ObservableObject
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(
-                    $"Error starting experiment: {ex.Message}",
-                    "Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Error);
+                Services.Message.Error($"Failed to start: {ex.Message}");
             }
         }
     }

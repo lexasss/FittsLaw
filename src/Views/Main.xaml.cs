@@ -11,6 +11,8 @@ public partial class Main : Page
         InitializeComponent();
     }
 
+    #region UI event handlers
+
     private void Color_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Controls.ColorTextButton btn)
@@ -29,4 +31,6 @@ public partial class Main : Page
     {
         Keyboard.Focus(this);
     }
+
+    #endregion
 }

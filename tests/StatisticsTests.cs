@@ -66,7 +66,7 @@ public class StatisticsTests
 
         Assert.Equal("1", result["Trials"][0]);
         Assert.Equal("900", result["MT, ms"][0]);
-        Assert.True("0" != result["Throughput, b/s"][0]);
+        Assert.NotEqual("0", result["Throughput, b/s"][0]);
     }
 
     [Fact]

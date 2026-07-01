@@ -1,10 +1,9 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace FittsLaw.Converters;
 
-[ValueConversion(typeof(SolidColorBrush), typeof(Brush))]
+[ValueConversion(typeof(bool), typeof(bool))]
 internal class Inverse : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => 

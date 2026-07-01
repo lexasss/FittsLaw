@@ -6,14 +6,12 @@ namespace FittsLaw.Views;
 
 public partial class Experiment : Page
 {
-    public ItemsControl TargetContainer => itemsControl;
-
     public Experiment()
     {
         InitializeComponent();
     }
 
-    #region Internal
+    #region UI event handlers
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
