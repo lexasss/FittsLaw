@@ -24,7 +24,7 @@
     <Window.Resources>
         <conv:StatKeyToMargin x:Key="StatKeyToMargin"/>
 
-        <DataTemplate x:Key="copySign">
+        <DataTemplate x:Key="CopySign">
             <Grid>
                 <TextBlock Margin="-2,-2,0,0" Foreground="White">▮</TextBlock>
                 <TextBlock Margin="-2,-2,0,0">▯</TextBlock>
@@ -33,31 +33,42 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="copy" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Padding" Value="2,0,0,0"/>
-            <Setter Property="Foreground" Value="Gray"/>
-            <Setter Property="ContentTemplate" Value="{StaticResource copySign}" />
+            <Setter Property="Foreground" Value="#444"/>
         </Style>
-        <Style x:Key="copyPlot" TargetType="Button" BasedOn="{StaticResource copy}">
+
+        <Style x:Key="Copy" TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Setter Property="ContentTemplate" Value="{StaticResource CopySign}" />
+        </Style>
+
+        <Style x:Key="Save" TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Setter Property="Content" Value="💾"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+
+        <Style x:Key="CopyPlot" TargetType="Button" BasedOn="{StaticResource Copy}">
             <Setter Property="Command" Value="{Binding CopyPlotToClipboardCommand}"/>
             <Setter Property="ToolTip">
                 <Setter.Value>
                     <ToolTip>
                         <StackPanel>
-                            <TextBlock>Copies the plot to the clipboard as an image.</TextBlock>
+                            <TextBlock>Copy the plot to the clipboard as an image.</TextBlock>
                             <TextBlock>Keep Control button to rather copy as HTML image.</TextBlock>
                         </StackPanel>
                     </ToolTip>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="copiedLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+        
+        <Style x:Key="CopiedLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="4"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="Visibility" Value="{Binding CopyToClipboardConfirmationVisibility}"/>
         </Style>
@@ -116,42 +127,22 @@
                     <Grid Grid.Row="1">
                         <WrapPanel Margin="4"
                                    HorizontalAlignment="Center">
-                            <Button Style="{StaticResource copy}"
+                            <Button Style="{StaticResource Copy}"
                                     Command="{Binding CopyTableToClipboardCommand}">
                                 <Button.ToolTip>
                                     <ToolTip>
                                         <StackPanel>
-                                            <TextBlock>Copies all numeric data to the clipboard.</TextBlock>
+                                            <TextBlock>Copy all numeric data to the clipboard.</TextBlock>
                                             <TextBlock>Keep Control button to include headers.</TextBlock>
                                         </StackPanel>
                                     </ToolTip>
                                 </Button.ToolTip>
                             </Button>
-                            <Button Style="{StaticResource copy}"
-                                    Content="💾"
+                            <Button Style="{StaticResource Save}"
                                     Margin="4,0,0,0"
-                                    Padding="0"
-                                    Command="{Binding SaveRawDataToFileCommand}">
-                                <Button.ContentTemplate>
-                                    <DataTemplate>
-                                        <Label Content="💾"
-                                               FontSize="18"
-                                               Foreground="#444"
-                                               Padding="0"/>
-                                    </DataTemplate>
-                                </Button.ContentTemplate>
-                                <Button.ToolTip>
-                                    <ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>Copies all numeric data to the clipboard.</TextBlock>
-                                            <TextBlock>Keep Control button to include headers.</TextBlock>
-                                        </StackPanel>
-                                    </ToolTip>
-                                </Button.ToolTip>
-                            </Button>
+                                    Command="{Binding SaveRawDataToFileCommand}"
+                                    ToolTip="Save all numeric data to a file"/>
                         </WrapPanel>
-                        <Label Style="{StaticResource copiedLabel}"
-                               Content="{Binding ActionName}"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -168,10 +159,16 @@
                     <Grid Grid.Row="1">
                         <WrapPanel Margin="4"
                                    HorizontalAlignment="Center">
-                            <Button Style="{StaticResource copyPlot}"
+                            <Button Style="{StaticResource CopyPlot}"
                                     CommandParameter="{Binding TpAndMt}"/>
+                            <Button Style="{StaticResource Save}"
+                                    Margin="4,0,0,0"
+                                    Command="{Binding SavePlotToFileCommand}"
+                                    CommandParameter="{Binding TpAndMt}"
+                                    ToolTip="Save the plot to a file">
+                            </Button>
                         </WrapPanel>
-                        <Label Style="{StaticResource copiedLabel}"/>
+                        <Label Style="{StaticResource CopiedLabel}"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -188,15 +185,24 @@
                     <Grid Grid.Row="1">
                         <WrapPanel Margin="4"
                                    HorizontalAlignment="Center">
-                            <Button Style="{StaticResource copyPlot}"
+                            <Button Style="{StaticResource CopyPlot}"
                                     CommandParameter="{Binding EffTpAndMt}"/>
+                            <Button Style="{StaticResource Save}"
+                                    Margin="4,0,0,0"
+                                    Command="{Binding SavePlotToFileCommand}"
+                                    CommandParameter="{Binding EffTpAndMt}"
+                                    ToolTip="Save the plot to a file">
+                            </Button>
                         </WrapPanel>
-                        <Label Style="{StaticResource copiedLabel}"/>
+                        <Label Style="{StaticResource CopiedLabel}"/>
                     </Grid>
                 </Grid>
             </TabItem>
         </TabControl>
 
+        <Label Style="{StaticResource CopiedLabel}"
+               Content="{Binding ActionName}"/>
+        
         <ctrl:Hyperlink Text="Log folder"
                         Uri="{Binding LogFolder}"
                         HorizontalAlignment="Right"

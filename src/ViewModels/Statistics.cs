@@ -138,6 +138,18 @@ internal partial class Statistics : ObservableObject
     }
 
     [RelayCommand]
+    private void SavePlotToFile(WpfPlot plot)
+    {
+        _logFileStorage.Save(filename =>
+        {
+            var image = plot.Plot.GetBitmap();
+            image.Save(filename);
+
+            ShowConfirmation(ACTION_SAVE);
+        }, "PNG images|*.png");
+    }
+
+    [RelayCommand]
     private void CopyTableToClipboard()
     {
         List<string> lines = [];
