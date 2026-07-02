@@ -140,13 +140,13 @@ internal partial class Statistics : ObservableObject
     [RelayCommand]
     private void SavePlotToFile(WpfPlot plot)
     {
-        _logFileStorage.Save(filename =>
+        _imageStorage.Save(filename =>
         {
             var image = plot.Plot.GetBitmap();
             image.Save(filename);
 
             ShowConfirmation(ACTION_SAVE);
-        }, "PNG images|*.png");
+        });
     }
 
     [RelayCommand]
@@ -192,7 +192,8 @@ internal partial class Statistics : ObservableObject
     const int CONFIRMATION_VISIBILITY_DURATION = 2000;
     const string ACTION_COPY = "Copied";
     const string ACTION_SAVE = "Saved";
-    const string STORAGE_FILTER = "Text files (*.txt)|*.txt";
+    const string TEXT_STORAGE_FILTER = "Text files|*.txt";
+    const string IMAGE_STORAGE_FILTER = "PNG images|*.png";
 
     static string IDField => Services.Statistics.Fields[5];
     static string IDEffField => Services.Statistics.Fields[8];
@@ -200,7 +201,8 @@ internal partial class Statistics : ObservableObject
     static string TPField => Services.Statistics.Fields[12];
     static string TPEffField => Services.Statistics.Fields[13];
 
-    readonly Services.Storage _logFileStorage = Services.Storage.For(STORAGE_FILTER);
+    readonly Services.Storage _logFileStorage = Services.Storage.For(TEXT_STORAGE_FILTER);
+    readonly Services.Storage _imageStorage = Services.Storage.For(IMAGE_STORAGE_FILTER);
 
     private void ShowConfirmation(string actionName)
     {
