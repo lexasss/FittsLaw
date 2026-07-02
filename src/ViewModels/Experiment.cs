@@ -85,7 +85,8 @@ internal partial class Experiment : ObservableObject, IDisposable
             Services.LayoutType.Grid => Services.LayoutCreator.CreateGrid(
                 block,
                 setup.GridSize,
-                ParentSize),
+                ParentSize,
+                block.BlockId),
             _ => throw new InvalidOperationException($"Layout type {setup.LayoutType} is not yet implemented")
         };
    

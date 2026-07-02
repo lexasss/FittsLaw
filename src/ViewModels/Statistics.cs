@@ -226,7 +226,8 @@ internal partial class Statistics : ObservableObject
         sb.AppendLine($"# {nameof(setup.IsDistinctErrorAudioFeedback)}: {setup.IsDistinctErrorAudioFeedback}");
 
         sb.AppendLine("# " + string.Join('\t', [
-            "Block" + nameof(Models.Block.Id),
+            nameof(Models.Block.SessionId),
+            nameof(Models.Block.BlockId),
             nameof(Models.Block.Amplitude),
             nameof(Models.Block.Width),
             ..Models.Target.LogFields
@@ -235,7 +236,8 @@ internal partial class Statistics : ObservableObject
         foreach (var block in experiment.Blocks)
             foreach (var target in block.Targets)
                 sb.AppendLine(string.Join('\t', [
-                    block.Id,
+                    block.SessionId,
+                    block.BlockId,
                     block.Amplitude.ToString("F0"),
                     block.Width,
                     ..target.LogValues

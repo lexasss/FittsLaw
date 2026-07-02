@@ -75,7 +75,7 @@ internal class Statistics
                 if (prevTarget != null)
                 {
                     var amplitude = target.Position.DistanceTo(prevTarget.Position);
-                    var newBlock = new Models.Block(0, amplitude, block.Width);
+                    var newBlock = new Models.Block(0, 0, amplitude, block.Width);
                     newBlock.Targets.Add(prevTarget);
                     newBlock.Targets.Add(target);
                     newBlocks.Add(newBlock);
@@ -129,7 +129,10 @@ internal class Statistics
         foreach (var field in Fields)
             statRows.Add(field, new string[blockCount]);
 
-        experimentBlocks.Sort((b1, b2) => b1.Id.CompareTo(b2.Id));
+        experimentBlocks.Sort((b1, b2) => 
+            b1.SessionId == b2.SessionId
+                ? b1.BlockId.CompareTo(b2.BlockId)
+                : b1.SessionId.CompareTo(b2.SessionId));
 
         for (int i = 0; i < experimentBlocks.Length; i++)
         {

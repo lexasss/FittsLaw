@@ -171,16 +171,19 @@ internal class Experiment
     private static Models.Block[] CreateBlocks(Models.ExperimentSetup setup)
     {
         var result = new List<Models.Block>();
-        int i = 0;
-        for (int session = 0; session < setup.SessionCount; session++)
+
+        for (int sessionId = 0; sessionId < setup.SessionCount; sessionId++)
         {
+            int blockId = 0;
+            List<Models.Block> sessionBlocks = [];
+
             if (setup.LayoutType == LayoutType.Circular)
             {
                 foreach (var amplitude in setup.Amplitudes)
                 {
                     foreach (var width in setup.Widths)
                     {
-                        result.Add(new(i++, amplitude, width));
+                        sessionBlocks.Add(new(sessionId, blockId++, amplitude, width));
                     }
                 }
             }
@@ -188,18 +191,24 @@ internal class Experiment
             {
                 foreach (var width in setup.Widths)
                 {
-                    result.Add(new(i++, 0, width));
+                    sessionBlocks.Add(new(sessionId, blockId++, 0, width));
                 }
             }
             else
             {
                 throw new NotImplementedException();
             }
-        }
 
-        if (setup.IsRandomized)
-        {
-            Random.Shared.Shuffle(result);
+            if (setup.IsRandomized)
+            {
+                Random.Shared.Shuffle(sessionBlocks);
+                for (int i = 0; i < sessionBlocks.Count; i++)
+                {
+                    sessionBlocks[i].BlockId = i;
+                }
+            }
+
+            result.AddRange(sessionBlocks);
         }
 
         return result.ToArray();
