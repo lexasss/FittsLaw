@@ -10,7 +10,7 @@ public class LayoutCreatorTest
     {
         StaThread.Run(() =>
         {
-            var block = new Block(0, amplitude: 120, width: 24);
+            var block = new Block(0, 0, amplitude: 120, width: 24);
 
             var targets = LayoutCreator.CreateCircular(block, targetCount: 7, fieldSize: 168);
 
@@ -28,7 +28,7 @@ public class LayoutCreatorTest
     {
         StaThread.Run(() =>
         {
-            var block = new Block(0, amplitude: 120, width: 24);
+            var block = new Block(0, 0, amplitude: 120, width: 24);
             var fieldSize = block.Amplitude + 2 * block.Width;
 
             var targets = LayoutCreator.CreateCircular(block, targetCount: 7, fieldSize);
@@ -46,7 +46,7 @@ public class LayoutCreatorTest
     {
         StaThread.Run(() =>
         {
-            var block = new Block(0, amplitude: 120, width: 24);
+            var block = new Block(0, 0, amplitude: 120, width: 24);
 
             var targets = LayoutCreator.CreateCircular(block, targetCount: 7, fieldSize: 168);
 

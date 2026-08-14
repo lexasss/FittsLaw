@@ -10,7 +10,7 @@ public class StatisticsTests
     [Fact]
     public void ComputeCalculatesMovementTimeAndErrors()
     {
-        var block = new Block(0, amplitude: 100, width: 20)
+        var block = new Block(0, 0, amplitude: 100, width: 20)
         {
             Targets =
             [
@@ -45,7 +45,7 @@ public class StatisticsTests
     [Fact]
     public void ComputeHandlesBlockWithFewerThanTwoTargets()
     {
-        var block = new Block(0, amplitude: 100, width: 20)
+        var block = new Block(0, 0, amplitude: 100, width: 20)
         {
             Targets =
             [
@@ -72,7 +72,7 @@ public class StatisticsTests
     [Fact]
     public void ComputeHandlesZeroEffectiveWidthWithoutInfinityOrNaN()
     {
-        var block = new Block(0, amplitude: 100, width: 20)
+        var block = new Block(0, 0, amplitude: 100, width: 20)
         {
             Targets =
             [
