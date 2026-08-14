@@ -12,10 +12,6 @@
       Title="Main"
       Focusable="True"
       Loaded="Page_Loaded">
-    <Page.DataContext>
-        <vm:Main />
-    </Page.DataContext>
-    
     <Page.InputBindings>
         <KeyBinding Key="F2" Command="{Binding SetupCommand}"/>
     </Page.InputBindings>

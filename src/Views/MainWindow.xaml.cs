@@ -4,8 +4,9 @@ namespace FittsLaw.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    internal MainWindow(ViewModels.MainWindow viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 }

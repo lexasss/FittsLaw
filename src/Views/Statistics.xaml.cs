@@ -4,15 +4,18 @@ namespace FittsLaw.Views;
 
 public partial class Statistics : Window
 {
-    public Statistics(IReadOnlyDictionary<string, string[]> statisticsData)
+    internal Statistics(ViewModels.Statistics viewModel)
     {
         Owner = Application.Current.MainWindow;
 
         InitializeComponent();
+        DataContext = viewModel;
+        viewModel.HideCopyToClipboardConfirmation += (s, e) =>
+            Dispatcher.Invoke(() => viewModel.CopyToClipboardConfirmationVisibility = Visibility.Hidden);
+    }
 
-        var vm = (ViewModels.Statistics)DataContext;
-        vm.Items = statisticsData;
-        vm.HideCopyToClipboardConfirmation += (s, e) =>
-            Dispatcher.Invoke(() => vm.CopyToClipboardConfirmationVisibility = Visibility.Hidden);
+    public void SetStatisticsData(IReadOnlyDictionary<string, string[]> statisticsData)
+    {
+        ((ViewModels.Statistics)DataContext).Items = statisticsData;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace FittsLaw.ViewModels;
@@ -13,12 +12,16 @@ internal partial class MainWindow : ObservableObject
     [ObservableProperty]
     public partial WindowStyle Style { get; private set; } = WindowStyle.SingleBorderWindow;
 
-    public MainWindow()
+    public MainWindow(
+        Services.Experiment experiment,
+        Func<string, Services.IInput> inputFactory,
+        Views.Main mainView,
+        Func<Views.Experiment> experimentViewFactory)
     {
-        _inputFactory = App.ServiceProvider.GetService<Func<string, Services.IInput>>()
-            ?? throw new InvalidOperationException("Input service factory not available");
-        _experiment = App.ServiceProvider.GetService<Services.Experiment>()
-            ?? throw new InvalidOperationException("Experiment service not available");
+        _experiment = experiment;
+        _inputFactory = inputFactory;
+        _mainView = mainView;
+        _experimentViewFactory = experimentViewFactory;
 
         Page = _mainView;
 
@@ -30,9 +33,9 @@ internal partial class MainWindow : ObservableObject
 
     readonly Func<string, Services.IInput> _inputFactory;
     readonly Services.Experiment _experiment;
-    readonly Window _window = Application.Current.MainWindow;
 
-    readonly Views.Main _mainView = new();
+    readonly Views.Main _mainView;
+    readonly Func<Views.Experiment> _experimentViewFactory;
 
     Experiment? _experimentViewModel;
     WindowState _originalWindowState;
@@ -40,27 +43,29 @@ internal partial class MainWindow : ObservableObject
 
     private void MainVm_ExperimentStarted(object? sender, Models.ExperimentSetup setup)
     {
+        var window = Application.Current.MainWindow;
+
         _originalWindowState = State;
-        _originalScreenIndex = Services.Display.GetScreenIndex(_window);
+        _originalScreenIndex = Services.Display.GetScreenIndex(window);
 
         if (setup.ScreenIndex != _originalScreenIndex && State == WindowState.Maximized)
         {
             State = WindowState.Normal;
         }
 
-        Services.Display.MoveToScreen(_window, setup.ScreenIndex);
+        Services.Display.MoveToScreen(window, setup.ScreenIndex);
 
         //Topmost = true;
         Style = WindowStyle.None;
         State = WindowState.Maximized;
 
-        var experimentView = new Views.Experiment();
+        var experimentView = _experimentViewFactory();
 
         _experimentViewModel = (Experiment)experimentView.DataContext;
         _experimentViewModel.ExperimentStopped += ExpVm_ExperimentStopped;
 
         var input = _inputFactory(setup.InputType);
-        input.Register(_experiment, _window, experimentView.itemsControl,
+        input.Register(_experiment, window, experimentView.itemsControl,
             () => _experimentViewModel.Targets);
 
         Page = experimentView;
@@ -74,7 +79,7 @@ internal partial class MainWindow : ObservableObject
         if (setup.ScreenIndex != _originalScreenIndex)
         {
             State = WindowState.Normal;
-            Services.Display.MoveToScreen(_window, _originalScreenIndex);
+            Services.Display.MoveToScreen(Application.Current.MainWindow, _originalScreenIndex);
         }
 
         State = _originalWindowState;

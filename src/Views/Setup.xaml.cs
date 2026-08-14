@@ -4,11 +4,12 @@ namespace FittsLaw.Views;
 
 public partial class Setup : Window
 {
-    public Setup()
+    internal Setup(ViewModels.Setup viewModel)
     {
         Owner = Application.Current.MainWindow;
 
         InitializeComponent();
+        DataContext = viewModel;
     }
 
     #region UI event handlers

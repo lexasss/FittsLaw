@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
@@ -20,8 +19,13 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     public event EventHandler<Models.ExperimentSetup>? ExperimentStopped;
 
-    public Experiment()
+    public Experiment(
+        Services.Experiment experiment,
+        Func<IReadOnlyDictionary<string, string[]>, Views.Statistics> statisticsDialogFactory)
     {
+        _statisticsDialogFactory = statisticsDialogFactory;
+
+        _experiment = experiment;
         _experiment.BlockStarted += Experiment_BlockStarted;
         _experiment.BlockFinished += Experiment_BlockFinished;
         _experiment.TargetChanged += Experiment_TargetChanged;
@@ -68,8 +72,8 @@ internal partial class Experiment : ObservableObject, IDisposable
 
     #region Internal
 
-    readonly Services.Experiment _experiment = App.ServiceProvider.GetService<Services.Experiment>() 
-        ?? throw new InvalidOperationException("Experiment service not available");
+    readonly Services.Experiment _experiment;
+    readonly Func<IReadOnlyDictionary<string, string[]>, Views.Statistics> _statisticsDialogFactory;
 
     private void Experiment_BlockStarted(object? sender, Models.Block block)
     {
@@ -139,7 +143,7 @@ internal partial class Experiment : ObservableObject, IDisposable
             }
             else
             {
-                var dialog = new Views.Statistics(statisticsData);
+                var dialog = _statisticsDialogFactory(statisticsData);
                 dialog.ShowDialog();
             }
         }

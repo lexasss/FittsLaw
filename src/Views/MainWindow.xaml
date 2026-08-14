@@ -13,9 +13,6 @@
         WindowState="{Binding State, Mode=OneWay}"
         WindowStyle="{Binding Style, Mode=OneWay}"
         Icon="/Assets/Images/icon.png">
-    <Window.DataContext>
-        <vm:MainWindow />
-    </Window.DataContext>
     <Grid>
         <Frame Content="{Binding Page}" 
                NavigationUIVisibility="Hidden"/>

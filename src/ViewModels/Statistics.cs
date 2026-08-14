@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FittsLaw.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using ScottPlot;
 using System.Drawing;
 using System.IO;
@@ -30,8 +29,10 @@ internal partial class Statistics : ObservableObject
 
     public event EventHandler? HideCopyToClipboardConfirmation;
 
-    public Statistics()
+    public Statistics(Services.Experiment experiment)
     {
+        _experiment = experiment;
+
         // Configure plots
 
         TpAndMt.Plot.Legend(location: Alignment.UpperLeft);
@@ -203,6 +204,7 @@ internal partial class Statistics : ObservableObject
 
     readonly Services.Storage _logFileStorage = Services.Storage.For(TEXT_STORAGE_FILTER);
     readonly Services.Storage _imageStorage = Services.Storage.For(IMAGE_STORAGE_FILTER);
+    readonly Services.Experiment _experiment;
 
     private void ShowConfirmation(string actionName)
     {
@@ -218,9 +220,7 @@ internal partial class Statistics : ObservableObject
 
     private string CreateRawStatisticsText()
     {
-        var experiment = App.ServiceProvider.GetService<Services.Experiment>()
-            ?? throw new InvalidOperationException("Experiment service not available");
-        var setup = experiment.Setup
+        var setup = _experiment.Setup
             ?? throw new InvalidOperationException("Setup is undefined");
 
         StringBuilder sb = new StringBuilder();
@@ -247,7 +247,7 @@ internal partial class Statistics : ObservableObject
             ..Models.Target.LogFields
         ]));
 
-        foreach (var block in experiment.Blocks)
+        foreach (var block in _experiment.Blocks)
             foreach (var target in block.Targets)
                 sb.AppendLine(string.Join('\t', [
                     block.SessionId,

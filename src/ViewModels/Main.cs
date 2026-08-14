@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Media;
 
 namespace FittsLaw.ViewModels;
@@ -78,24 +77,26 @@ internal partial class Main : ObservableObject
 
     public event EventHandler<Models.ExperimentSetup>? ExperimentStarted;
 
+    public Main(Services.Experiment experiment, Func<Views.Setup> setupDialogFactory)
+    {
+        _experiment = experiment;
+        _setupDialogFactory = setupDialogFactory;
+    }
+
     #region Commands
 
     [RelayCommand]
     private void Setup()
     {
-        var dialog = new Views.Setup();
+        var dialog = _setupDialogFactory();
 
         if (dialog.ShowDialog() == true)
         {
             try
             {
                 var setup = ((Setup)dialog.DataContext).Model;
-                var experiment = App.ServiceProvider.GetService<Services.Experiment>();
-                if (experiment != null)
-                {
-                    _ = experiment.Run(setup);  // runs asynchronously, never throws
-                    ExperimentStarted?.Invoke(this, setup);
-                }
+                _ = _experiment.Run(setup);  // runs asynchronously, never throws
+                ExperimentStarted?.Invoke(this, setup);
             }
             catch (Exception ex)
             {
@@ -108,8 +109,11 @@ internal partial class Main : ObservableObject
 
     #region Internal
 
+    readonly Services.Experiment _experiment;
+    readonly Func<Views.Setup> _setupDialogFactory;
+
     Models.UiSettings _uiSettings = Models.UiSettings.From(Properties.Settings.Default);
     Models.StatisticsSettings _statisticsSettings = Models.StatisticsSettings.From(Properties.Settings.Default);
-
+    
     #endregion
 }

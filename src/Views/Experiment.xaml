@@ -13,10 +13,6 @@
       Background="{Binding Background}"
       Loaded="Page_Loaded">
     
-    <Page.DataContext>
-        <vm:Experiment />
-    </Page.DataContext>
-    
     <Page.InputBindings>
         <KeyBinding Key="Esc" 
                     Command="{Binding InterruptCommand}" />

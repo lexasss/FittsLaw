@@ -17,10 +17,6 @@
         ResizeMode="NoResize"
         SizeToContent="Height">
     
-    <Window.DataContext>
-        <vm:Setup />
-    </Window.DataContext>
-    
     <Window.Resources>
         <conv:LayoutTypeToVisibility x:Key="LayoutToVisibility"/>
         <ObjectDataProvider x:Key="LayoutTypes"

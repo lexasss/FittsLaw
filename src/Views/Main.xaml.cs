@@ -6,9 +6,10 @@ namespace FittsLaw.Views;
 
 public partial class Main : Page
 {
-    public Main()
+    internal Main(ViewModels.Main viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 
     #region UI event handlers

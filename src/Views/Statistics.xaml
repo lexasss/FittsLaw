@@ -17,10 +17,6 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         SizeToContent="Width">
-    <Window.DataContext>
-        <vm:Statistics />
-    </Window.DataContext>
-
     <Window.Resources>
         <conv:StatKeyToMargin x:Key="StatKeyToMargin"/>
 

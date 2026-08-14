@@ -5,9 +5,9 @@ namespace FittsLaw;
 
 public partial class App : Application
 {
-    public static IServiceProvider ServiceProvider { get; private set; }
+    private readonly ServiceProvider _serviceProvider;
 
-    static App()
+    public App()
     {
         ServiceCollection services = new();
 
@@ -33,6 +33,50 @@ public partial class App : Application
             throw new ArgumentException($"Unknown input type: {key}");
         });
 
-        ServiceProvider = services.BuildServiceProvider();
+        services.AddTransient<ViewModels.Main>();
+        services.AddTransient<ViewModels.Experiment>();
+        services.AddTransient<ViewModels.MainWindow>();
+        services.AddTransient<ViewModels.Setup>();
+        services.AddTransient<ViewModels.Statistics>();
+
+        services.AddTransient<Views.Main>(sp => new Views.Main(
+            sp.GetRequiredService<ViewModels.Main>()));
+        services.AddTransient<Views.Experiment>(sp => new Views.Experiment(
+            sp.GetRequiredService<ViewModels.Experiment>()));
+        services.AddTransient<Views.MainWindow>(sp => new Views.MainWindow(
+            sp.GetRequiredService<ViewModels.MainWindow>()));
+        services.AddTransient<Views.Setup>(sp => new Views.Setup(
+            sp.GetRequiredService<ViewModels.Setup>()));
+        services.AddTransient<Views.Statistics>(sp => new Views.Statistics(
+            sp.GetRequiredService<ViewModels.Statistics>()));
+
+        services.AddTransient<Func<Views.Setup>>(sp =>
+            () => sp.GetRequiredService<Views.Setup>());
+        services.AddTransient<Func<Views.Experiment>>(sp =>
+            () => sp.GetRequiredService<Views.Experiment>());
+        services.AddTransient<Func<IReadOnlyDictionary<string, string[]>, Views.Statistics>>(sp =>
+            statisticsData =>
+            {
+                var dialog = sp.GetRequiredService<Views.Statistics>();
+                dialog.SetStatisticsData(statisticsData);
+                return dialog;
+            });
+
+        _serviceProvider = services.BuildServiceProvider();
+    }
+
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+
+        var mainWindow = _serviceProvider.GetRequiredService<Views.MainWindow>();
+        MainWindow = mainWindow;
+        mainWindow.Show();
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _serviceProvider.Dispose();
+        base.OnExit(e);
     }
 }
